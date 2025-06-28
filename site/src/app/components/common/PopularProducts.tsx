@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 type Product = {
     id: number;
@@ -25,11 +26,12 @@ const PopularProducts: React.FC = () => {
                 {popularProducts.map((product) => (
                     <div
                         key={product.id}
-                        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col items-center transition duration-300 hover:shadow-xl"
-                    >
-                        <img
+                        className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col items-center transition duration-300 hover:shadow-xl">
+                        <Image
                             src={product.imageUrl}
                             alt={product.title}
+                            width={300}
+                            height={200}
                             className="w-full h-40 object-cover mb-4 rounded"
                         />
                         <h3 className="text-xl text-gray-700 dark:text-gray-200">

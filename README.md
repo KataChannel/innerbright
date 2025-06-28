@@ -4,7 +4,8 @@ InnerBright Training &amp; Coaching tự hào là thành viên chính thức và
 git add .
 git commit -m "update"
 git push
-ssh root@116.118.85.23
+ssh root@116.118.85.41
 cp /root/secret/.env /root/kataoffical/api/
 git pull
 docker compose -f 'docker-compose.yml' up -d --build 
+

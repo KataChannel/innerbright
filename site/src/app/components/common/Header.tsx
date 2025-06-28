@@ -1,6 +1,7 @@
 // File: src/app/components/common/Header.tsx
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState } from "react";
 import Navbar from "../ui/Navbars";
 
@@ -14,11 +15,9 @@ const Header: React.FC = () => {
   return (
     <header className="flex justify-between items-center p-4 border-gray-500 rounded shadow-md bg-white">
       {/* Logo */}
-      <div className="logo">
         <Link href="/">
-          <img src="/logo.png" alt="Logo" className="h-10 filter grayscale" />
+          <Image src="/logo.png" alt="Logo" width={40} height={40} className="h-10 filter grayscale" />
         </Link>
-      </div>
 
       {/* Navbar */}
       <Navbar />

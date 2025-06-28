@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const useCart = () => {
     // Add your hook logic here
-    const [data, setData] = useState(null);
+    const [data] = useState(null);
 
     useEffect(() => {
         // Example: Fetch data

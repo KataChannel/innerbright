@@ -1,18 +1,20 @@
-# Giai đoạn build
-FROM node:18-alpine as builder
+FROM oven/bun:latest AS builder
+# Set the working directory in the container
+RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+COPY package.json bun.lock ./
+RUN bun install --no-cache
 COPY . .
-RUN npm run build
-
-# Giai đoạn production
-FROM node:18-alpine
+# RUN bun install -g prisma
+# RUN bun prisma migrate dev --name init1.1
+# RUN bun prisma generate
+FROM oven/bun:latest
+RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app
-# Chỉ copy những file cần thiết cho chạy ứng dụng
-COPY package*.json ./
-RUN npm install --only=production
-COPY --from=builder /app/dist ./dist
-
+COPY --from=builder /app /app
+COPY --from=builder /app/dist /app/dist
+COPY .env .env
 EXPOSE 3333
-CMD ["node", "dist/main.js"]
+
+# Run the application
+CMD ["bun", "run", "dist/src/main.js"]

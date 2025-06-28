@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const useAuth = () => {
     // Add your hook logic here
-    const [data, setData] = useState(null);
+    const [data] = useState(null);
 
     useEffect(() => {
         // Example: Fetch data
