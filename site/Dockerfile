@@ -1,20 +1,20 @@
 # Stage 1: Build
-FROM node:18-alpine AS builder
+FROM node:22-bullseye-slim AS builder
 WORKDIR /app
 
-# Cài đặt dependencies
+# Install dependencies
 COPY package*.json ./
 RUN npm ci
 
-# Copy toàn bộ source và build ứng dụng
+# Copy source files and build the application
 COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:18-alpine
+FROM node:22-bullseye-slim
 WORKDIR /app
 
-# Chỉ copy những file cần thiết từ stage build
+# Copy only the required files from the build stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/build ./build

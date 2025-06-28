@@ -2,7 +2,7 @@ FROM oven/bun:latest AS builder
 # Set the working directory in the container
 RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app
-COPY package.json bun.lock ./
+COPY . .
 RUN bun install --no-cache
 COPY . .
 # RUN bun install -g prisma
