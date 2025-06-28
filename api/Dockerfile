@@ -13,7 +13,7 @@ RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app
 COPY --from=builder /app /app
 COPY --from=builder /app/dist /app/dist
-COPY .env .env
+# COPY .env .env
 EXPOSE 3333
 
 # Run the application
