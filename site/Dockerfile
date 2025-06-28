@@ -17,7 +17,8 @@ WORKDIR /app
 # Copy only the required files from the build stage
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/build ./build
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
 EXPOSE 3000
 CMD ["npm", "start"]
