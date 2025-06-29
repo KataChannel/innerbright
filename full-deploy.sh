@@ -169,12 +169,20 @@ if [[ ! -f "docker-compose.yml" ]]; then
     exit 1
 fi
 
-# Update containers
+# Update containers with proper build context
 echo -e "\${YELLOW}🔄 Updating containers...\${NC}"
+
+# Clean up old containers and images to free space
+echo -e "\${YELLOW}🧹 Cleaning up old containers and images...\${NC}"
+docker system prune -f > /dev/null 2>&1 || true
+
+# Build and start containers
 if docker compose up --build -d --remove-orphans; then
     echo -e "\${GREEN}✅ Containers updated successfully\${NC}"
 else
     echo -e "\${RED}❌ Container update failed\${NC}"
+    echo -e "\${YELLOW}🔍 Checking Docker logs for errors...\${NC}"
+    docker compose logs --tail=20
     exit 1
 fi
 

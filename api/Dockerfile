@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lockb* bunfig.toml* ./
+COPY package.json bun.lock* bunfig.toml* ./
 COPY tsconfig*.json ./
 
 # Install dependencies
@@ -21,9 +21,6 @@ COPY . .
 
 # Install all dependencies (including dev)
 RUN bun install --frozen-lockfile
-
-# Generate Prisma client if exists
-RUN if [ -f "prisma/schema.prisma" ]; then bun prisma generate; fi
 
 # Build the application
 RUN bun run build
@@ -45,10 +42,6 @@ RUN useradd --system --uid 1001 nestjs
 COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nodejs /app/package.json ./
-
-# Copy Prisma files if they exist
-RUN mkdir -p ./prisma
-COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
 
 USER nestjs
 
