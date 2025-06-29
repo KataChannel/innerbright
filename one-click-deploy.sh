@@ -202,12 +202,46 @@ install_dependencies() {
         sudo sh get-docker.sh
         sudo usermod -aG docker $USER
         rm get-docker.sh
+        
+        # Start Docker service
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        
+        log "${GREEN}✅ Docker installed and started${NC}"
+        log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
+    else
+        log "${GREEN}✅ Docker is already installed${NC}"
+        
+        # Ensure Docker service is running
+        if ! sudo systemctl is-active --quiet docker; then
+            log "${YELLOW}🔄 Starting Docker service...${NC}"
+            sudo systemctl start docker
+            sudo systemctl enable docker
+        fi
+        
+        # Check if user is in docker group
+        if ! groups $USER | grep -q docker; then
+            log "${YELLOW}⚠️  Adding $USER to docker group...${NC}"
+            sudo usermod -aG docker $USER
+            log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
+        fi
     fi
     
     # Install Docker Compose if not present
     if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
         log "${YELLOW}🐳 Installing Docker Compose...${NC}"
         sudo apt install -y docker-compose-plugin
+        log "${GREEN}✅ Docker Compose installed${NC}"
+    else
+        log "${GREEN}✅ Docker Compose is already available${NC}"
+    fi
+    
+    # Test Docker installation
+    log "${YELLOW}🧪 Testing Docker installation...${NC}"
+    if sudo docker run --rm hello-world &> /dev/null; then
+        log "${GREEN}✅ Docker is working correctly${NC}"
+    else
+        log "${YELLOW}⚠️  Docker test failed, but continuing with installation...${NC}"
     fi
     
     # Install Node.js (for debugging)
@@ -337,8 +371,8 @@ setup_project() {
     # Clone repository if not exists
     if [[ ! -f "docker-compose.yml" ]]; then
         log "${YELLOW}📥 Cloning repository...${NC}"
-        read -p "Enter Git repository URL [https://github.com/KataChannel/innerbright.git]: " REPO_URL
-        REPO_URL=${REPO_URL:-https://github.com/KataChannel/innerbright.git}
+        read -p "Enter Git repository URL [https://github.com/chikiet/innerbright.git]: " REPO_URL
+        REPO_URL=${REPO_URL:-https://github.com/chikiet/innerbright.git}
         
         if [[ -n "$REPO_URL" ]]; then
             # Clone to temporary directory first
@@ -479,6 +513,49 @@ deploy_application() {
     log "${YELLOW}🚀 Deploying application...${NC}"
     
     cd $PROJECT_DIR
+    
+    # Check Docker installation and permissions
+    log "${YELLOW}🐳 Checking Docker installation and permissions...${NC}"
+    
+    # Check if Docker is installed
+    if ! command -v docker &> /dev/null; then
+        error_exit "Docker is not installed. Please run the install_dependencies function first."
+    fi
+    
+    # Check if Docker daemon is running
+    if ! docker info &> /dev/null; then
+        log "${YELLOW}⚠️  Docker daemon is not running. Starting Docker service...${NC}"
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        sleep 5
+        
+        # Check again
+        if ! docker info &> /dev/null; then
+            error_exit "Docker daemon failed to start. Please check Docker installation."
+        fi
+        log "${GREEN}✅ Docker daemon is now running${NC}"
+    fi
+    
+    # Check if user is in docker group
+    if ! groups $USER | grep -q docker; then
+        log "${YELLOW}⚠️  User $USER is not in docker group. Adding to group...${NC}"
+        sudo usermod -aG docker $USER
+        log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
+        log "${YELLOW}⚠️  Trying to use sudo for Docker commands...${NC}"
+        DOCKER_CMD="sudo docker"
+        DOCKER_COMPOSE_CMD="sudo docker compose"
+    else
+        DOCKER_CMD="docker"
+        DOCKER_COMPOSE_CMD="docker compose"
+    fi
+    
+    # Test Docker with a simple command
+    log "   Testing Docker functionality..."
+    if $DOCKER_CMD run --rm hello-world &> /dev/null; then
+        log "${GREEN}✅ Docker is working correctly${NC}"
+    else
+        log "${YELLOW}⚠️  Docker test failed, but continuing with deployment...${NC}"
+    fi
     
     # Check if docker-compose file exists
     if [[ ! -f "docker-compose.yml" ]] && [[ ! -f "docker-compose.yaml" ]]; then
@@ -636,54 +713,184 @@ NEXTAUTH_URL=https://${DOMAIN:-localhost}
 EOF
     fi
     
+    # Check available system resources before starting containers
+    log "   Checking system resources..."
+    AVAILABLE_MEM=$(free -m | awk 'NR==2{print $7}')
+    AVAILABLE_DISK=$(df . | awk 'NR==2{print int($4/1024)}')
+    
+    if [[ $AVAILABLE_MEM -lt 1000 ]]; then
+        log "${YELLOW}⚠️  Low available memory (${AVAILABLE_MEM}MB). Containers may fail to start.${NC}"
+    fi
+    
+    if [[ $AVAILABLE_DISK -lt 2000 ]]; then
+        log "${YELLOW}⚠️  Low available disk space (${AVAILABLE_DISK}MB). Containers may fail to start.${NC}"
+    fi
+    
+    # Stop any existing containers to free up resources
+    log "   Stopping any existing containers..."
+    $DOCKER_COMPOSE_CMD down 2>/dev/null || true
+    
+    # Clean up any orphaned containers
+    $DOCKER_CMD container prune -f 2>/dev/null || true
+    
     # Pull latest base images
     log "   Pulling latest images..."
-    docker compose pull postgres minio redis 2>/dev/null || true
+    $DOCKER_COMPOSE_CMD pull postgres minio redis 2>/dev/null || {
+        log "${YELLOW}⚠️  Failed to pull some images, but continuing...${NC}"
+    }
     
-    # Build and start services
-    log "   Building and starting services..."
-    if docker compose up --build -d --remove-orphans; then
-        log "${GREEN}✅ Containers started successfully${NC}"
+    # Start services one by one to better identify issues
+    log "   Starting PostgreSQL database..."
+    if $DOCKER_COMPOSE_CMD up postgres -d; then
+        log "${GREEN}✅ PostgreSQL started${NC}"
+        
+        # Wait for PostgreSQL to be ready
+        log "   Waiting for PostgreSQL to be ready..."
+        for i in {1..30}; do
+            if $DOCKER_CMD exec innerbright-postgres pg_isready -U ${DB_USER:-innerbright_user} &>/dev/null; then
+                log "${GREEN}✅ PostgreSQL is ready${NC}"
+                break
+            fi
+            sleep 2
+        done
     else
-        log "${RED}❌ Container startup failed${NC}"
-        log "${YELLOW}📋 Checking container status...${NC}"
-        docker compose ps 2>/dev/null || log "Could not get container status"
-        log "${YELLOW}📋 Checking logs for errors...${NC}"
-        docker compose logs --tail=20 2>/dev/null || log "Could not get container logs"
+        log "${RED}❌ Failed to start PostgreSQL${NC}"
+        log "${YELLOW}📋 PostgreSQL logs:${NC}"
+        $DOCKER_COMPOSE_CMD logs postgres 2>/dev/null || true
+    fi
+    
+    log "   Starting MinIO object storage..."
+    if $DOCKER_COMPOSE_CMD up minio -d; then
+        log "${GREEN}✅ MinIO started${NC}"
+    else
+        log "${RED}❌ Failed to start MinIO${NC}"
+        log "${YELLOW}📋 MinIO logs:${NC}"
+        $DOCKER_COMPOSE_CMD logs minio 2>/dev/null || true
+    fi
+    
+    log "   Starting Redis cache..."
+    if $DOCKER_COMPOSE_CMD up redis -d; then
+        log "${GREEN}✅ Redis started${NC}"
+    else
+        log "${RED}❌ Failed to start Redis${NC}"
+        log "${YELLOW}📋 Redis logs:${NC}"
+        $DOCKER_COMPOSE_CMD logs redis 2>/dev/null || true
+    fi
+    
+    # Check if basic services are running
+    RUNNING_SERVICES=$($DOCKER_COMPOSE_CMD ps --services --filter status=running | wc -l)
+    if [[ $RUNNING_SERVICES -eq 0 ]]; then
+        log "${RED}❌ No containers are running${NC}"
+        log "${YELLOW}📋 Debugging information:${NC}"
+        log "   Docker version: $($DOCKER_CMD --version)"
+        log "   Docker compose version: $($DOCKER_COMPOSE_CMD version --short 2>/dev/null || echo 'N/A')"
+        log "   Available memory: ${AVAILABLE_MEM}MB"
+        log "   Available disk: ${AVAILABLE_DISK}MB"
+        log "   Current user: $(whoami)"
+        log "   User groups: $(groups)"
         
-        # Try to restart with more permissive permissions
-        log "${YELLOW}🔄 Trying with more permissive permissions...${NC}"
-        sudo chmod -R 777 data/ 2>/dev/null || true
+        # Show container status
+        log "${YELLOW}📋 Container status:${NC}"
+        $DOCKER_COMPOSE_CMD ps || true
         
-        # Try again with just basic services
-        log "${YELLOW}🔄 Trying with basic services only...${NC}"
-        if docker compose up postgres minio redis -d; then
-            log "${GREEN}✅ Basic services started${NC}"
+        # Show recent Docker events
+        log "${YELLOW}📋 Recent Docker events:${NC}"
+        $DOCKER_CMD events --since 5m --until now 2>/dev/null | tail -10 || true
+        
+        # Try with simplified compose file
+        log "${YELLOW}🔄 Creating simplified docker-compose.yml for basic services...${NC}"
+        cat > docker-compose-simple.yml << 'EOF'
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    container_name: innerbright-postgres-simple
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-innerbright_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-innerbright_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme123}
+    volumes:
+      - postgres_data_simple:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data_simple:
+EOF
+        
+        log "   Trying with simplified PostgreSQL container..."
+        if $DOCKER_COMPOSE_CMD -f docker-compose-simple.yml up -d; then
+            log "${GREEN}✅ Simplified PostgreSQL container started${NC}"
+            log "${YELLOW}� Basic database service is running. You can continue with manual application deployment.${NC}"
         else
-            error_exit "Failed to start even basic containers. Please check Docker installation and permissions."
+            # Final diagnostic
+            log "${RED}❌ Even simplified container failed to start${NC}"
+            log "${YELLOW}📋 Final diagnostic information:${NC}"
+            
+            # Check if it's a permission issue
+            if ! $DOCKER_CMD ps &>/dev/null; then
+                log "${RED}❌ Cannot access Docker daemon. This is likely a permission issue.${NC}"
+                log "${YELLOW}💡 Solutions:${NC}"
+                log "   1. Log out and log back in (if recently added to docker group)"
+                log "   2. Run: newgrp docker"
+                log "   3. Restart the system"
+                log "   4. Check Docker service: sudo systemctl status docker"
+            fi
+            
+            # Check disk space more thoroughly
+            df -h
+            
+            error_exit "Failed to start even basic containers. Please check the diagnostic information above."
         fi
+    else
+        log "${GREEN}✅ Basic services are running (${RUNNING_SERVICES} containers)${NC}"
     fi
     
     # Wait for services to be ready
     log "${YELLOW}⏳ Waiting for services to be ready...${NC}"
-    sleep 30
+    sleep 15
     
     # Check service health
     services=("postgres" "minio" "redis")
     for service in "${services[@]}"; do
-        if docker compose ps $service 2>/dev/null | grep -q "healthy\|running"; then
+        if $DOCKER_COMPOSE_CMD ps $service 2>/dev/null | grep -q "healthy\|running"; then
             log "${GREEN}✅ $service is healthy${NC}"
         else
             log "${YELLOW}⚠️  $service status check...${NC}"
-            docker compose ps $service 2>/dev/null || log "Could not check $service status"
+            $DOCKER_COMPOSE_CMD ps $service 2>/dev/null || log "Could not check $service status"
         fi
     done
     
     # Try to start application services if basic services are running
-    log "${YELLOW}🔄 Starting application services...${NC}"
-    docker compose up nextjs nestjs -d 2>/dev/null || log "${YELLOW}⚠️  Application services may need manual configuration${NC}"
+    if [[ $RUNNING_SERVICES -gt 0 ]]; then
+        log "${YELLOW}🔄 Starting application services...${NC}"
+        
+        # Check if application directories exist
+        if [[ -d "site" ]] && [[ -f "site/Dockerfile" ]]; then
+            log "   Starting Next.js frontend..."
+            $DOCKER_COMPOSE_CMD up nextjs -d 2>/dev/null || log "${YELLOW}⚠️  Next.js service failed to start${NC}"
+        else
+            log "${YELLOW}⚠️  site/Dockerfile not found, skipping Next.js service${NC}"
+        fi
+        
+        if [[ -d "api" ]] && [[ -f "api/Dockerfile" ]]; then
+            log "   Starting NestJS backend..."
+            $DOCKER_COMPOSE_CMD up nestjs -d 2>/dev/null || log "${YELLOW}⚠️  NestJS service failed to start${NC}"
+        else
+            log "${YELLOW}⚠️  api/Dockerfile not found, skipping NestJS service${NC}"
+        fi
+    fi
     
+    # Final status report
+    FINAL_RUNNING_SERVICES=$($DOCKER_COMPOSE_CMD ps --services --filter status=running | wc -l)
     log "${GREEN}✅ Application deployment completed${NC}"
+    log "${BLUE}📊 Final Status: ${FINAL_RUNNING_SERVICES} containers running${NC}"
+    
+    # Show running containers
+    log "${BLUE}📋 Running containers:${NC}"
+    $DOCKER_COMPOSE_CMD ps 2>/dev/null || $DOCKER_CMD ps
 }
 
 # Setup SSL function
