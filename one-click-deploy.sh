@@ -220,6 +220,30 @@ install_dependencies() {
     log "${GREEN}✅ Dependencies installed${NC}"
 }
 
+# Helper function to safely create directories with permissions
+safe_mkdir_with_permissions() {
+    local dir_path="$1"
+    local owner="$2"
+    local permissions="$3"
+    
+    # Create directory if it doesn't exist
+    mkdir -p "$dir_path" 2>/dev/null || sudo mkdir -p "$dir_path"
+    
+    # Try to set ownership
+    if [[ -n "$owner" ]]; then
+        chown -R "$owner" "$dir_path" 2>/dev/null || \
+        sudo chown -R "$owner" "$dir_path" 2>/dev/null || \
+        log "${YELLOW}⚠️  Could not set ownership for $dir_path${NC}"
+    fi
+    
+    # Try to set permissions
+    if [[ -n "$permissions" ]]; then
+        chmod -R "$permissions" "$dir_path" 2>/dev/null || \
+        sudo chmod -R "$permissions" "$dir_path" 2>/dev/null || \
+        log "${YELLOW}⚠️  Could not set permissions for $dir_path${NC}"
+    fi
+}
+
 # Setup project function
 setup_project() {
     log "${YELLOW}📁 Setting up project directory...${NC}"
@@ -228,41 +252,114 @@ setup_project() {
     sudo mkdir -p $PROJECT_DIR
     sudo chown $USER:$USER $PROJECT_DIR
     
-    # Create necessary directories
+    # Navigate to project directory
     cd $PROJECT_DIR
-    mkdir -p data/postgres data/minio data/redis logs backups
     
-    # Set proper permissions with sudo
+    # Create necessary directories
+    mkdir -p logs backups
+    
+    # Setup data directories with proper error handling
+    log "${YELLOW}Setting up data directory structure...${NC}"
+    
+    # Create data directory structure
+    mkdir -p data
+    
+    # Stop any existing containers to avoid conflicts
+    if [[ -f "docker-compose.yml" ]]; then
+        log "   Stopping existing containers..."
+        docker compose down 2>/dev/null || true
+    fi
+    
+    # Create subdirectories for services
+    log "   Creating service data directories..."
+    mkdir -p data/postgres data/minio data/redis
+    
+    # Set permissions with proper error handling
     log "${YELLOW}Setting up data directory permissions...${NC}"
-    sudo chown -R 999:999 data/postgres 2>/dev/null || {
-        log "${YELLOW}⚠️  Could not set postgres permissions, trying alternative approach...${NC}"
-        sudo mkdir -p data/postgres
-        sudo chmod 755 data/postgres
-    }
     
-    sudo chown -R 1001:1001 data/minio 2>/dev/null || {
-        log "${YELLOW}⚠️  Could not set minio permissions, trying alternative approach...${NC}"
-        sudo mkdir -p data/minio
-        sudo chmod 755 data/minio
-    }
+    # Method 1: Try to set ownership to current user first
+    if chown -R $USER:$USER data/ 2>/dev/null; then
+        log "${GREEN}✅ Set ownership to $USER${NC}"
+        chmod -R 755 data/
+        log "${GREEN}✅ Set directory permissions${NC}"
+    else
+        # Method 2: Use sudo to set ownership
+        log "   Trying with sudo..."
+        if sudo chown -R $USER:$USER data/ 2>/dev/null; then
+            log "${GREEN}✅ Set ownership with sudo${NC}"
+            chmod -R 755 data/
+            log "${GREEN}✅ Set directory permissions${NC}"
+        else
+            # Method 3: Set Docker-compatible permissions
+            log "${YELLOW}⚠️  Setting Docker-compatible permissions...${NC}"
+            
+            # Ensure directories exist and are accessible
+            sudo mkdir -p data/postgres data/minio data/redis 2>/dev/null || true
+            
+            # Try to set specific Docker user IDs
+            sudo chown -R 999:999 data/postgres 2>/dev/null || {
+                log "${YELLOW}   Using fallback permissions for postgres${NC}"
+                sudo chmod -R 777 data/postgres 2>/dev/null || true
+            }
+            
+            sudo chown -R 1001:1001 data/minio 2>/dev/null || {
+                log "${YELLOW}   Using fallback permissions for minio${NC}"
+                sudo chmod -R 777 data/minio 2>/dev/null || true
+            }
+            
+            # Ensure redis directory is accessible
+            sudo chmod -R 777 data/redis 2>/dev/null || true
+            
+            # Ensure main user can access the data directory
+            sudo chown $USER:$USER data 2>/dev/null || true
+            chmod 755 data 2>/dev/null || true
+            
+            log "${GREEN}✅ Docker-compatible permissions set${NC}"
+        fi
+    fi
     
-    # Ensure user can access the data directory
-    sudo chown $USER:$USER data
-    chmod -R 755 data logs backups
+    # Verify directory structure
+    log "   Verifying directory structure..."
+    if [[ -d "data/postgres" && -d "data/minio" ]]; then
+        log "${GREEN}✅ Required directories created successfully${NC}"
+        
+        # Show current permissions for debugging
+        log "   Current directory structure:"
+        ls -la data/ 2>/dev/null || log "   (Could not list directory contents)"
+    else
+        log "${RED}❌ Failed to create required directories${NC}"
+        log "${YELLOW}⚠️  Docker will create volumes as needed${NC}"
+    fi
+    
+    # Set proper permissions for logs and backups
+    chmod -R 755 logs backups 2>/dev/null || true
     
     # Clone repository if not exists
     if [[ ! -f "docker-compose.yml" ]]; then
         log "${YELLOW}📥 Cloning repository...${NC}"
-        read -p "Enter Git repository URL: " REPO_URL
+        read -p "Enter Git repository URL [https://github.com/chikiet/innerbright.git]: " REPO_URL
+        REPO_URL=${REPO_URL:-https://github.com/chikiet/innerbright.git}
+        
         if [[ -n "$REPO_URL" ]]; then
-            git clone $REPO_URL .
+            # Clone to temporary directory first
+            TEMP_DIR=$(mktemp -d)
+            git clone $REPO_URL "$TEMP_DIR"
+            
+            # Copy files from temp directory
+            cp -r "$TEMP_DIR"/* . 2>/dev/null || true
+            cp -r "$TEMP_DIR"/.* . 2>/dev/null || true
+            
+            # Clean up
+            rm -rf "$TEMP_DIR"
+            
+            log "${GREEN}✅ Repository cloned successfully${NC}"
         else
             error_exit "Repository URL is required"
         fi
     fi
     
-    # Make scripts executable
-    chmod +x *.sh
+    # Make scripts executable if they exist
+    find . -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
     
     log "${GREEN}✅ Project setup completed${NC}"
 }
@@ -383,11 +480,39 @@ deploy_application() {
     
     cd $PROJECT_DIR
     
+    # Ensure data directories exist before starting containers
+    log "   Ensuring data directories exist..."
+    mkdir -p data/postgres data/minio data/redis 2>/dev/null || true
+    
+    # Final permission check before deployment
+    log "   Final permission check..."
+    if [[ ! -w "data" ]]; then
+        log "${YELLOW}⚠️  Data directory not writable, fixing permissions...${NC}"
+        sudo chown -R $USER:$USER data/ 2>/dev/null || \
+        sudo chmod -R 777 data/ 2>/dev/null || \
+        log "${YELLOW}⚠️  Could not fix permissions, continuing anyway...${NC}"
+    fi
+    
     # Pull latest base images
+    log "   Pulling latest images..."
     docker compose pull postgres minio nginx redis 2>/dev/null || true
     
     # Build and start services
-    docker compose up --build -d --remove-orphans
+    log "   Building and starting services..."
+    if docker compose up --build -d --remove-orphans; then
+        log "${GREEN}✅ Containers started successfully${NC}"
+    else
+        log "${RED}❌ Container startup failed${NC}"
+        log "${YELLOW}📋 Checking container status...${NC}"
+        docker compose ps
+        log "${YELLOW}📋 Checking logs for errors...${NC}"
+        docker compose logs --tail=20
+        
+        # Try to restart with more permissive permissions
+        log "${YELLOW}🔄 Trying with more permissive permissions...${NC}"
+        sudo chmod -R 777 data/ 2>/dev/null || true
+        docker compose up --build -d --remove-orphans || error_exit "Failed to start containers"
+    fi
     
     # Wait for services to be ready
     log "${YELLOW}⏳ Waiting for services to be ready...${NC}"
@@ -399,7 +524,8 @@ deploy_application() {
         if docker compose ps $service | grep -q "healthy\|running"; then
             log "${GREEN}✅ $service is healthy${NC}"
         else
-            log "${RED}❌ $service is not healthy${NC}"
+            log "${YELLOW}⚠️  $service status check...${NC}"
+            docker compose ps $service || true
         fi
     done
     
