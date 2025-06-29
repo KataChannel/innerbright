@@ -60,7 +60,7 @@ COPY --from=builder --chown=nextjs:bunjs /app/.next/static ./.next/static
 # Copy Prisma schema and generated client
 COPY --from=builder --chown=nextjs:bunjs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:bunjs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=nextjs:bunjs /app/node_modules/@prisma ./node_modules/@prisma
 
 USER nextjs
 
