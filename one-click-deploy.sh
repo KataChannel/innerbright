@@ -337,8 +337,8 @@ setup_project() {
     # Clone repository if not exists
     if [[ ! -f "docker-compose.yml" ]]; then
         log "${YELLOW}📥 Cloning repository...${NC}"
-        read -p "Enter Git repository URL [https://github.com/chikiet/innerbright.git]: " REPO_URL
-        REPO_URL=${REPO_URL:-https://github.com/chikiet/innerbright.git}
+        read -p "Enter Git repository URL [https://github.com/KataChannel/innerbright.git]: " REPO_URL
+        REPO_URL=${REPO_URL:-https://github.com/KataChannel/innerbright.git}
         
         if [[ -n "$REPO_URL" ]]; then
             # Clone to temporary directory first
