@@ -62,16 +62,12 @@ interactive_setup() {
     echo -e "${CYAN}🔧 Let's configure your deployment settings...${NC}\n"
     
     # Domain configuration
-    read -p "Enter your domain name (e.g., example.com): " DOMAIN
-    if [[ -z "$DOMAIN" ]]; then
-        error_exit "Domain name is required"
-    fi
+    read -p "Enter your domain name [innerbright.vn]: " DOMAIN
+    DOMAIN=${DOMAIN:-innerbright.vn}
     
     # Email for SSL
-    read -p "Enter your email for SSL certificate: " EMAIL
-    if [[ -z "$EMAIL" ]]; then
-        error_exit "Email is required for SSL certificate"
-    fi
+    read -p "Enter your email for SSL certificate [trantqchau90@gmail.com]: " EMAIL
+    EMAIL=${EMAIL:-trantqchau90@gmail.com}
     
     # Database configuration
     read -p "Enter PostgreSQL database name [innerbright_prod]: " DB_NAME
@@ -80,16 +76,22 @@ interactive_setup() {
     read -p "Enter PostgreSQL username [innerbright_user]: " DB_USER
     DB_USER=${DB_USER:-innerbright_user}
     
-    read -s -p "Enter PostgreSQL password: " DB_PASSWORD
+    read -s -p "Enter PostgreSQL password [auto-generate]: " DB_PASSWORD
     echo
     if [[ -z "$DB_PASSWORD" ]]; then
-        error_exit "Database password is required"
+        # Auto-generate secure password
+        DB_PASSWORD=$(openssl rand -base64 16)
+        log "${GREEN}✅ Auto-generated database password${NC}"
     fi
     
     # NextAuth secret
-    read -s -p "Enter NextAuth secret (32+ characters): " NEXTAUTH_SECRET
+    read -s -p "Enter NextAuth secret (32+ characters) [auto-generate]: " NEXTAUTH_SECRET
     echo
-    if [[ ${#NEXTAUTH_SECRET} -lt 32 ]]; then
+    if [[ -z "$NEXTAUTH_SECRET" ]]; then
+        # Auto-generate secure secret
+        NEXTAUTH_SECRET=$(openssl rand -base64 32)
+        log "${GREEN}✅ Auto-generated NextAuth secret${NC}"
+    elif [[ ${#NEXTAUTH_SECRET} -lt 32 ]]; then
         error_exit "NextAuth secret must be at least 32 characters long"
     fi
     
@@ -97,10 +99,12 @@ interactive_setup() {
     read -p "Enter MinIO admin username [minioadmin]: " MINIO_USER
     MINIO_USER=${MINIO_USER:-minioadmin}
     
-    read -s -p "Enter MinIO admin password: " MINIO_PASSWORD
+    read -s -p "Enter MinIO admin password [auto-generate]: " MINIO_PASSWORD
     echo
     if [[ -z "$MINIO_PASSWORD" ]]; then
-        error_exit "MinIO password is required"
+        # Auto-generate secure password
+        MINIO_PASSWORD=$(openssl rand -base64 16)
+        log "${GREEN}✅ Auto-generated MinIO password${NC}"
     fi
     
     # Optional services
@@ -110,7 +114,18 @@ interactive_setup() {
     read -p "Enable Redis? (y/N): " ENABLE_REDIS
     ENABLE_REDIS=${ENABLE_REDIS:-n}
     
-    echo -e "\n${GREEN}✅ Configuration completed!${NC}\n"
+    echo -e "\n${GREEN}✅ Configuration completed!${NC}"
+    
+    # Display configuration summary
+    echo -e "\n${CYAN}📋 Configuration Summary:${NC}"
+    echo -e "   Domain: ${GREEN}$DOMAIN${NC}"
+    echo -e "   Email: ${GREEN}$EMAIL${NC}"
+    echo -e "   Database: ${GREEN}$DB_NAME${NC}"
+    echo -e "   DB User: ${GREEN}$DB_USER${NC}"
+    echo -e "   MinIO User: ${GREEN}$MINIO_USER${NC}"
+    echo -e "   PgAdmin: ${GREEN}$ENABLE_PGADMIN${NC}"
+    echo -e "   Redis: ${GREEN}$ENABLE_REDIS${NC}"
+    echo -e "\n${YELLOW}⚠️  Auto-generated passwords will be saved in .env file${NC}\n"
 }
 
 # System check function
@@ -217,10 +232,23 @@ setup_project() {
     cd $PROJECT_DIR
     mkdir -p data/postgres data/minio data/redis logs backups
     
-    # Set proper permissions
-    sudo chown -R 999:999 data/postgres
-    sudo chown -R 1001:1001 data/minio
-    chmod -R 755 data
+    # Set proper permissions with sudo
+    log "${YELLOW}Setting up data directory permissions...${NC}"
+    sudo chown -R 999:999 data/postgres 2>/dev/null || {
+        log "${YELLOW}⚠️  Could not set postgres permissions, trying alternative approach...${NC}"
+        sudo mkdir -p data/postgres
+        sudo chmod 755 data/postgres
+    }
+    
+    sudo chown -R 1001:1001 data/minio 2>/dev/null || {
+        log "${YELLOW}⚠️  Could not set minio permissions, trying alternative approach...${NC}"
+        sudo mkdir -p data/minio
+        sudo chmod 755 data/minio
+    }
+    
+    # Ensure user can access the data directory
+    sudo chown $USER:$USER data
+    chmod -R 755 data logs backups
     
     # Clone repository if not exists
     if [[ ! -f "docker-compose.yml" ]]; then
@@ -283,7 +311,33 @@ EOF
     # Set proper permissions
     chmod 600 .env
     
+    # Save credentials to a secure file for reference
+    cat > credentials.txt << EOF
+# Innerbright Production Credentials
+# Generated on: $(date)
+# IMPORTANT: Keep this file secure and delete after noting down the credentials
+
+Domain: $DOMAIN
+Email: $EMAIL
+
+Database Credentials:
+- Database: $DB_NAME
+- Username: $DB_USER
+- Password: $DB_PASSWORD
+
+MinIO Credentials:
+- Username: $MINIO_USER
+- Password: $MINIO_PASSWORD
+
+NextAuth Secret: $NEXTAUTH_SECRET
+
+# This file will be automatically deleted in 24 hours
+EOF
+    
+    chmod 600 credentials.txt
+    
     log "${GREEN}✅ Environment configured${NC}"
+    log "${BLUE}📄 Credentials saved to: credentials.txt (will be deleted in 24 hours)${NC}"
 }
 
 # Setup security function
@@ -495,6 +549,9 @@ EOF
     (crontab -l 2>/dev/null; echo "*/5 * * * * $PROJECT_DIR/health-check.sh") | crontab -
     (crontab -l 2>/dev/null; echo "0 0 1 * * certbot renew --quiet") | crontab -
     
+    # Auto-delete credentials file after 24 hours
+    (crontab -l 2>/dev/null; echo "0 0 * * * find $PROJECT_DIR -name 'credentials.txt' -mtime +1 -delete") | crontab -
+    
     log "${GREEN}✅ Monitoring configured${NC}"
 }
 
@@ -570,7 +627,12 @@ main() {
     echo "║  💾 Database: PostgreSQL (internal)                                          ║"
     echo "║  📦 Storage: MinIO (internal)                                                ║"
     echo "║                                                                               ║"
-    echo "║  📊 Monitoring:                                                               ║"
+    echo "║  � Important Credentials:                                                    ║"
+    echo "║    • Database: $DB_USER / (see credentials.txt)                              ║"
+    echo "║    • MinIO: $MINIO_USER / (see credentials.txt)                              ║"
+    echo "║    • Credentials file: $PROJECT_DIR/credentials.txt                          ║"
+    echo "║                                                                               ║"
+    echo "║  �📊 Monitoring:                                                               ║"
     echo "║    • Automatic backups: Daily at 2 AM                                        ║"
     echo "║    • Health checks: Every 5 minutes                                          ║"
     echo "║    • SSL renewal: Automatic                                                   ║"
@@ -580,9 +642,13 @@ main() {
     echo "║  💾 Backups: $PROJECT_DIR/backups/                                           ║"
     echo "║                                                                               ║"
     echo "║  🔧 Management Commands:                                                      ║"
+    echo "║    • Management console: ./manage-production.sh                              ║"
     echo "║    • View logs: docker compose logs -f                                       ║"
     echo "║    • Restart: docker compose restart                                         ║"
     echo "║    • Update: git pull && docker compose up --build -d                        ║"
+    echo "║                                                                               ║"
+    echo "║  ⚠️  IMPORTANT: Save credentials from credentials.txt file!                  ║"
+    echo "║      File will be auto-deleted in 24 hours for security.                    ║"
     echo "║                                                                               ║"
     echo "╚═══════════════════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"

@@ -50,6 +50,48 @@ InnerBright Training & Coaching tự hào là thành viên chính thức và uy 
 | `deploy-production.sh` | Triển khai thủ công | Manual deployment |
 | `docker-dev.sh` | Development env | Development |
 | `docker-build.sh` | Build local | Testing |
+| **`quick-deploy.sh`** | **Deploy nhanh** | **One-line deploy** |
+| **`git-deploy.sh`** | **Git operations** | **Auto git push** |
+| **`server-connect.sh`** | **Connect server** | **Auto SSH login** |
+| **`full-deploy.sh`** | **Full pipeline** | **Complete workflow** |
+
+## 🚀 Quick Deploy Commands
+
+### Simplest Deploy (Khuyến nghị)
+```bash
+# Deploy với message tự động
+./quick-deploy.sh
+
+# Deploy với custom message
+./quick-deploy.sh "fix login bug"
+```
+
+### Git Operations Only
+```bash
+# Auto git add, commit, push
+./git-deploy.sh
+
+# Với custom commit message
+./git-deploy.sh "update authentication"
+```
+
+### Server Connection
+```bash
+# Connect to server
+./server-connect.sh
+
+# Setup server config lần đầu
+./server-connect.sh setup
+
+# Deploy và connect
+./server-connect.sh deploy
+```
+
+### Full Pipeline
+```bash
+# Complete workflow: git + server update + health check
+./full-deploy.sh "major update"
+```
 
 ## 🔧 Development
 
