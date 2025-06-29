@@ -764,8 +764,6 @@ deploy_application() {
             
             # Create a basic docker-compose.yml
             cat > docker-compose.yml << 'EOF'
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
