@@ -1,0 +1,29 @@
+[install]
+# Cấu hình cho việc cài đặt packages
+cache = true
+exact = false
+production = false
+optional = true
+dev = true
+peer = false
+frozen-lockfile = false
+
+# Trust các packages cần compile native code
+trusted = [
+  "bcrypt",
+  "sharp",
+  "@prisma/client",
+  "@prisma/engines",
+  "next"
+]
+
+[install.scopes]
+# Có thể cấu hình registry khác cho các scope khác nhau nếu cần
+
+[run]
+# Cấu hình cho bun run commands
+shell = "system"
+
+# Environment variables
+[env]
+NODE_ENV = "development"

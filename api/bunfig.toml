@@ -1,0 +1,8 @@
+[install]
+# Equivalent to npm ci flag
+exact = true
+cache = false
+
+[test]
+# Use bun test instead of jest
+preload = ["./test/setup.ts"]

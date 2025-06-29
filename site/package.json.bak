@@ -5,6 +5,7 @@
     "build": "bun run next build",
     "dev": "bun run next dev --turbopack",
     "start": "bun run next start",
+    "install": "bun install",
     "prisma:generate": "bun run prisma generate",
     "prisma:migrate": "bun run prisma migrate dev",
     "prisma:studio": "bun run prisma studio"
