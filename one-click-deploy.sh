@@ -471,20 +471,74 @@ setup_project() {
         REPO_URL=${REPO_URL:-https://github.com/chikiet/innerbright.git}
         
         if [[ -n "$REPO_URL" ]]; then
-            # Clone to temporary directory first
-            TEMP_DIR=$(mktemp -d)
-            git clone $REPO_URL "$TEMP_DIR"
+            # Check if directory is empty
+            if [[ "$(ls -A . 2>/dev/null)" ]]; then
+                log "${YELLOW}⚠️  Directory is not empty. Creating backup...${NC}"
+                BACKUP_NAME="backup_$(date +%Y%m%d_%H%M%S)"
+                mkdir -p "../$BACKUP_NAME"
+                cp -r . "../$BACKUP_NAME/" 2>/dev/null || true
+                log "${YELLOW}📁 Backup created at ../$BACKUP_NAME${NC}"
+                
+                # Clear directory except for essential files
+                find . -mindepth 1 -maxdepth 1 ! -name 'logs' ! -name 'backups' ! -name 'data' -exec rm -rf {} + 2>/dev/null || true
+            fi
             
-            # Copy files from temp directory
-            cp -r "$TEMP_DIR"/* . 2>/dev/null || true
-            cp -r "$TEMP_DIR"/.* . 2>/dev/null || true
-            
-            # Clean up
-            rm -rf "$TEMP_DIR"
-            
-            log "${GREEN}✅ Repository cloned successfully${NC}"
+            # Clone repository
+            log "   Cloning from $REPO_URL..."
+            if git clone "$REPO_URL" . ; then
+                log "${GREEN}✅ Repository cloned successfully${NC}"
+                
+                # Verify essential directories exist
+                log "   Verifying project structure..."
+                if [[ -d "site" && -d "api" && -f "docker-compose.yml" ]]; then
+                    log "${GREEN}✅ Project structure verified${NC}"
+                    log "   Found: site/, api/, docker-compose.yml"
+                else
+                    log "${YELLOW}⚠️  Incomplete project structure${NC}"
+                    log "   Current contents:"
+                    ls -la
+                    
+                    # Check if files are in a subdirectory
+                    SUBDIR=$(find . -name "docker-compose.yml" -type f | head -1 | xargs dirname 2>/dev/null)
+                    if [[ -n "$SUBDIR" && "$SUBDIR" != "." ]]; then
+                        log "${YELLOW}📁 Found project files in subdirectory: $SUBDIR${NC}"
+                        log "   Moving files to root directory..."
+                        mv "$SUBDIR"/* . 2>/dev/null || true
+                        mv "$SUBDIR"/.* . 2>/dev/null || true
+                        rmdir "$SUBDIR" 2>/dev/null || true
+                        log "${GREEN}✅ Project files moved to root${NC}"
+                    fi
+                fi
+            else
+                error_exit "Failed to clone repository from $REPO_URL"
+            fi
         else
             error_exit "Repository URL is required"
+        fi
+    else
+        log "${GREEN}✅ Project files already exist${NC}"
+        
+        # Verify project structure
+        log "   Verifying existing project structure..."
+        if [[ -d "site" && -d "api" ]]; then
+            log "${GREEN}✅ Application directories found${NC}"
+            
+            # Check for Dockerfiles
+            if [[ -f "site/Dockerfile" ]]; then
+                log "${GREEN}✅ site/Dockerfile found${NC}"
+            else
+                log "${YELLOW}⚠️  site/Dockerfile missing${NC}"
+            fi
+            
+            if [[ -f "api/Dockerfile" ]]; then
+                log "${GREEN}✅ api/Dockerfile found${NC}"
+            else
+                log "${YELLOW}⚠️  api/Dockerfile missing${NC}"
+            fi
+        else
+            log "${YELLOW}⚠️  Application directories missing${NC}"
+            log "   Current directory contents:"
+            ls -la
         fi
     fi
     
@@ -720,16 +774,20 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-innerbright_prod}
       POSTGRES_USER: ${POSTGRES_USER:-innerbright_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-innerbright_user}"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-innerbright_user} -d ${POSTGRES_DB:-innerbright_prod}"]
+      interval: 10s
+      timeout: 5s
       retries: 5
+      start_period: 30s
+    networks:
+      - app-network
 
   minio:
     image: minio/minio:latest
@@ -738,7 +796,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
-      - ./data/minio:/data
+      - minio_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -749,12 +807,14 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - app-network
 
   redis:
     image: redis:7-alpine
     container_name: innerbright-redis
     volumes:
-      - ./data/redis:/data
+      - redis_data:/data
     ports:
       - "6379:6379"
     restart: unless-stopped
@@ -763,17 +823,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    networks:
+      - app-network
 
   nextjs:
     build:
       context: ./site
       dockerfile: Dockerfile
+      target: runner
     container_name: innerbright-nextjs
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-innerbright_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-innerbright_prod}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXT_TELEMETRY_DISABLED=1
     ports:
       - "3000:3000"
     depends_on:
@@ -783,23 +848,31 @@ services:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - app-network
 
   nestjs:
     build:
       context: ./api
       dockerfile: Dockerfile
+      target: runner
     container_name: innerbright-nestjs
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-innerbright_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-innerbright_prod}
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_SECRET_KEY=${MINIO_ROOT_PASSWORD}
     ports:
       - "3333:3333"
     depends_on:
       postgres:
+        condition: service_healthy
+      minio:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
@@ -807,15 +880,20 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - app-network
 
 networks:
-  default:
-    name: innerbright-network
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data:
+    driver: local
   minio_data:
+    driver: local
   redis_data:
+    driver: local
 EOF
             log "${GREEN}✅ Created basic docker-compose.yml${NC}"
         fi
@@ -1002,20 +1080,68 @@ EOF
     if [[ $RUNNING_SERVICES -gt 0 ]]; then
         log "${YELLOW}🔄 Starting application services...${NC}"
         
-        # Check if application directories exist
-        if [[ -d "site" ]] && [[ -f "site/Dockerfile" ]]; then
-            log "   Starting Next.js frontend..."
-            $DOCKER_COMPOSE_CMD up nextjs -d 2>/dev/null || log "${YELLOW}⚠️  Next.js service failed to start${NC}"
+        # Check if application directories and Dockerfiles exist
+        log "   Checking for application services..."
+        
+        # Check for Next.js service
+        if [[ -d "site" ]]; then
+            if [[ -f "site/Dockerfile" ]]; then
+                log "   Starting Next.js frontend..."
+                if $DOCKER_COMPOSE_CMD up nextjs -d 2>/dev/null; then
+                    log "${GREEN}✅ Next.js service started${NC}"
+                else
+                    log "${YELLOW}⚠️  Next.js service failed to start${NC}"
+                    log "${YELLOW}📋 Next.js logs:${NC}"
+                    $DOCKER_COMPOSE_CMD logs nextjs 2>/dev/null || true
+                fi
+            else
+                log "${YELLOW}⚠️  site/Dockerfile not found${NC}"
+                log "   Available files in site directory:"
+                ls -la site/ 2>/dev/null | head -10 || log "   Cannot list site directory"
+            fi
         else
-            log "${YELLOW}⚠️  site/Dockerfile not found, skipping Next.js service${NC}"
+            log "${YELLOW}⚠️  site directory not found${NC}"
+            log "   Current directory contents:"
+            ls -la . | head -10
         fi
         
-        if [[ -d "api" ]] && [[ -f "api/Dockerfile" ]]; then
-            log "   Starting NestJS backend..."
-            $DOCKER_COMPOSE_CMD up nestjs -d 2>/dev/null || log "${YELLOW}⚠️  NestJS service failed to start${NC}"
+        # Check for NestJS service
+        if [[ -d "api" ]]; then
+            if [[ -f "api/Dockerfile" ]]; then
+                log "   Starting NestJS backend..."
+                if $DOCKER_COMPOSE_CMD up nestjs -d 2>/dev/null; then
+                    log "${GREEN}✅ NestJS service started${NC}"
+                else
+                    log "${YELLOW}⚠️  NestJS service failed to start${NC}"
+                    log "${YELLOW}📋 NestJS logs:${NC}"
+                    $DOCKER_COMPOSE_CMD logs nestjs 2>/dev/null || true
+                fi
+            else
+                log "${YELLOW}⚠️  api/Dockerfile not found${NC}"
+                log "   Available files in api directory:"
+                ls -la api/ 2>/dev/null | head -10 || log "   Cannot list api directory"
+            fi
         else
-            log "${YELLOW}⚠️  api/Dockerfile not found, skipping NestJS service${NC}"
+            log "${YELLOW}⚠️  api directory not found${NC}"
         fi
+        
+        # If no application services can start, check if we need to build them differently
+        if [[ ! -d "site" && ! -d "api" ]]; then
+            log "${YELLOW}💡 Application directories not found. Checking project structure...${NC}"
+            log "   Project directory: $(pwd)"
+            log "   Directory contents:"
+            find . -maxdepth 3 -name "Dockerfile" -type f 2>/dev/null || log "   No Dockerfiles found"
+            
+            # Try to start services anyway in case docker-compose handles paths differently
+            log "${YELLOW}🔄 Attempting to start all services from docker-compose...${NC}"
+            $DOCKER_COMPOSE_CMD up -d 2>/dev/null || {
+                log "${YELLOW}⚠️  Full service startup failed${NC}"
+                log "${YELLOW}📋 Available services in docker-compose.yml:${NC}"
+                $DOCKER_COMPOSE_CMD config --services 2>/dev/null || log "   Cannot read docker-compose services"
+            }
+        fi
+    else
+        log "${RED}❌ No basic services running, skipping application services${NC}"
     fi
     
     # Final status report
