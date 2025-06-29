@@ -6,6 +6,7 @@ git commit -m "update"
 git push
 ssh root@116.118.85.41
 cp /root/secret/.env /root/kataoffical/api/
+cd innerbright/
 git pull
 docker compose -f 'docker-compose.yml' up -d --build 
 

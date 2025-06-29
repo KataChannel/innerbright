@@ -9,6 +9,8 @@ const nextConfig: import('next').NextConfig = {
     ],
   },
   reactStrictMode: true,
+  // Enable standalone output for Docker optimization
+  output: 'standalone',
   turbopack: {
     rules: {
       '*.sw.js': {
