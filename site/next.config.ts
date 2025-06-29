@@ -1,7 +1,27 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig: import('next').NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+      },
+    ],
+  },
+  reactStrictMode: true,
+  turbopack: {
+    rules: {
+      '*.sw.js': {
+        loaders: ['file-loader'],
+      },
+    },
+  },
 };
 
-export default nextConfig;
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+});
+
+export default withPWA(nextConfig);

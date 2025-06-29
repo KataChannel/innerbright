@@ -20,9 +20,15 @@ nmap 116.118.85.41 -p 3333,3000
 
 
 sudo Distinctive feature - In-Context
-sudo nano /etc/nginx/sites-available/innerbright.vn
 
-sudo ln -s /etc/nginx/sites-available/innerbright.vn /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/sites-available/website
+sudo rm /etc/nginx/sites-available/website
+sudo rm /etc/nginx/sites-enabled/website
+
+sudo ln -s /etc/nginx/sites-available/website /etc/nginx/sites-enabled/
+
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d innerbright.vn -d www.innerbright.vn
 
 sudo nginx -t
 sudo systemctl restart nginx
