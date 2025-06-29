@@ -1,35 +1,116 @@
-# innerbright
-InnerBright Training &amp; Coaching tự hào là thành viên chính thức và uy tín của Hiệp hội NLP Hoa Kỳ (ABNLP) trong suốt 5 năm liên tiếp.
+# 🌟 Innerbright - Training & Coaching Platform
 
-git add .
-git commit -m "update"
-git push
-ssh root@116.118.85.41
-cp /root/secret/.env /root/kataoffical/api/
-cd innerbright/
-git pull
-docker compose -f 'docker-compose.yml' up -d --build 
+InnerBright Training & Coaching tự hào là thành viên chính thức và uy tín của Hiệp hội NLP Hoa Kỳ (ABNLP) trong suốt 5 năm liên tiếp.
 
-sudo ufw status
-sudo firewall-cmd --state
-sudo ufw allow 6379/tcp
-sudo ufw reload
-sudo crontab -e
-sudo crontab -l
+## 🏗️ Kiến Trúc Hệ Thống
 
-nmap 116.118.85.41 -p 3333,3000
+- **Frontend**: Next.js 14 + TypeScript + Tailwind CSS
+- **Backend**: NestJS + TypeScript + REST API
+- **Database**: PostgreSQL 15
+- **Storage**: MinIO Object Storage
+- **Cache**: Redis
+- **Proxy**: Nginx với SSL/TLS
+- **Containerization**: Docker + Docker Compose
 
+## 🚀 Triển Khai Nhanh
 
-sudo Distinctive feature - In-Context
+### Development
+```bash
+# Start development environment
+./docker-dev.sh
+```
 
-sudo nano /etc/nginx/sites-available/website
-sudo rm /etc/nginx/sites-available/website
-sudo rm /etc/nginx/sites-enabled/website
+### Production
+```bash
+# 1. Kiểm tra hệ thống
+./pre-deployment-check.sh
 
-sudo ln -s /etc/nginx/sites-available/website /etc/nginx/sites-enabled/
+# 2. Triển khai tự động (khuyến nghị)
+./one-click-deploy.sh
 
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d innerbright.vn -d www.innerbright.vn
+# 3. Quản lý production
+./manage-production.sh
+```
 
-sudo nginx -t
-sudo systemctl restart nginx
+## 📚 Tài Liệu Triển Khai
+
+- **[📖 Hướng Dẫn Triển Khai Hoàn Chỉnh](./README_DEPLOYMENT.md)** - Tổng quan tất cả các options
+- **[📘 Production Deployment Manual](./PRODUCTION_DEPLOYMENT_MANUAL.md)** - Chi tiết từng bước 
+- **[📙 Deployment Guide](./DEPLOYMENT_GUIDE.md)** - Hướng dẫn kỹ thuật
+- **[🐳 Docker Documentation](./DOCKER.md)** - Tài liệu Docker
+
+## 🛠️ Scripts Có Sẵn
+
+| Script | Mô Tả | Sử Dụng |
+|--------|-------|---------|
+| `pre-deployment-check.sh` | Kiểm tra hệ thống | Trước triển khai |
+| `one-click-deploy.sh` | Triển khai tự động | Production setup |
+| `manage-production.sh` | Quản lý production | Sau triển khai |
+| `setup-cloud-server.sh` | Setup server mới | Server preparation |
+| `deploy-production.sh` | Triển khai thủ công | Manual deployment |
+| `docker-dev.sh` | Development env | Development |
+| `docker-build.sh` | Build local | Testing |
+
+## 🔧 Development
+
+```bash
+# Install dependencies
+cd site && npm install
+cd api && npm install
+
+# Start development
+./docker-dev.sh
+
+# Build for production
+./docker-build.sh
+```
+
+## 🌐 Production URLs
+
+- **Website**: https://innerbright.vn
+- **API**: https://innerbright.vn/api
+- **Admin**: https://innerbright.vn/admin
+
+## 📊 Management
+
+Sau khi triển khai, sử dụng management console:
+
+```bash
+./manage-production.sh
+```
+
+**Tính năng**:
+- ✅ Service monitoring
+- ✅ Database backup/restore
+- ✅ Log management
+- ✅ SSL certificate management
+- ✅ System resource monitoring
+- ✅ Application updates
+
+## 🔐 Bảo Mật
+
+- ✅ SSL/TLS encryption
+- ✅ UFW Firewall
+- ✅ Fail2ban protection
+- ✅ Security headers
+- ✅ Non-root containers
+- ✅ Environment variable protection
+
+## 💾 Backup
+
+- ✅ Automatic daily database backups
+- ✅ 7-day retention policy
+- ✅ Manual backup/restore tools
+- ✅ Point-in-time recovery
+
+## 📞 Support
+
+Để được hỗ trợ triển khai hoặc sử dụng:
+
+1. Xem [README_DEPLOYMENT.md](./README_DEPLOYMENT.md) cho hướng dẫn đầy đủ
+2. Chạy `./manage-production.sh` để truy cập management console
+3. Kiểm tra logs với `docker compose logs -f`
+
+---
+
+*Powered by Docker, secured by best practices, managed by automation*
