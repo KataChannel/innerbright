@@ -464,11 +464,11 @@ setup_project() {
     # Set proper permissions for logs and backups
     chmod -R 755 logs backups 2>/dev/null || true
     
-    # Clone repository if not exists
-    if [[ ! -f "docker-compose.yml" ]]; then
+    # Clone repository if not exists, or update existing repository
+    if [[ ! -d ".git" ]]; then
         log "${YELLOW}📥 Cloning repository...${NC}"
-        read -p "Enter Git repository URL [https://github.com/chikiet/innerbright.git]: " REPO_URL
-        REPO_URL=${REPO_URL:-https://github.com/chikiet/innerbright.git}
+        read -p "Enter Git repository URL [https://github.com/KataChannel/innerbright.git]: " REPO_URL
+        REPO_URL=${REPO_URL:-https://github.com/KataChannel/innerbright.git}
         
         if [[ -n "$REPO_URL" ]]; then
             # Check if directory is empty
@@ -516,7 +516,116 @@ setup_project() {
             error_exit "Repository URL is required"
         fi
     else
+        log "${YELLOW}📥 Updating existing repository...${NC}"
+        
+        # Check if we have uncommitted changes or untracked files that might conflict
+        log "   Checking for potential conflicts..."
+        
+        # Backup any locally created files that might conflict
+        CONFLICT_FILES=()
+        if [[ -f "docker-compose.yml" ]] && ! git ls-files --error-unmatch docker-compose.yml &>/dev/null; then
+            CONFLICT_FILES+=("docker-compose.yml")
+        fi
+        if [[ -f ".env" ]] && ! git ls-files --error-unmatch .env &>/dev/null; then
+            CONFLICT_FILES+=(".env")
+        fi
+        
+        if [[ ${#CONFLICT_FILES[@]} -gt 0 ]]; then
+            log "${YELLOW}⚠️  Found conflicting untracked files: ${CONFLICT_FILES[*]}${NC}"
+            BACKUP_NAME="backup_before_pull_$(date +%Y%m%d_%H%M%S)"
+            mkdir -p "backups/$BACKUP_NAME"
+            
+            for file in "${CONFLICT_FILES[@]}"; do
+                if [[ -f "$file" ]]; then
+                    log "   Backing up $file to backups/$BACKUP_NAME/"
+                    cp "$file" "backups/$BACKUP_NAME/" 2>/dev/null || true
+                fi
+            done
+            
+            # Remove conflicting files
+            log "   Removing conflicting files temporarily..."
+            for file in "${CONFLICT_FILES[@]}"; do
+                rm -f "$file"
+            done
+        fi
+        
+        # Stash any uncommitted changes
+        if ! git diff --quiet || ! git diff --cached --quiet; then
+            log "   Stashing uncommitted changes..."
+            git stash push -m "Auto-stash before deployment update $(date)"
+        fi
+        
+        # Fetch latest changes
+        log "   Fetching latest changes..."
+        if git fetch origin; then
+            log "${GREEN}✅ Fetched latest changes${NC}"
+        else
+            log "${YELLOW}⚠️  Failed to fetch changes, continuing with existing code...${NC}"
+        fi
+        
+        # Get current branch
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        
+        # Try to pull/merge changes
+        log "   Pulling changes from origin/$CURRENT_BRANCH..."
+        if git pull origin "$CURRENT_BRANCH"; then
+            log "${GREEN}✅ Repository updated successfully${NC}"
+        elif git pull origin dev 2>/dev/null; then
+            log "${GREEN}✅ Repository updated from dev branch${NC}"
+        elif git pull origin main 2>/dev/null; then
+            log "${GREEN}✅ Repository updated from main branch${NC}"
+        else
+            log "${YELLOW}⚠️  Could not pull changes, continuing with existing code...${NC}"
+        fi
+        
+        # Restore backed up files if they don't exist in the repository
+        if [[ ${#CONFLICT_FILES[@]} -gt 0 ]]; then
+            log "   Checking if backed up files need to be restored..."
+            for file in "${CONFLICT_FILES[@]}"; do
+                if [[ ! -f "$file" ]] && [[ -f "backups/$BACKUP_NAME/$file" ]]; then
+                    log "   Restoring $file from backup (not in repository)"
+                    cp "backups/$BACKUP_NAME/$file" "$file"
+                elif [[ -f "$file" ]] && [[ -f "backups/$BACKUP_NAME/$file" ]]; then
+                    log "   Repository has $file, keeping repository version"
+                    log "   Your backup is saved at: backups/$BACKUP_NAME/$file"
+                fi
+            done
+        fi
+        
+        # Verify project structure after update
+        log "   Verifying updated project structure..."
+        if [[ -d "site" && -d "api" ]]; then
+            log "${GREEN}✅ Application directories found${NC}"
+        else
+            log "${YELLOW}⚠️  Application directories missing after update${NC}"
+        fi
+    else
         log "${GREEN}✅ Project files already exist${NC}"
+        
+        # For existing repositories, try to update them
+        if [[ -d ".git" ]]; then
+            log "${YELLOW}📥 Repository exists, checking for updates...${NC}"
+            
+            # Save current status
+            NEED_UPDATE=false
+            if git fetch origin 2>/dev/null; then
+                BEHIND_COUNT=$(git rev-list --count HEAD..@{u} 2>/dev/null || echo "0")
+                if [[ "$BEHIND_COUNT" -gt 0 ]]; then
+                    NEED_UPDATE=true
+                    log "${YELLOW}⚠️  Repository is $BEHIND_COUNT commits behind${NC}"
+                fi
+            fi
+            
+            if [[ "$NEED_UPDATE" == "true" ]]; then
+                read -p "Update repository to latest version? (Y/n): " UPDATE_REPO
+                if [[ ! $UPDATE_REPO =~ ^[Nn]$ ]]; then
+                    # Use the updated repository logic above
+                    log "${YELLOW}🔄 Repository will be updated during the update process above${NC}"
+                fi
+            else
+                log "${GREEN}✅ Repository is up to date${NC}"
+            fi
+        fi
         
         # Verify project structure
         log "   Verifying existing project structure..."
@@ -1383,6 +1492,126 @@ fix_docker_issues() {
     return 0
 }
 
+# Git conflict resolution function
+resolve_git_conflicts() {
+    local project_dir="$1"
+    
+    log "${YELLOW}🔄 Resolving Git conflicts...${NC}"
+    
+    cd "$project_dir"
+    
+    # Check if this is a Git repository
+    if [[ ! -d ".git" ]]; then
+        log "${YELLOW}⚠️  Not a Git repository, skipping conflict resolution${NC}"
+        return 0
+    fi
+    
+    # Check for conflicting untracked files
+    local conflicting_files=()
+    
+    # Get list of files that would be overwritten by merge/pull
+    local files_to_check=("docker-compose.yml" ".env" "nginx.conf")
+    
+    for file in "${files_to_check[@]}"; do
+        # Check if file exists locally but is not tracked
+        if [[ -f "$file" ]] && ! git ls-files --error-unmatch "$file" &>/dev/null; then
+            # Check if this file exists in the remote repository
+            if git cat-file -e "origin/$(git rev-parse --abbrev-ref HEAD):$file" 2>/dev/null || \
+               git cat-file -e "origin/dev:$file" 2>/dev/null || \
+               git cat-file -e "origin/main:$file" 2>/dev/null; then
+                conflicting_files+=("$file")
+                log "${YELLOW}⚠️  Conflict detected: $file (local untracked vs remote tracked)${NC}"
+            fi
+        fi
+    done
+    
+    # Backup and remove conflicting files
+    if [[ ${#conflicting_files[@]} -gt 0 ]]; then
+        local backup_dir="backups/git_conflict_backup_$(date +%Y%m%d_%H%M%S)"
+        mkdir -p "$backup_dir"
+        
+        log "${YELLOW}📁 Backing up conflicting files to $backup_dir${NC}"
+        
+        for file in "${conflicting_files[@]}"; do
+            log "   Backing up $file"
+            cp "$file" "$backup_dir/" 2>/dev/null || true
+            rm -f "$file"
+        done
+        
+        log "${GREEN}✅ Conflicting files backed up and removed${NC}"
+        log "${BLUE}💡 Backup location: $project_dir/$backup_dir${NC}"
+    fi
+    
+    # Reset any uncommitted changes that might cause conflicts
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        log "${YELLOW}📝 Stashing uncommitted changes...${NC}"
+        git stash push -m "Auto-stash before conflict resolution $(date)" || true
+    fi
+    
+    # Clean untracked files that might cause conflicts (except important directories)
+    log "${YELLOW}🧹 Cleaning untracked files...${NC}"
+    git clean -fd -e logs/ -e backups/ -e data/ -e node_modules/ -e .env.local -e credentials.txt || true
+    
+    # Reset to clean state
+    git reset --hard HEAD 2>/dev/null || true
+    
+    log "${GREEN}✅ Git conflicts resolved${NC}"
+    return 0
+}
+
+# Manual Git conflict fix function (can be called directly)
+fix_git_conflicts() {
+    log "${BLUE}🔧 Manual Git Conflict Fix${NC}"
+    
+    local current_dir="${1:-$(pwd)}"
+    
+    if [[ ! -d "$current_dir/.git" ]]; then
+        error_exit "Not a Git repository: $current_dir"
+    fi
+    
+    cd "$current_dir"
+    
+    log "${YELLOW}Current Git status:${NC}"
+    git status
+    
+    echo
+    read -p "Do you want to automatically resolve conflicts? (Y/n): " AUTO_RESOLVE
+    
+    if [[ ! $AUTO_RESOLVE =~ ^[Nn]$ ]]; then
+        resolve_git_conflicts "$current_dir"
+        
+        # Try to update repository
+        log "${YELLOW}🔄 Attempting to update repository...${NC}"
+        
+        if git pull origin dev 2>/dev/null; then
+            log "${GREEN}✅ Successfully updated from dev branch${NC}"
+        elif git pull origin main 2>/dev/null; then
+            log "${GREEN}✅ Successfully updated from main branch${NC}"
+        elif git pull 2>/dev/null; then
+            log "${GREEN}✅ Successfully updated repository${NC}"
+        else
+            log "${YELLOW}⚠️  Could not update repository automatically${NC}"
+            log "${YELLOW}💡 Try manually:${NC}"
+            log "   git fetch origin"
+            log "   git merge origin/dev"
+            log "   or"
+            log "   git pull origin dev"
+        fi
+    else
+        log "${YELLOW}💡 Manual resolution steps:${NC}"
+        log "   1. Back up important files: cp docker-compose.yml docker-compose.yml.backup"
+        log "   2. Remove conflicting files: rm docker-compose.yml"
+        log "   3. Pull changes: git pull origin dev"
+        log "   4. Restore custom settings if needed"
+    fi
+}
+
+# If script is called with 'fix-git' argument, run the fix function
+if [[ "${1:-}" == "fix-git" ]]; then
+    fix_git_conflicts "${2:-$PROJECT_DIR}"
+    exit 0
+fi
+
 # Main deployment function
 main() {
     log "${BLUE}🚀 Starting Innerbright Production Deployment${NC}"
@@ -1430,6 +1659,12 @@ main() {
     # Run deployment steps
     system_check
     install_dependencies
+    
+    # Resolve any Git conflicts before setting up project
+    if [[ -d "$PROJECT_DIR/.git" ]]; then
+        resolve_git_conflicts "$PROJECT_DIR"
+    fi
+    
     setup_project
     configure_environment
     setup_security
