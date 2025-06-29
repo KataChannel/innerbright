@@ -26,6 +26,18 @@ git push
 
 # Server operations
 echo -e "${YELLOW}🔗 Server: pull and update...${NC}"
-ssh $SERVER "cd $PROJECT_DIR && git pull && docker compose up --build -d"
+ssh $SERVER "cd $PROJECT_DIR && \
+  if [ ! -d .git ]; then \
+    echo 'Setting up git repository...'; \
+    if [ \"\$(ls -A .)\" ]; then \
+      cd /opt && sudo mv innerbright innerbright.backup.\$(date +%Y%m%d_%H%M%S) && \
+      sudo git clone https://github.com/chikiet/innerbright.git innerbright && \
+      sudo chown -R deploy:deploy innerbright && cd innerbright; \
+    else \
+      git clone https://github.com/chikiet/innerbright.git .; \
+    fi; \
+  fi && \
+  (git pull origin main 2>/dev/null || git pull origin master 2>/dev/null || git pull) && \
+  docker compose up --build -d"
 
 echo -e "${GREEN}✅ Deploy completed!${NC}"
