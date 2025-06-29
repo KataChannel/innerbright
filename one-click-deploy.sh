@@ -198,32 +198,80 @@ install_dependencies() {
     # Install Docker if not present
     if ! command -v docker &> /dev/null; then
         log "${YELLOW}🐳 Installing Docker...${NC}"
-        curl -fsSL https://get.docker.com -o get-docker.sh
-        sudo sh get-docker.sh
-        sudo usermod -aG docker $USER
-        rm get-docker.sh
         
-        # Start Docker service
+        # Remove any old Docker packages
+        sudo apt-get remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
+        
+        # Install prerequisites
+        sudo apt-get update
+        sudo apt-get install -y \
+            ca-certificates \
+            curl \
+            gnupg \
+            lsb-release
+        
+        # Add Docker's official GPG key
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        
+        # Set up the repository
+        echo \
+          "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+          $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        
+        # Install Docker Engine
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+        
+        # Add user to docker group
+        sudo usermod -aG docker $USER
+        
+        # Start and enable Docker service
         sudo systemctl start docker
         sudo systemctl enable docker
         
-        log "${GREEN}✅ Docker installed and started${NC}"
-        log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
+        # Set proper permissions for Docker socket
+        sudo chmod 666 /var/run/docker.sock
+        
+        log "${GREEN}✅ Docker installed and configured${NC}"
+        log "${YELLOW}⚠️  Group changes will take effect after logout/login or running 'newgrp docker'${NC}"
     else
         log "${GREEN}✅ Docker is already installed${NC}"
         
-        # Ensure Docker service is running
-        if ! sudo systemctl is-active --quiet docker; then
-            log "${YELLOW}🔄 Starting Docker service...${NC}"
+        # Check if Docker service exists and start it
+        if sudo systemctl list-unit-files | grep -q docker.service; then
+            # Ensure Docker service is running
+            if ! sudo systemctl is-active --quiet docker; then
+                log "${YELLOW}🔄 Starting Docker service...${NC}"
+                sudo systemctl start docker
+                sudo systemctl enable docker
+            fi
+        else
+            log "${RED}❌ Docker service not found. Reinstalling Docker...${NC}"
+            
+            # Remove broken installation
+            sudo apt-get remove -y docker docker-engine docker.io containerd runc 2>/dev/null || true
+            
+            # Reinstall Docker
+            sudo apt-get update
+            sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+            
+            # Start and enable Docker service
             sudo systemctl start docker
             sudo systemctl enable docker
+        fi
+        
+        # Fix Docker socket permissions
+        if [[ -S /var/run/docker.sock ]]; then
+            sudo chmod 666 /var/run/docker.sock
+            log "${GREEN}✅ Docker socket permissions fixed${NC}"
         fi
         
         # Check if user is in docker group
         if ! groups $USER | grep -q docker; then
             log "${YELLOW}⚠️  Adding $USER to docker group...${NC}"
             sudo usermod -aG docker $USER
-            log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
+            log "${YELLOW}⚠️  Group changes will take effect after logout/login or running 'newgrp docker'${NC}"
         fi
     fi
     
@@ -236,12 +284,60 @@ install_dependencies() {
         log "${GREEN}✅ Docker Compose is already available${NC}"
     fi
     
-    # Test Docker installation
+    # Apply group changes without logout
+    log "${YELLOW}🔄 Applying Docker group changes...${NC}"
+    if groups $USER | grep -q docker; then
+        # User is in docker group, try to apply changes
+        newgrp docker << 'ENDGROUP' || true
+        echo "Group changes applied"
+ENDGROUP
+    fi
+    
+    # Test Docker installation with both methods
     log "${YELLOW}🧪 Testing Docker installation...${NC}"
-    if sudo docker run --rm hello-world &> /dev/null; then
+    
+    # Try regular docker command first
+    if docker run --rm hello-world &> /dev/null; then
         log "${GREEN}✅ Docker is working correctly${NC}"
     else
-        log "${YELLOW}⚠️  Docker test failed, but continuing with installation...${NC}"
+        log "${YELLOW}⚠️  Regular docker command failed, trying with sudo...${NC}"
+        if sudo docker run --rm hello-world &> /dev/null; then
+            log "${GREEN}✅ Docker works with sudo${NC}"
+            log "${YELLOW}💡 You may need to log out and log back in, or run 'newgrp docker'${NC}"
+        else
+            log "${RED}❌ Docker test failed even with sudo${NC}"
+            
+            # Additional troubleshooting
+            log "${YELLOW}📋 Docker troubleshooting information:${NC}"
+            log "   Docker service status:"
+            sudo systemctl status docker --no-pager -l || true
+            log "   Docker socket permissions:"
+            ls -la /var/run/docker.sock || true
+            log "   Current user groups:"
+            groups $USER
+            
+            # Try to fix common issues
+            log "${YELLOW}🔧 Attempting to fix Docker issues...${NC}"
+            
+            # Restart Docker service
+            sudo systemctl restart docker
+            sleep 5
+            
+            # Fix socket permissions again
+            sudo chmod 666 /var/run/docker.sock
+            
+            # Test again
+            if sudo docker run --rm hello-world &> /dev/null; then
+                log "${GREEN}✅ Docker is now working with sudo${NC}"
+            else
+                log "${RED}❌ Docker installation appears to be broken${NC}"
+                log "${YELLOW}💡 Manual steps to fix:${NC}"
+                log "   1. sudo systemctl restart docker"
+                log "   2. sudo chmod 666 /var/run/docker.sock"
+                log "   3. Log out and log back in"
+                log "   4. Or run: newgrp docker"
+            fi
+        fi
     fi
     
     # Install Node.js (for debugging)
@@ -524,29 +620,68 @@ deploy_application() {
     
     # Check if Docker daemon is running
     if ! docker info &> /dev/null; then
-        log "${YELLOW}⚠️  Docker daemon is not running. Starting Docker service...${NC}"
-        sudo systemctl start docker
-        sudo systemctl enable docker
-        sleep 5
+        log "${YELLOW}⚠️  Docker daemon is not accessible. Checking issues...${NC}"
         
-        # Check again
-        if ! docker info &> /dev/null; then
-            error_exit "Docker daemon failed to start. Please check Docker installation."
+        # Check if Docker service exists
+        if ! sudo systemctl list-unit-files | grep -q docker.service; then
+            error_exit "Docker service not found. Please run install_dependencies first."
         fi
-        log "${GREEN}✅ Docker daemon is now running${NC}"
+        
+        # Check Docker service status
+        if ! sudo systemctl is-active --quiet docker; then
+            log "${YELLOW}🔄 Docker service is not running. Starting...${NC}"
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sleep 5
+        fi
+        
+        # Fix Docker socket permissions
+        if [[ -S /var/run/docker.sock ]]; then
+            log "${YELLOW}🔧 Fixing Docker socket permissions...${NC}"
+            sudo chmod 666 /var/run/docker.sock
+        else
+            log "${RED}❌ Docker socket not found at /var/run/docker.sock${NC}"
+            error_exit "Docker socket is missing. Docker installation may be corrupted."
+        fi
+        
+        # Test again after fixes
+        if ! docker info &> /dev/null; then
+            log "${RED}❌ Still cannot access Docker daemon${NC}"
+            log "${YELLOW}📋 Diagnostic information:${NC}"
+            log "   Docker service status:"
+            sudo systemctl status docker --no-pager -l || true
+            log "   Docker socket:"
+            ls -la /var/run/docker.sock || true
+            log "   Current user: $(whoami)"
+            log "   User groups: $(groups)"
+            
+            # Try using sudo for all Docker commands
+            log "${YELLOW}⚠️  Will use sudo for Docker commands${NC}"
+            DOCKER_CMD="sudo docker"
+            DOCKER_COMPOSE_CMD="sudo docker compose"
+        else
+            log "${GREEN}✅ Docker daemon is now accessible${NC}"
+            DOCKER_CMD="docker"
+            DOCKER_COMPOSE_CMD="docker compose"
+        fi
+    else
+        log "${GREEN}✅ Docker daemon is accessible${NC}"
+        DOCKER_CMD="docker"
+        DOCKER_COMPOSE_CMD="docker compose"
     fi
     
-    # Check if user is in docker group
+    # Check if user is in docker group and apply group changes if needed
     if ! groups $USER | grep -q docker; then
         log "${YELLOW}⚠️  User $USER is not in docker group. Adding to group...${NC}"
         sudo usermod -aG docker $USER
-        log "${YELLOW}⚠️  You may need to log out and log back in for group changes to take effect${NC}"
-        log "${YELLOW}⚠️  Trying to use sudo for Docker commands...${NC}"
-        DOCKER_CMD="sudo docker"
-        DOCKER_COMPOSE_CMD="sudo docker compose"
-    else
-        DOCKER_CMD="docker"
-        DOCKER_COMPOSE_CMD="docker compose"
+        log "${YELLOW}⚠️  Applying group changes without logout...${NC}"
+        
+        # Try to apply group changes without logout
+        exec sg docker -c "$0 $*" 2>/dev/null || {
+            log "${YELLOW}⚠️  Could not apply group changes. Using sudo for Docker commands...${NC}"
+            DOCKER_CMD="sudo docker"
+            DOCKER_COMPOSE_CMD="sudo docker compose"
+        }
     fi
     
     # Test Docker with a simple command
@@ -1071,9 +1206,86 @@ final_verification() {
     log "${GREEN}✅ Final verification completed${NC}"
 }
 
+# Fix Docker permissions and issues
+fix_docker_issues() {
+    log "${YELLOW}🔧 Fixing Docker installation and permissions...${NC}"
+    
+    # Stop any running Docker containers
+    sudo docker stop $(sudo docker ps -q) 2>/dev/null || true
+    
+    # Stop Docker service
+    sudo systemctl stop docker 2>/dev/null || true
+    
+    # Clean up Docker socket
+    sudo rm -f /var/run/docker.sock
+    
+    # Start Docker service
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    
+    # Wait for Docker socket to be created
+    for i in {1..10}; do
+        if [[ -S /var/run/docker.sock ]]; then
+            break
+        fi
+        sleep 2
+    done
+    
+    # Set proper permissions on Docker socket
+    if [[ -S /var/run/docker.sock ]]; then
+        sudo chmod 666 /var/run/docker.sock
+        sudo chown root:docker /var/run/docker.sock 2>/dev/null || true
+        log "${GREEN}✅ Docker socket permissions fixed${NC}"
+    else
+        log "${RED}❌ Docker socket was not created${NC}"
+        return 1
+    fi
+    
+    # Add user to docker group if not already
+    if ! groups $USER | grep -q docker; then
+        sudo usermod -aG docker $USER
+        log "${GREEN}✅ User added to docker group${NC}"
+    fi
+    
+    # Test Docker functionality
+    if sudo docker run --rm hello-world &> /dev/null; then
+        log "${GREEN}✅ Docker is working with sudo${NC}"
+    else
+        log "${RED}❌ Docker test failed${NC}"
+        return 1
+    fi
+    
+    log "${GREEN}✅ Docker issues fixed${NC}"
+    return 0
+}
+
 # Main deployment function
 main() {
     log "${BLUE}🚀 Starting Innerbright Production Deployment${NC}"
+    
+    # Check for Docker issues first
+    if ! command -v docker &> /dev/null || ! docker info &> /dev/null 2>&1; then
+        log "${YELLOW}⚠️  Docker issues detected${NC}"
+        read -p "Would you like to fix Docker installation and permissions? (Y/n): " fix_docker
+        if [[ ! $fix_docker =~ ^[Nn]$ ]]; then
+            if fix_docker_issues; then
+                log "${GREEN}✅ Docker issues resolved${NC}"
+            else
+                log "${RED}❌ Could not fix Docker issues automatically${NC}"
+                log "${YELLOW}💡 Manual steps to fix Docker:${NC}"
+                log "   1. sudo systemctl restart docker"
+                log "   2. sudo chmod 666 /var/run/docker.sock" 
+                log "   3. sudo usermod -aG docker $USER"
+                log "   4. Log out and log back in"
+                log "   5. Or run: newgrp docker"
+                echo
+                read -p "Continue anyway? (y/N): " continue_anyway
+                if [[ ! $continue_anyway =~ ^[Yy]$ ]]; then
+                    error_exit "Docker setup required before deployment"
+                fi
+            fi
+        fi
+    fi
     
     # Check if .env already exists
     if [[ -f ".env" ]]; then
