@@ -83,10 +83,102 @@ bun run start
 | `bun run git:save` | Quick save with timestamp |
 | `bun run git:build-push` | Build first, then commit and push |
 | `bun run git:watch` | Auto-commit every 10 minutes |
+| `bun run compose:check` | Check if docker-compose.prod.yml exists |
+| `bun run compose:create` | Create docker-compose.prod.yml from template |
+| `bun run compose:ensure` | Ensure docker-compose.prod.yml exists (create if missing) |
+| `bun run compose:validate` | Validate docker-compose.prod.yml syntax |
+| `bun run compose:git-add` | Add docker-compose.prod.yml to git |
+| `bun run compose:status` | Show docker-compose.prod.yml status |
+| `bun run docker:install` | Auto-install Docker and Docker Compose |
+| `bun run docker:check` | Check Docker installation status |
+| `bun run docker:status` | Show detailed Docker system status |
+| `bun run docker:manage` | Launch Docker management interface |
+| `bun run docker:cleanup` | Clean up unused Docker resources |
+| `bun run docker:fix` | Fix Docker permissions for current user |
+| `bun run deploy:local` | Deploy locally with auto Docker installation |
+| `bun run deploy:remote` | Deploy to remote server with auto setup |
+| `bun run deploy:test-remote` | Test remote server before deployment |
 | `bun run git:push` | Auto commit and push changes to git |
 | `bun run git:save` | Quick save with timestamp |
 | `bun run git:build-push` | Build first, then commit and push |
 | `bun run git:watch` | Auto-commit every 10 minutes |
+
+## 🚀 Universal Cloud Deployer v2.0
+
+KataCore features a **Universal Cloud Deployer** that can deploy to **any** cloud server with zero configuration!
+
+### ✨ New Features
+
+- **🌐 Universal Deployment** - Deploy to ANY server with one command
+- **🔧 Automatic Server Setup** - Installs Docker, configures firewall, sets up dependencies
+- **🔐 Secure by Default** - Generates random secure passwords for all services
+- **📦 Smart Docker Handling** - Handles both regular and snap-installed Docker Compose
+- **🌐 SSL Ready** - Automatic SSL certificate setup with Let's Encrypt
+- **🧹 Clean Deployment** - Option to remove old containers and start fresh
+- **⚡ Flexible Modes** - Setup-only, deploy-only, or full deployment
+- **🎨 Beautiful CLI** - Colored output with progress indicators
+
+### 🚀 Quick Start
+
+```bash
+# Deploy to any server (recommended)
+bun run deploy:universal --host 192.168.1.100
+
+# Deploy with custom domain and SSL
+bun run deploy:universal --host myserver.com --domain mydomain.com
+
+# Clean installation (removes old containers)
+bun run deploy:universal:clean --host 192.168.1.100
+```
+
+### 📋 Universal Deployer Options
+
+```bash
+# Full deployment with auto-setup
+bun run deploy:universal --host SERVER_IP
+
+# Setup server only (no deployment)
+bun run deploy:setup-only --host SERVER_IP
+
+# Deploy only (skip server setup)
+bun run deploy:deploy-only --host SERVER_IP
+
+# Clean deployment (removes old containers)
+bun run deploy:universal:clean --host SERVER_IP
+```
+
+### 🏠 Legacy Local Deployment
+
+```bash
+# Deploy locally with auto Docker installation
+bun run deploy:local
+```
+
+### 🔧 Manual Docker Management
+
+```bash
+# Install Docker manually
+./scripts/install-docker.sh install
+
+# Check Docker status
+./scripts/install-docker.sh check
+
+# Test Docker installation
+./scripts/test-docker-install.sh
+
+# Test remote deployment setup
+SERVER_HOST=your-server-ip ./scripts/test-remote-deploy.sh
+```
+
+## 🚨 Troubleshooting
+
+For detailed deployment documentation, see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+Common issues:
+- **SSH connection problems**: Verify server connectivity and SSH access
+- **Docker not found**: Universal deployer auto-installs Docker
+- **Permission denied**: Use `--user ubuntu` for non-root servers
+- **Port conflicts**: Use `--clean` flag to remove old containers
 
 ## 🌐 API Endpoints
 

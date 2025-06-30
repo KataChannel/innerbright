@@ -46,11 +46,38 @@ log "🧪 Testing KataCore Production Deployment..."
 log "🔍 Checking prerequisites..."
 
 if ! command -v docker &> /dev/null; then
-    error "Docker is not installed"
+    warning "Docker not found. Installing Docker automatically..."
+    if "$SCRIPT_DIR/install-docker.sh" install; then
+        success "Docker installed successfully"
+        warning "You may need to restart your terminal session for full Docker access"
+    else
+        error "Failed to install Docker automatically. Please install Docker manually."
+    fi
 fi
 
-if ! command -v docker-compose &> /dev/null; then
-    error "Docker Compose is not installed"
+if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null 2>&1; then
+    warning "Docker Compose not found. Installing..."
+    if "$SCRIPT_DIR/install-docker.sh" install; then
+        success "Docker Compose installed successfully"
+    else
+        error "Failed to install Docker Compose automatically."
+    fi
+fi
+
+# Check if Docker is running and start if needed
+if ! docker info > /dev/null 2>&1; then
+    log "🔄 Docker is not running. Attempting to start..."
+    if command -v systemctl &> /dev/null; then
+        sudo systemctl start docker 2>/dev/null || warning "Could not start Docker service"
+    elif command -v service &> /dev/null; then
+        sudo service docker start 2>/dev/null || warning "Could not start Docker service"
+    fi
+    
+    sleep 3
+    if ! docker info > /dev/null 2>&1; then
+        error "Docker is not running and could not be started. Please start Docker manually."
+    fi
+    success "Docker started successfully"
 fi
 
 success "Prerequisites check passed"

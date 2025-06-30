@@ -65,6 +65,18 @@ run_health_checks() {
     # Navigate to project directory
     cd "$PROJECT_DIR"
     
+    # Check if Docker is available
+    if ! command -v docker &> /dev/null; then
+        error "Docker is not installed. Run 'bun run docker:install' to install Docker."
+        return 1
+    fi
+    
+    # Check if Docker is running
+    if ! docker info > /dev/null 2>&1; then
+        error "Docker is not running. Please start Docker first."
+        return 1
+    fi
+    
     # Check if docker-compose is running
     if ! docker-compose -f docker-compose.prod.yml ps | grep -q "Up"; then
         error "No services are running"
