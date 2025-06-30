@@ -14,8 +14,21 @@ trusted = [
   "sharp",
   "@prisma/client",
   "@prisma/engines",
-  "next"
+  "next",
+  "next-pwa",
+  "workbox-webpack-plugin"
 ]
+
+[build]
+# Tối ưu hóa cho PWA build
+target = "node"
+splitting = true
+minify = true
+
+[run]
+# Tối ưu hóa runtime cho Next.js
+shell = "bash"
+silent = false
 
 [install.scopes]
 # Có thể cấu hình registry khác cho các scope khác nhau nếu cần
