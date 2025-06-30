@@ -23,7 +23,11 @@
     "test": "cd api && bun run test",
     "lint": "bun run lint:site && bun run lint:api",
     "lint:site": "cd site && bun run lint",
-    "lint:api": "cd api && bun run lint"
+    "lint:api": "cd api && bun run lint",
+    "git:push": "./scripts/auto-push.sh",
+    "git:save": "./scripts/quick-save.sh",
+    "git:build-push": "./scripts/build-and-push.sh",
+    "git:watch": "./scripts/watch-auto-commit.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

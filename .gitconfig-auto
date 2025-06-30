@@ -1,0 +1,36 @@
+# Git Auto-Push Configuration for KataCore
+
+# Set up git to automatically push to the current branch
+[push]
+    default = current
+    autoSetupRemote = true
+
+# Auto-track new branches
+[branch]
+    autosetupmerge = always
+    autosetuprebase = always
+
+# Useful aliases for quick operations
+[alias]
+    # Quick commit and push
+    quick = "!f() { git add -A && git commit -m \"${1:-Quick commit: $(date)}\" && git push; }; f"
+    
+    # Save work in progress
+    save = "!git add -A && git commit -m 'WIP: Save progress'"
+    
+    # Push current branch
+    pushup = "!git push --set-upstream origin $(git branch --show-current)"
+    
+    # Status with branch info
+    st = status -sb
+    
+    # Pretty log
+    lg = log --oneline --graph --decorate --all
+
+# Auto-prune deleted remote branches
+[fetch]
+    prune = true
+
+# Use VS Code as default editor (optional)
+[core]
+    editor = code --wait

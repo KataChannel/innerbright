@@ -79,6 +79,10 @@ bun run start
 | `bun run test` | Run backend tests |
 | `bun run lint` | Lint both applications |
 | `bun run clean` | Clean all node_modules and build artifacts |
+| `bun run git:push` | Auto commit and push changes to git |
+| `bun run git:save` | Quick save with timestamp |
+| `bun run git:build-push` | Build first, then commit and push |
+| `bun run git:watch` | Auto-commit every 10 minutes |
 
 ## 🌐 API Endpoints
 
