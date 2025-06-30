@@ -5,6 +5,15 @@
 
 set -e
 
+# Setup Bun PATH - source the helper script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/bun-setup.sh"
+
+# Setup Bun for current session
+if ! setup_bun_for_session; then
+    exit 1
+fi
+
 echo "🔨 Building and testing before git push..."
 
 # Run the test-build script first
