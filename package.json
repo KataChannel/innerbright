@@ -8,6 +8,7 @@
     "api"
   ],
   "scripts": {
+    "setup": "./scripts/setup-bun-path.sh",
     "dev": "bun run dev:all",
     "dev:all": "concurrently \"bun run dev:site\" \"bun run dev:api\"",
     "dev:site": "cd site && bun run dev",

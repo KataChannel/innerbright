@@ -5,6 +5,15 @@
 
 set -e  # Exit on any error
 
+# Setup Bun PATH - source the helper script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/bun-setup.sh"
+
+# Setup Bun for current session
+if ! setup_bun_for_session; then
+    exit 1
+fi
+
 echo "🚀 Starting auto git push for KataCore..."
 
 # Check if we're in a git repository

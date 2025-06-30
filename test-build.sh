@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Setup Bun PATH - source the helper script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/scripts/bun-setup.sh"
+
+# Setup Bun for current session
+if ! setup_bun_for_session; then
+    exit 1
+fi
+
 echo "Testing KataCore Projects..."
 
 # Test API build
