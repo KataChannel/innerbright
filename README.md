@@ -83,6 +83,10 @@ bun run start
 | `bun run git:save` | Quick save with timestamp |
 | `bun run git:build-push` | Build first, then commit and push |
 | `bun run git:watch` | Auto-commit every 10 minutes |
+| `bun run git:push` | Auto commit and push changes to git |
+| `bun run git:save` | Quick save with timestamp |
+| `bun run git:build-push` | Build first, then commit and push |
+| `bun run git:watch` | Auto-commit every 10 minutes |
 
 ## 🌐 API Endpoints
 
@@ -116,4 +120,4 @@ bun run start
 
 ## 📄 License
 
-This project is private and proprietary.
+This project is private and proprietary.# Test change
