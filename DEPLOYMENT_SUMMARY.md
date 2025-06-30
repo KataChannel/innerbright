@@ -123,6 +123,7 @@ bun run deploy:universal --host myserver.com --domain mydomain.com
 ### Ubuntu Server with Custom User
 ```bash
 bun run deploy:universal --host server.com --user ubuntu
+bun run deploy:universal --host 116.118.85.41 --user root
 ```
 
 ### Clean Reinstall
