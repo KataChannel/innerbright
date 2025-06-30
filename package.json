@@ -28,7 +28,22 @@
     "git:push": "./scripts/auto-push.sh",
     "git:save": "./scripts/quick-save.sh",
     "git:build-push": "./scripts/build-and-push.sh",
-    "git:watch": "./scripts/watch-auto-commit.sh"
+    "git:watch": "./scripts/watch-auto-commit.sh",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
+    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down",
+    "docker:prod:build": "docker-compose -f docker-compose.prod.yml build --no-cache",
+    "deploy:local": "./scripts/deploy-cloud.sh --local",
+    "deploy:remote": "./scripts/deploy-cloud.sh --remote",
+    "monitor": "./scripts/monitor.sh --check",
+    "monitor:watch": "./scripts/monitor.sh --monitor",
+    "monitor:status": "./scripts/monitor.sh --status",
+    "backup": "docker-compose -f docker-compose.prod.yml exec backup /backup.sh",
+    "logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "logs:api": "docker-compose -f docker-compose.prod.yml logs -f api",
+    "logs:site": "docker-compose -f docker-compose.prod.yml logs -f site",
+    "logs:nginx": "docker-compose -f docker-compose.prod.yml logs -f nginx"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
