@@ -27,16 +27,50 @@ else
     echo "🏭 Deploying in PRODUCTION mode..."
 fi
 
-# Check if Docker is running
-if ! docker info > /dev/null 2>&1; then
-    echo "❌ Docker is not running. Please start Docker first."
-    exit 1
+# Check if Docker is installed and install if needed
+if ! command -v docker &> /dev/null; then
+    echo "🐳 Docker not found. Installing Docker automatically..."
+    if ./scripts/install-docker.sh install; then
+        echo "✅ Docker installed successfully"
+        echo "⚠️  You may need to restart your terminal session for full Docker access"
+        echo "   Continuing with deployment using sudo for Docker commands..."
+    else
+        echo "❌ Failed to install Docker automatically."
+        echo "   Please install Docker manually and try again."
+        exit 1
+    fi
 fi
 
 # Check if Docker Compose is available
-if ! command -v docker-compose &> /dev/null; then
-    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
-    exit 1
+if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null 2>&1; then
+    echo "🐳 Docker Compose not found. Installing..."
+    if ./scripts/install-docker.sh install; then
+        echo "✅ Docker Compose installed successfully"
+    else
+        echo "❌ Failed to install Docker Compose automatically."
+        exit 1
+    fi
+fi
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "🔄 Docker is not running. Attempting to start..."
+    if command -v systemctl &> /dev/null; then
+        sudo systemctl start docker || echo "⚠️  Please start Docker manually: sudo systemctl start docker"
+    elif command -v service &> /dev/null; then
+        sudo service docker start || echo "⚠️  Please start Docker manually: sudo service docker start"
+    else
+        echo "❌ Docker is not running. Please start Docker first."
+        exit 1
+    fi
+    
+    # Wait a moment and check again
+    sleep 3
+    if ! docker info > /dev/null 2>&1; then
+        echo "❌ Docker failed to start. Please start Docker manually and try again."
+        exit 1
+    fi
+    echo "✅ Docker started successfully"
 fi
 
 # Build and install dependencies first
