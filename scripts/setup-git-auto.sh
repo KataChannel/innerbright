@@ -3,6 +3,17 @@
 # Setup Git Auto-Push Configuration
 echo "⚙️  Setting up Git auto-push configuration..."
 
+# Get absolute path of the repository
+REPO_PATH=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+GIT_PATH="$REPO_PATH/.git"
+
+echo "📍 Repository path: $REPO_PATH"
+
+# Fix safe.directory warnings by adding absolute paths
+echo "🔒 Configuring safe directories..."
+git config --global --add safe.directory "$REPO_PATH"
+git config --global --add safe.directory "$GIT_PATH"
+
 # Apply git configuration
 echo "📝 Applying git configuration..."
 git config --local include.path ../.gitconfig-auto
