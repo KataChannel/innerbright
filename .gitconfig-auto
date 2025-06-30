@@ -34,3 +34,8 @@
 # Use VS Code as default editor (optional)
 [core]
     editor = code --wait
+
+# Safe directory configuration to prevent warnings
+[safe]
+    directory = /chikiet/kataoffical/KataCore
+    directory = /chikiet/kataoffical/KataCore/.git
