@@ -1,0 +1,200 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: katacore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: katacore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+      - ./init-scripts:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    networks:
+      - katacore-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: katacore-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis123
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - katacore-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: katacore-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9001:9001"  # MinIO Console
+    networks:
+      - katacore-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: katacore-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@katacore.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "8080:80"
+    networks:
+      - katacore-network
+    depends_on:
+      - postgres
+
+  # NestJS API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: katacore-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/katacore
+      REDIS_URL: redis://:redis123@redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      JWT_SECRET: your-super-secret-jwt-key-here
+      API_PORT: 3001
+    ports:
+      - "3001:3001"
+    networks:
+      - katacore-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    volumes:
+      - ./api/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Frontend
+  site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    container_name: katacore-site
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      INTERNAL_API_URL: http://api:3001
+    ports:
+      - "3000:3000"
+    networks:
+      - katacore-network
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: katacore-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - katacore-network
+    depends_on:
+      - site
+      - api
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prisma Migration Runner (Optional - for automated migrations)
+  prisma-migrate:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: katacore-prisma-migrate
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/katacore
+    command: ["bun", "run", "prisma", "migrate", "deploy"]
+    networks:
+      - katacore-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+networks:
+  katacore-network:
+    driver: bridge
+    name: katacore-network
+
+volumes:
+  postgres_data:
+    name: katacore-postgres-data
+  redis_data:
+    name: katacore-redis-data
+  minio_data:
+    name: katacore-minio-data
+  pgadmin_data:
+    name: katacore-pgadmin-data
+  nginx_logs:
+    name: katacore-nginx-logs
