@@ -60,7 +60,7 @@ show_usage() {
 }
 
 # Default values
-SERVER_HOST=""
+SERVER_HOST="116.118.85.41"
 SERVER_USER="root"
 SERVER_PORT="22"
 DEPLOY_PATH="/opt/katacore"
@@ -133,7 +133,7 @@ main() {
     
     # Test SSH
     log "🔐 Testing SSH connection..."
-    if ! ssh -p "$SERVER_PORT" -o ConnectTimeout=10 -o BatchMode=yes "$SERVER_USER@$SERVER_HOST" "echo 'SSH OK'" 2>/dev/null; then
+    if ! ssh -p "$SERVER_PORT" -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SERVER_USER@$SERVER_HOST" "echo 'SSH OK'" 2>/dev/null; then
         error "Cannot connect to $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
     fi
     success "SSH connection verified"
@@ -351,28 +351,28 @@ ENVEOF
         # Clean deployment if requested
         if [[ "$CLEAN_INSTALL" == "true" ]]; then
             echo "🧹 Cleaning old deployment..."
-            \$COMPOSE_CMD -f "\$COMPOSE_FILE" down --volumes --remove-orphans 2>/dev/null || true
+            eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" down --volumes --remove-orphans" 2>/dev/null || true
             docker system prune -af 2>/dev/null || true
         else
             echo "🛑 Stopping existing containers..."
-            \$COMPOSE_CMD -f "\$COMPOSE_FILE" down 2>/dev/null || true
+            eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" down" 2>/dev/null || true
         fi
         
         # Build and start
         echo "🔨 Building images..."
-        \$COMPOSE_CMD -f "\$COMPOSE_FILE" build --no-cache
+        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" build --no-cache"
         
         echo "🗄️  Starting database services..."
-        \$COMPOSE_CMD -f "\$COMPOSE_FILE" up -d postgres redis minio 2>/dev/null || true
+        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" up -d postgres redis minio" 2>/dev/null || true
         
         echo "⏳ Waiting for databases..."
         sleep 30
         
         echo "🌐 Starting all services..."
-        \$COMPOSE_CMD -f "\$COMPOSE_FILE" up -d
+        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" up -d"
         
         echo "📊 Final status:"
-        \$COMPOSE_CMD -f "\$COMPOSE_FILE" ps
+        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" ps"
         
         echo "✅ Deployment completed!"
 EOF
