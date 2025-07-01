@@ -2,36 +2,37 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
-    container_name: katacore-postgres
+    container_name: katacore-postgres-prod
     restart: unless-stopped
     environment:
-      POSTGRES_DB: katacore
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: ${POSTGRES_DB:-katacore}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /data/postgres
     volumes:
       - postgres_data:/data/postgres
-      - ./init-scripts:/docker-entrypoint-initdb.d/
-    ports:
-      - "5432:5432"
+      - ./backups:/backups
     networks:
       - katacore-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: katacore-redis
+    container_name: katacore-redis-prod
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass redis123
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     networks:
       - katacore-network
     healthcheck:
@@ -39,21 +40,23 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # MinIO Object Storage
   minio:
     image: minio/minio:latest
-    container_name: katacore-minio
+    container_name: katacore-minio-prod
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
-    ports:
-      - "9000:9000"  # MinIO API
-      - "9001:9001"  # MinIO Console
     networks:
       - katacore-network
     healthcheck:
@@ -61,44 +64,56 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # pgAdmin
+  # pgAdmin (chỉ enable trong development, comment out trong production)
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: katacore-pgadmin
+    container_name: katacore-pgadmin-prod
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@katacore.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-    ports:
-      - "8080:80"
     networks:
       - katacore-network
     depends_on:
       - postgres
+    profiles:
+      - admin  # Chỉ start khi chạy với --profile admin
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # NestJS API
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: katacore-api
+      args:
+        NODE_ENV: production
+    image: katacore/api:${API_VERSION:-latest}
+    container_name: katacore-api-prod
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/katacore
-      REDIS_URL: redis://:redis123@redis:6379
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore}
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin123
-      JWT_SECRET: your-super-secret-jwt-key-here
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       API_PORT: 3001
-    ports:
-      - "3001:3001"
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
     networks:
       - katacore-network
     depends_on:
@@ -109,26 +124,33 @@ services:
       minio:
         condition: service_healthy
     volumes:
-      - ./api/logs:/app/logs
+      - api_logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Next.js Frontend
   site:
     build:
       context: ./site
       dockerfile: Dockerfile
-    container_name: katacore-site
+      args:
+        NODE_ENV: production
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    image: katacore/site:${SITE_VERSION:-latest}
+    container_name: katacore-site-prod
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
       INTERNAL_API_URL: http://api:3001
-    ports:
-      - "3000:3000"
     networks:
       - katacore-network
     depends_on:
@@ -139,15 +161,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
-    container_name: katacore-nginx
+    container_name: katacore-nginx-prod
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "8080:8080"  # PgAdmin
+      - "9001:9001"  # MinIO Console
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
@@ -163,15 +192,21 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # Prisma Migration Runner (Optional - for automated migrations)
+  # Prisma Migration Runner
   prisma-migrate:
     build:
       context: ./api
       dockerfile: Dockerfile
-    container_name: katacore-prisma-migrate
+    image: katacore/api:${API_VERSION:-latest}
+    container_name: katacore-prisma-migrate-prod
     environment:
-      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/katacore
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore}
     command: ["bun", "run", "prisma", "migrate", "deploy"]
     networks:
       - katacore-network
@@ -179,20 +214,53 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Backup Service (Optional)
+  backup:
+    image: postgres:16-alpine
+    container_name: katacore-backup-prod
+    environment:
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-katacore}
+      PGHOST: postgres
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    networks:
+      - katacore-network
+    depends_on:
+      - postgres
+    command: ["sh", "-c", "while true; do sleep 24h; /backup.sh; done"]
+    restart: unless-stopped
+    profiles:
+      - backup
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 networks:
   katacore-network:
     driver: bridge
-    name: katacore-network
+    name: katacore-prod-network
 
 volumes:
   postgres_data:
-    name: katacore-postgres-data
+    name: katacore-postgres-prod-data
   redis_data:
-    name: katacore-redis-data
+    name: katacore-redis-prod-data
   minio_data:
-    name: katacore-minio-data
+    name: katacore-minio-prod-data
   pgadmin_data:
-    name: katacore-pgadmin-data
+    name: katacore-pgadmin-prod-data
   nginx_logs:
-    name: katacore-nginx-logs
+    name: katacore-nginx-prod-logs
+  api_logs:
+    name: katacore-api-prod-logs

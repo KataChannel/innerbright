@@ -1,0 +1,178 @@
+# Local Development Docker Compose
+# Use this for local testing without external domains
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: katacore-postgres-local
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"  # Expose for local access
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-katacore_local}
+      POSTGRES_USER: ${POSTGRES_USER:-katacore_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_postgres_pass_123}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data_local:/data/postgres
+      - ./backups:/backups
+    networks:
+      - katacore-network-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-katacore_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: katacore-redis-local
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"  # Expose for local access
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-local_redis_pass_123}
+    volumes:
+      - redis_data_local:/data
+    networks:
+      - katacore-network-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-local_redis_pass_123}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: katacore-minio-local
+    restart: unless-stopped
+    ports:
+      - "${MINIO_PORT:-9000}:9000"   # API
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"   # Console
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-katacore_minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-local_minio_pass_123}
+    volumes:
+      - minio_data_local:/data
+    networks:
+      - katacore-network-local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # pgAdmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: katacore-pgadmin-local
+    restart: unless-stopped
+    ports:
+      - "${PGADMIN_PORT:-8080}:80"  # Expose for local access
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGLADMIN_EMAIL:-admin@localhost.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-local_pgladmin_pass_123}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'  # Single user for local
+    volumes:
+      - pgadmin_data_local:/var/lib/pgadmin
+    networks:
+      - katacore-network-local
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Prisma Migration Runner
+  prisma-migrate:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: katacore/api:${API_VERSION:-latest}
+    container_name: katacore-prisma-migrate-local
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-katacore_user}:${POSTGRES_PASSWORD:-local_postgres_pass_123}@postgres:5432/${POSTGRES_DB:-katacore_local}
+    command: ["bun", "run", "prisma", "migrate", "deploy"]
+    networks:
+      - katacore-network-local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  # NestJS API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: katacore/api:${API_VERSION:-latest}
+    container_name: katacore-api-local
+    restart: unless-stopped
+    ports:
+      - "${API_PORT:-3001}:3001"  # Expose for local access
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-katacore_user}:${POSTGRES_PASSWORD:-local_postgres_pass_123}@postgres:5432/${POSTGRES_DB:-katacore_local}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-local_redis_pass_123}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-local_jwt_secret_key_for_development_only_32_chars}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+    networks:
+      - katacore-network-local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      prisma-migrate:
+        condition: service_completed_successfully
+    volumes:
+      - api_logs_local:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Next.js Frontend
+  site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    image: katacore/site:${SITE_VERSION:-latest}
+    container_name: katacore-site-local
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"  # Expose for local access
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      INTERNAL_API_URL: http://api:3001
+      NODE_ENV: ${NODE_ENV:-development}
+    networks:
+      - katacore-network-local
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  katacore-network-local:
+    driver: bridge
+    name: katacore-local-network
+
+volumes:
+  postgres_data_local:
+    name: katacore-postgres-local-data
+  redis_data_local:
+    name: katacore-redis-local-data
+  minio_data_local:
+    name: katacore-minio-local-data
+  pgadmin_data_local:
+    name: katacore-pgadmin-local-data
+  api_logs_local:
+    name: katacore-api-local-logs
