@@ -515,24 +515,28 @@ validate_environment() {
 # Enhanced logging with deployment tracking
 setup_deployment_logging() {
     local log_dir=".deploy-logs"
+    local cache_dir=".deploy-cache"
+    
+    # Create directories if they don't exist
     mkdir -p "$log_dir"
+    mkdir -p "$cache_dir"
     
     local timestamp=$(date +"%Y%m%d_%H%M%S")
-    local log_file="$log_dir/deploy_${SERVER_HOST}_${timestamp}.log"
+    local host_safe="${SERVER_HOST:-unknown_host}"
+    # Replace dots and special characters with underscores for filename
+    host_safe=$(echo "$host_safe" | sed 's/[^a-zA-Z0-9]/_/g')
+    local log_file="$log_dir/deploy_${host_safe}_${timestamp}.log"
     
     # Start logging to file
     exec 1> >(tee -a "$log_file")
     exec 2> >(tee -a "$log_file" >&2)
     
     log "📝 Deployment logging started: $log_file"
-    echo "DEPLOYMENT_LOG_FILE=$log_file" > .deploy-cache/current-deployment.env
+    echo "DEPLOYMENT_LOG_FILE=$log_file" > "$cache_dir/current-deployment.env"
 }
 
 # Main function
 main() {
-    # Setup deployment logging
-    setup_deployment_logging
-    
     # If no arguments provided, show interactive menu
     if [[ $# -eq 0 || -z "$SERVER_HOST" ]]; then
         show_deployment_menu
@@ -540,6 +544,14 @@ main() {
             interactive_config
         fi
     fi
+    
+    # Validate SERVER_HOST is set before continuing
+    if [[ -z "$SERVER_HOST" ]]; then
+        error "Server host is required. Use --host IP_OR_DOMAIN"
+    fi
+    
+    # Setup deployment logging after SERVER_HOST is confirmed
+    setup_deployment_logging
     
     # Handle special modes
     case "${DEPLOY_MODE:-}" in
@@ -588,7 +600,10 @@ main() {
     fi
     
     success "🎉 Deployment completed successfully!"
-    log "📝 Deployment log saved to: $(cat .deploy-cache/current-deployment.env | grep DEPLOYMENT_LOG_FILE | cut -d'=' -f2)"
+    if [[ -f ".deploy-cache/current-deployment.env" ]]; then
+        local log_file=$(grep DEPLOYMENT_LOG_FILE .deploy-cache/current-deployment.env | cut -d'=' -f2)
+        log "📝 Deployment log saved to: $log_file"
+    fi
 }
 
 # Setup server
