@@ -1,215 +1,186 @@
 # KataCore
 
-KataCore is a full-stack application built with the latest technologies and powered by Bun.js for optimal performance.
+> 🚀 **Modern Full-stack Application with Universal Cloud Deployment**
 
-## 🚀 Tech Stack
+KataCore is a production-ready full-stack application built with the latest technologies. Deploy to any cloud server in minutes with zero configuration.
 
-### Frontend (site/)
-- **Next.js 15.3.4** - The latest version with Turbopack for ultra-fast development
-- **React 19** - The latest React with improved performance and features
-- **Tailwind CSS 4** - Latest version for modern styling
-- **TypeScript 5** - For type safety and better developer experience
+## ✨ Features
 
-### Backend (api/)
-- **NestJS 11** - Latest version of the progressive Node.js framework
-- **Bun.js** - Ultra-fast JavaScript runtime and package manager
-- **TypeScript 5** - For type-safe backend development
+- 🌐 **Universal Cloud Deployment** - Deploy to ANY server with one command
+- 🔧 **Zero-configuration Setup** - Automatic server setup and security
+- ⚡ **Ultra-fast Development** - Powered by Bun.js and Next.js 15
+- 🛡️ **Production Ready** - Docker, SSL, monitoring included
+- 🔐 **Secure by Default** - Auto-generated passwords, firewall, SSL
+
+## 🏗️ Tech Stack
+
+- **Frontend**: Next.js 15 + React 19 + Tailwind CSS 4
+- **Backend**: NestJS 11 + TypeScript 5  
+- **Runtime**: Bun.js
+- **Database**: PostgreSQL + Redis + MinIO
+- **Deployment**: Docker + Nginx + SSL
+
+## 🚀 Quick Start
+
+### Prerequisites
+- **Bun.js** (v1.0.0+) - [Install here](https://bun.sh)
+
+### 1. Clone & Install
+```bash
+git clone <your-repo-url>
+cd KataCore
+bun run install:all
+```
+
+### 2. Development
+```bash
+# Start both frontend and backend
+bun run dev
+
+# Frontend: http://localhost:3000
+# Backend: http://localhost:3001
+```
+
+### 3. Deploy to Cloud ⭐
+```bash
+# Deploy to any server with one command!
+bun run deploy:universal --host YOUR_SERVER_IP
+
+# With custom domain + SSL
+bun run deploy:universal --host YOUR_SERVER_IP --domain yourdomain.com
+```
+
+## 🌐 Universal Cloud Deployment
+
+Deploy to **any** cloud server (AWS, DigitalOcean, Vultr, etc.) with zero configuration!
+
+### Quick Deploy Commands
+
+```bash
+# Full deployment (recommended)
+bun run deploy:universal --host 192.168.1.100
+
+# Clean installation (removes old containers)
+bun run deploy:universal:clean --host 192.168.1.100
+
+# With custom domain + SSL
+bun run deploy:universal --host myserver.com --domain mydomain.com
+```
+
+### Deploy Options
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `--host` | Server IP or domain | `--host 192.168.1.100` |
+| `--domain` | Custom domain for SSL | `--domain mydomain.com` |
+| `--user` | SSH user (default: root) | `--user ubuntu` |
+| `--clean` | Remove old containers | `--clean` |
+
+## 📦 Available Scripts
+
+### Development
+```bash
+bun run dev          # Start both frontend and backend
+bun run dev:site     # Start Next.js frontend only
+bun run dev:api      # Start NestJS backend only
+bun run build        # Build both applications
+bun run test         # Run tests
+bun run lint         # Lint code
+```
+
+### Deployment
+```bash
+bun run deploy:universal       # Deploy to any cloud server
+bun run deploy:universal:clean # Clean deploy (removes old containers)
+bun run deploy:setup-only      # Setup server only
+bun run deploy:deploy-only     # Deploy only (skip setup)
+```
+
+### Git Automation
+```bash
+bun run git:push        # Auto commit and push
+bun run git:save        # Quick save with timestamp
+bun run git:build-push  # Build then push
+```
 
 ## 🏗️ Project Structure
 
 ```
 KataCore/
-├── site/          # Next.js frontend application
-├── api/           # NestJS backend API
-├── package.json   # Root workspace configuration
-└── README.md      # This file
+├── site/                      # Next.js Frontend
+│   ├── src/app/              # App Router pages
+│   ├── src/components/       # React components
+│   └── package.json
+├── api/                       # NestJS Backend
+│   ├── src/                  # Source code
+│   ├── prisma/               # Database schema
+│   └── package.json
+├── docker-compose.yml         # Development setup
+├── docker-compose.prod.yml    # Production setup
+├── universal-deployer.sh      # Universal deployer
+├── scripts/                   # Deployment scripts
+├── nginx/                     # Nginx configuration
+└── package.json              # Root workspace
 ```
 
-## 🚦 Quick Start
+## 🌍 Cloud Provider Support
 
-### Prerequisites
-- Bun.js (v1.0.0 or higher)
+Works with **any** cloud provider:
+- ✅ DigitalOcean, AWS EC2, Vultr, Linode
+- ✅ Hetzner, Google Cloud, Azure
+- ✅ Any VPS running Ubuntu/CentOS
 
-### Installation
-```bash
-# Install all dependencies
-bun run install:all
+## 🔐 Security Features
 
-# Or install individually
-bun install          # Root dependencies
-cd site && bun install   # Frontend dependencies  
-cd api && bun install    # Backend dependencies
+- ✅ Auto-generated secure passwords for all services
+- ✅ Firewall automatically configured
+- ✅ SSL certificates via Let's Encrypt
+- ✅ Non-root user support
+- ✅ Secure environment variable handling
+
+## 🎯 Production Architecture
+
 ```
-
-### Development
-```bash
-# Start both frontend and backend in development mode
-bun run dev
-
-# Or start individually
-bun run dev:site      # Start Next.js frontend (http://localhost:3000)
-bun run dev:api       # Start NestJS backend (http://localhost:3001)
-```
-
-### Building for Production
-```bash
-# Build both applications
-bun run build
-
-# Or build individually
-bun run build:site   # Build Next.js application
-bun run build:api    # Build NestJS application
-```
-
-### Production Start
-```bash
-# Start both applications in production mode
-bun run start
-```
-
-## 📦 Available Scripts
-
-| Script | Description |
-|--------|-------------|
-| `bun run dev` | Start both frontend and backend in development mode |
-| `bun run dev:site` | Start only the Next.js frontend |
-| `bun run dev:api` | Start only the NestJS backend |
-| `bun run build` | Build both applications for production |
-| `bun run start` | Start both applications in production mode |
-| `bun run test` | Run backend tests |
-| `bun run lint` | Lint both applications |
-| `bun run clean` | Clean all node_modules and build artifacts |
-| `bun run git:push` | Auto commit and push changes to git |
-| `bun run git:save` | Quick save with timestamp |
-| `bun run git:build-push` | Build first, then commit and push |
-| `bun run git:watch` | Auto-commit every 10 minutes |
-| `bun run compose:check` | Check if docker-compose.prod.yml exists |
-| `bun run compose:create` | Create docker-compose.prod.yml from template |
-| `bun run compose:ensure` | Ensure docker-compose.prod.yml exists (create if missing) |
-| `bun run compose:validate` | Validate docker-compose.prod.yml syntax |
-| `bun run compose:git-add` | Add docker-compose.prod.yml to git |
-| `bun run compose:status` | Show docker-compose.prod.yml status |
-| `bun run docker:install` | Auto-install Docker and Docker Compose |
-| `bun run docker:check` | Check Docker installation status |
-| `bun run docker:status` | Show detailed Docker system status |
-| `bun run docker:manage` | Launch Docker management interface |
-| `bun run docker:cleanup` | Clean up unused Docker resources |
-| `bun run docker:fix` | Fix Docker permissions for current user |
-| `bun run deploy:local` | Deploy locally with auto Docker installation |
-| `bun run deploy:remote` | Deploy to remote server with auto setup |
-| `bun run deploy:test-remote` | Test remote server before deployment |
-| `bun run git:push` | Auto commit and push changes to git |
-| `bun run git:save` | Quick save with timestamp |
-| `bun run git:build-push` | Build first, then commit and push |
-| `bun run git:watch` | Auto-commit every 10 minutes |
-
-## 🚀 Universal Cloud Deployer v2.0
-
-KataCore features a **Universal Cloud Deployer** that can deploy to **any** cloud server with zero configuration!
-
-### ✨ New Features
-
-- **🌐 Universal Deployment** - Deploy to ANY server with one command
-- **🔧 Automatic Server Setup** - Installs Docker, configures firewall, sets up dependencies
-- **🔐 Secure by Default** - Generates random secure passwords for all services
-- **📦 Smart Docker Handling** - Handles both regular and snap-installed Docker Compose
-- **🌐 SSL Ready** - Automatic SSL certificate setup with Let's Encrypt
-- **🧹 Clean Deployment** - Option to remove old containers and start fresh
-- **⚡ Flexible Modes** - Setup-only, deploy-only, or full deployment
-- **🎨 Beautiful CLI** - Colored output with progress indicators
-
-### 🚀 Quick Start
-
-```bash
-# Deploy to any server (recommended)
-bun run deploy:universal --host 192.168.1.100
-
-# Deploy with custom domain and SSL
-bun run deploy:universal --host myserver.com --domain mydomain.com
-
-# Clean installation (removes old containers)
-bun run deploy:universal:clean --host 192.168.1.100
-```
-
-### 📋 Universal Deployer Options
-
-```bash
-# Full deployment with auto-setup
-bun run deploy:universal --host SERVER_IP
-
-# Setup server only (no deployment)
-bun run deploy:setup-only --host SERVER_IP
-
-# Deploy only (skip server setup)
-bun run deploy:deploy-only --host SERVER_IP
-
-# Clean deployment (removes old containers)
-bun run deploy:universal:clean --host SERVER_IP
-```
-
-### 🏠 Legacy Local Deployment
-
-```bash
-# Deploy locally with auto Docker installation
-bun run deploy:local
-```
-
-### 🔧 Manual Docker Management
-
-```bash
-# Install Docker manually
-./scripts/install-docker.sh install
-
-# Check Docker status
-./scripts/install-docker.sh check
-
-# Test Docker installation
-./scripts/test-docker-install.sh
-
-# Test remote deployment setup
-SERVER_HOST=your-server-ip ./scripts/test-remote-deploy.sh
+Internet → Nginx (80/443) → Next.js (3000) + NestJS (3001)
+                     ↓
+               PostgreSQL (5432) + Redis (6379) + MinIO (9000)
 ```
 
 ## 🚨 Troubleshooting
 
-For detailed deployment documentation, see [DEPLOYMENT.md](DEPLOYMENT.md)
+### SSH Connection Failed
+```bash
+# Check SSH access first
+ssh root@YOUR_SERVER_IP
 
-Common issues:
-- **SSH connection problems**: Verify server connectivity and SSH access
-- **Docker not found**: Universal deployer auto-installs Docker
-- **Permission denied**: Use `--user ubuntu` for non-root servers
-- **Port conflicts**: Use `--clean` flag to remove old containers
+# Use different user if needed
+bun run deploy:universal --host YOUR_SERVER_IP --user ubuntu
+```
 
-## 🌐 API Endpoints
+### Port Already in Use
+```bash
+# Clean deploy removes old containers
+bun run deploy:universal:clean --host YOUR_SERVER_IP
+```
 
-- **Base URL**: `http://localhost:3001`
-- **Health Check**: `GET /health`
-- **Hello**: `GET /`
+### SSL Certificate Issues
+```bash
+# Ensure domain points to server
+bun run deploy:universal --host YOUR_SERVER_IP --domain yourdomain.com
+```
 
-## 🎯 Features
+## 🤝 Contributing
 
-### Frontend Features
-- ⚡ **Turbopack** - Ultra-fast development server
-- 🎨 **Tailwind CSS 4** - Latest utility-first CSS framework
-- 📱 **Responsive Design** - Mobile-first approach
-- 🔄 **Hot Reload** - Instant updates during development
-- 🏗️ **App Router** - Next.js 13+ App Directory structure
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test deployment
+5. Submit a pull request
 
-### Backend Features  
-- 🚀 **High Performance** - Powered by Bun.js runtime
-- 🛡️ **Type Safety** - Full TypeScript support
-- 🔄 **Auto Restart** - Development mode with watch
-- 🌐 **CORS Enabled** - Ready for frontend integration
-- 📊 **Health Monitoring** - Built-in health check endpoint
+---
 
-## 🔧 Development Notes
+<div align="center">
 
-- The API runs on port **3001** by default
-- The frontend runs on port **3000** by default  
-- CORS is pre-configured to allow communication between frontend and backend
-- Both projects use the latest versions of their respective frameworks
-- Bun.js is used as the package manager and runtime for optimal performance
+**🚀 Ready to deploy? Run `bun run deploy:universal --host YOUR_SERVER_IP`**
 
-## 📄 License
-
-This project is private and proprietary.# Test change
+</div>
