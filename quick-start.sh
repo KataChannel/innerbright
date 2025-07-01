@@ -130,9 +130,9 @@ deploy_production() {
     info "Deploying to server: $server_ip"
     if [ ! -z "$domain" ]; then
         info "Domain: $domain"
-        bun run deploy:startkit "$server_ip" --domain "$domain"
+        ./startkit-deployer.sh --host "$server_ip" --domain "$domain"
     else
-        bun run deploy:startkit "$server_ip"
+        ./startkit-deployer.sh --host "$server_ip"
     fi
 }
 

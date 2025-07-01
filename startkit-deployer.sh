@@ -140,18 +140,30 @@ parse_arguments() {
     while [[ $# -gt 0 ]]; do
         case $1 in
             --host)
+                if [[ -z "${2:-}" ]] || [[ "${2:-}" =~ ^-- ]]; then
+                    error "--host requires a value (IP address or domain)"
+                fi
                 SERVER_HOST="$2"
                 shift 2
                 ;;
             --port)
+                if [[ -z "${2:-}" ]] || [[ "${2:-}" =~ ^-- ]]; then
+                    error "--port requires a value (port number)"
+                fi
                 SERVER_PORT="$2"
                 shift 2
                 ;;
             --user)
+                if [[ -z "${2:-}" ]] || [[ "${2:-}" =~ ^-- ]]; then
+                    error "--user requires a value (username)"
+                fi
                 SERVER_USER="$2"
                 shift 2
                 ;;
             --domain)
+                if [[ -z "${2:-}" ]] || [[ "${2:-}" =~ ^-- ]]; then
+                    error "--domain requires a value (domain name)"
+                fi
                 DOMAIN="$2"
                 shift 2
                 ;;
@@ -205,7 +217,17 @@ parse_arguments() {
 
     # Validate required arguments
     if [[ -z "$SERVER_HOST" ]]; then
-        error "Server host is required. Use --host SERVER_IP"
+        error "Server host is required. Use --host SERVER_IP or --help for usage information"
+    fi
+    
+    # Validate host format (basic check)
+    if [[ ! "$SERVER_HOST" =~ ^[a-zA-Z0-9.-]+$ ]]; then
+        error "Invalid host format: $SERVER_HOST. Please provide a valid IP address or domain name"
+    fi
+    
+    # Validate port is numeric
+    if [[ ! "$SERVER_PORT" =~ ^[0-9]+$ ]] || [[ "$SERVER_PORT" -lt 1 ]] || [[ "$SERVER_PORT" -gt 65535 ]]; then
+        error "Invalid port: $SERVER_PORT. Port must be a number between 1 and 65535"
     fi
 }
 
@@ -601,6 +623,14 @@ verify_deployment() {
 
 # Main deployment function
 main() {
+    # Show help if no arguments provided
+    if [[ $# -eq 0 ]]; then
+        show_banner
+        echo -e "${YELLOW}No arguments provided.${NC}\n"
+        show_help
+        exit 1
+    fi
+    
     show_banner
     parse_arguments "$@"
     
