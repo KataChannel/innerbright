@@ -38,4 +38,3 @@
 # Safe directory configuration to prevent warnings
 [safe]
     directory = /chikiet/kataoffical/KataCore
-    directory = /chikiet/kataoffical/KataCore/.git
