@@ -1,33 +1,41 @@
-# Multi-stage build for Next.js Frontend
+# Multi-stage build for Next.js Frontend - Optimized for production
 FROM oven/bun:1-alpine AS base
+
+# Install security updates and necessary packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache libc6-compat dumb-init && \
+    rm -rf /var/cache/apk/*
 
 # Install dependencies stage
 FROM base AS deps
 WORKDIR /app
-
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
 COPY package.json bun.lockb* ./
 RUN bun install --frozen-lockfile
 
-# Rebuild the source code only when needed
+# Build stage
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Disable Next.js telemetry for production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
+# Build the application
 RUN bun run build
 
-# Production image, copy all the files and run next
+# Production stage - Minimal image
 FROM base AS production
 WORKDIR /app
 
-ENV NODE_ENV production
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs --ingroup nodejs
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
@@ -49,8 +57,9 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-# set hostname to localhost
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["bun", "server.js"]

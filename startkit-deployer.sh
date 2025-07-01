@@ -1,0 +1,542 @@
+#!/bin/bash
+
+# KataCore StartKit v1 - Universal Deployment Script
+# Optimized for production deployment with zero configuration
+# Compatible with any Linux server (Ubuntu, Debian, CentOS, RHEL, etc.)
+
+set -euo pipefail
+
+# Version information
+readonly SCRIPT_VERSION="1.0.0"
+readonly KATACORE_VERSION="StartKit v1"
+
+# Color codes for output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly NC='\033[0m' # No Color
+
+# Global variables
+SERVER_HOST=""
+SERVER_PORT="22"
+SERVER_USER="root"
+DOMAIN=""
+CLEAN_DEPLOY=false
+SETUP_ONLY=false
+DEPLOY_ONLY=false
+FORCE_REBUILD=false
+CONFIG_ONLY=false
+VERBOSE=false
+DRY_RUN=false
+
+# Deployment paths
+readonly REMOTE_DIR="/opt/katacore"
+readonly LOG_DIR=".deploy-logs"
+readonly CACHE_DIR=".deploy-cache"
+
+# Security settings
+readonly SECURE_CIPHERS="ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305"
+readonly MIN_PASSWORD_LENGTH=16
+
+# Logging functions
+log() {
+    echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $1" >&2
+}
+
+info() {
+    echo -e "${CYAN}ℹ️  $1${NC}" >&2
+}
+
+success() {
+    echo -e "${GREEN}✅ $1${NC}" >&2
+}
+
+warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}" >&2
+}
+
+error() {
+    echo -e "${RED}❌ $1${NC}" >&2
+    exit 1
+}
+
+debug() {
+    if [[ "${VERBOSE}" == "true" ]]; then
+        echo -e "${PURPLE}🔍 $1${NC}" >&2
+    fi
+}
+
+# Enhanced banner with version info
+show_banner() {
+    echo -e "${CYAN}"
+    cat << 'EOF'
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     🚀 KataCore StartKit v1 Deployer                        ║
+║                                                                              ║
+║    Universal Cloud Deployment • Production Ready • Zero Configuration       ║
+║    Next.js 15 + NestJS 11 + PostgreSQL + Redis + MinIO + Nginx + SSL       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+EOF
+    echo -e "${NC}"
+    echo -e "  ${GREEN}Version:${NC} ${SCRIPT_VERSION}"
+    echo -e "  ${GREEN}KataCore:${NC} ${KATACORE_VERSION}"
+    echo ""
+}
+
+# Show help information
+show_help() {
+    cat << EOF
+KataCore StartKit v1 - Universal Deployment Script
+
+USAGE:
+    $0 [OPTIONS] --host SERVER_IP
+
+REQUIRED:
+    --host HOST        Target server IP address or domain
+
+OPTIONS:
+    --port PORT        SSH port (default: 22)
+    --user USER        SSH user (default: root)
+    --domain DOMAIN    Domain name for SSL certificates
+    --clean            Clean deployment (remove existing containers)
+    --setup-only       Only setup server, don't deploy
+    --deploy-only      Only deploy, skip server setup
+    --config-only      Only update configuration files
+    --force-rebuild    Force rebuild all Docker images
+    --verbose          Enable verbose logging
+    --dry-run          Show what would be done without executing
+    --help             Show this help message
+
+EXAMPLES:
+    # Basic deployment
+    $0 --host 192.168.1.100
+
+    # Deployment with custom domain and SSL
+    $0 --host myserver.com --domain myapp.com
+
+    # Clean deployment (removes existing data)
+    $0 --host 192.168.1.100 --clean
+
+    # Setup server only (no deployment)
+    $0 --host 192.168.1.100 --setup-only
+
+    # Update configuration only (fastest)
+    $0 --host 192.168.1.100 --config-only
+
+For more information, visit: https://github.com/your-org/katacore
+EOF
+}
+
+# Parse command line arguments
+parse_arguments() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --host)
+                SERVER_HOST="$2"
+                shift 2
+                ;;
+            --port)
+                SERVER_PORT="$2"
+                shift 2
+                ;;
+            --user)
+                SERVER_USER="$2"
+                shift 2
+                ;;
+            --domain)
+                DOMAIN="$2"
+                shift 2
+                ;;
+            --clean)
+                CLEAN_DEPLOY=true
+                shift
+                ;;
+            --setup-only)
+                SETUP_ONLY=true
+                shift
+                ;;
+            --deploy-only)
+                DEPLOY_ONLY=true
+                shift
+                ;;
+            --config-only)
+                CONFIG_ONLY=true
+                shift
+                ;;
+            --force-rebuild)
+                FORCE_REBUILD=true
+                shift
+                ;;
+            --verbose)
+                VERBOSE=true
+                shift
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --help)
+                show_help
+                exit 0
+                ;;
+            *)
+                warning "Unknown option: $1"
+                shift
+                ;;
+        esac
+    done
+
+    # Validate required arguments
+    if [[ -z "$SERVER_HOST" ]]; then
+        error "Server host is required. Use --host SERVER_IP"
+    fi
+}
+
+# Generate secure passwords
+generate_password() {
+    local length=${1:-$MIN_PASSWORD_LENGTH}
+    openssl rand -base64 $((length * 3 / 4)) | tr -d "=+/" | cut -c1-${length}
+}
+
+# Generate JWT secret
+generate_jwt_secret() {
+    openssl rand -base64 64 | tr -d "\n"
+}
+
+# Setup deployment logging
+setup_deployment_logging() {
+    local log_file="${LOG_DIR}/deploy-$(date +%Y%m%d-%H%M%S).log"
+    
+    mkdir -p "$LOG_DIR" "$CACHE_DIR"
+    
+    # Create deployment info
+    cat > "${CACHE_DIR}/current-deployment.env" << EOF
+DEPLOYMENT_HOST=$SERVER_HOST
+DEPLOYMENT_PORT=$SERVER_PORT
+DEPLOYMENT_USER=$SERVER_USER
+DEPLOYMENT_DOMAIN=$DOMAIN
+DEPLOYMENT_TIME=$(date -Iseconds)
+DEPLOYMENT_VERSION=$SCRIPT_VERSION
+KATACORE_VERSION=$KATACORE_VERSION
+EOF
+
+    debug "Logging to: $log_file"
+}
+
+# Validate environment
+validate_environment() {
+    log "🔍 Validating deployment environment..."
+    
+    # Check required tools
+    local missing_tools=()
+    
+    for tool in ssh scp rsync openssl docker; do
+        if ! command -v "$tool" >/dev/null 2>&1; then
+            missing_tools+=("$tool")
+        fi
+    done
+    
+    if [[ ${#missing_tools[@]} -gt 0 ]]; then
+        error "Missing required tools: ${missing_tools[*]}"
+    fi
+    
+    # Check project structure
+    local required_files=(
+        "docker-compose.prod.yml"
+        "package.json"
+        "api/"
+        "site/"
+    )
+    
+    for file in "${required_files[@]}"; do
+        if [[ ! -e "$file" ]]; then
+            error "Missing required file/directory: $file"
+        fi
+    done
+    
+    success "Environment validation passed"
+}
+
+# Test SSH connection
+test_ssh_connection() {
+    log "🔗 Testing SSH connection to $SERVER_HOST..."
+    
+    if ! ssh -o ConnectTimeout=10 -o BatchMode=yes -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" exit 2>/dev/null; then
+        error "Cannot connect to $SERVER_HOST:$SERVER_PORT with user $SERVER_USER"
+    fi
+    
+    success "SSH connection successful"
+}
+
+# Setup server (install Docker, create directories, etc.)
+setup_server() {
+    if [[ "$DEPLOY_ONLY" == "true" ]]; then
+        debug "Skipping server setup (deploy-only mode)"
+        return
+    fi
+    
+    log "🔧 Setting up server environment..."
+    
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << 'EOF'
+        set -euo pipefail
+        
+        # Update system packages
+        if command -v apt-get >/dev/null 2>&1; then
+            apt-get update && apt-get upgrade -y
+            apt-get install -y curl wget git ufw fail2ban
+        elif command -v yum >/dev/null 2>&1; then
+            yum update -y
+            yum install -y curl wget git
+        fi
+        
+        # Install Docker if not present
+        if ! command -v docker >/dev/null 2>&1; then
+            echo "Installing Docker..."
+            curl -fsSL https://get.docker.com | sh
+            systemctl enable docker
+            systemctl start docker
+        fi
+        
+        # Install Docker Compose if not present
+        if ! docker compose version >/dev/null 2>&1; then
+            echo "Installing Docker Compose..."
+            curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+        fi
+        
+        # Create deployment directory
+        mkdir -p /opt/katacore/{nginx/conf.d,ssl,backups,logs}
+        
+        # Setup firewall
+        if command -v ufw >/dev/null 2>&1; then
+            ufw --force enable
+            ufw allow ssh
+            ufw allow 80/tcp
+            ufw allow 443/tcp
+            ufw allow 8080/tcp
+            ufw allow 9001/tcp
+        fi
+        
+        echo "✅ Server setup completed"
+EOF
+    
+    success "Server setup completed"
+}
+
+# Generate environment file
+generate_environment() {
+    log "🔐 Generating secure environment configuration..."
+    
+    local env_file=".env.prod"
+    
+    # Check if environment file already exists
+    if [[ -f "$env_file" ]] && [[ "$FORCE_REBUILD" != "true" ]]; then
+        info "Environment file exists, using existing configuration"
+        return
+    fi
+    
+    # Generate secure passwords
+    local postgres_pass=$(generate_password 24)
+    local redis_pass=$(generate_password 20)
+    local jwt_secret=$(generate_jwt_secret)
+    local minio_pass=$(generate_password 20)
+    local pgadmin_pass=$(generate_password 16)
+    local grafana_pass=$(generate_password 16)
+    
+    # Generate environment file from template
+    if [[ -f ".env.prod.template" ]]; then
+        cp .env.prod.template "$env_file"
+    else
+        # Create basic environment file
+        cat > "$env_file" << EOF
+# KataCore StartKit v1 - Production Environment
+# Auto-generated secure configuration
+
+# Database
+POSTGRES_DB=katacore_prod
+POSTGRES_USER=katacore_user
+POSTGRES_PASSWORD=$postgres_pass
+DATABASE_URL=postgresql://katacore_user:$postgres_pass@postgres:5432/katacore_prod
+
+# Redis
+REDIS_PASSWORD=$redis_pass
+REDIS_URL=redis://:$redis_pass@redis:6379
+
+# Application
+JWT_SECRET=$jwt_secret
+LOG_LEVEL=info
+NODE_ENV=production
+
+# MinIO
+MINIO_ROOT_USER=katacore_admin
+MINIO_ROOT_PASSWORD=$minio_pass
+
+# pgAdmin
+PGADMIN_EMAIL=admin@${DOMAIN:-localhost}
+PGADMIN_PASSWORD=$pgadmin_pass
+
+# API Configuration
+API_VERSION=latest
+CORS_ORIGIN=https://${DOMAIN:-*}
+
+# Frontend
+SITE_VERSION=latest
+NEXT_PUBLIC_API_URL=https://${DOMAIN:-localhost}/api
+
+# Domain
+DOMAIN=${DOMAIN:-localhost}
+LETSENCRYPT_EMAIL=admin@${DOMAIN:-localhost.com}
+EOF
+    fi
+    
+    # Replace placeholders with actual values
+    sed -i "s/__SECURE_POSTGRES_PASSWORD__/$postgres_pass/g" "$env_file"
+    sed -i "s/__SECURE_REDIS_PASSWORD__/$redis_pass/g" "$env_file"
+    sed -i "s/__SECURE_JWT_SECRET__/$jwt_secret/g" "$env_file"
+    sed -i "s/__SECURE_MINIO_PASSWORD__/$minio_pass/g" "$env_file"
+    sed -i "s/__SECURE_PGADMIN_PASSWORD__/$pgadmin_pass/g" "$env_file"
+    sed -i "s/__SECURE_GRAFANA_PASSWORD__/$grafana_pass/g" "$env_file"
+    sed -i "s/your-domain.com/${DOMAIN:-localhost}/g" "$env_file"
+    
+    success "Environment configuration generated"
+}
+
+# Upload files to server
+upload_files() {
+    if [[ "$CONFIG_ONLY" == "true" ]]; then
+        log "📤 Uploading configuration files only..."
+        scp -P "$SERVER_PORT" .env.prod nginx/conf.d/* "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/"
+    else
+        log "📤 Uploading project files..."
+        
+        # Create exclude file for rsync
+        cat > .rsync-exclude << EOF
+.git/
+node_modules/
+.next/
+dist/
+*.log
+.deploy-cache/
+.deploy-logs/
+.DS_Store
+Thumbs.db
+EOF
+        
+        # Upload files using rsync
+        rsync -avz --delete --exclude-from=.rsync-exclude \
+            -e "ssh -p $SERVER_PORT" \
+            ./ "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/"
+        
+        rm -f .rsync-exclude
+    fi
+    
+    success "Files uploaded successfully"
+}
+
+# Deploy application
+deploy_application() {
+    if [[ "$SETUP_ONLY" == "true" ]]; then
+        debug "Skipping application deployment (setup-only mode)"
+        return
+    fi
+    
+    log "🚀 Deploying KataCore application..."
+    
+    local compose_args=""
+    
+    if [[ "$CLEAN_DEPLOY" == "true" ]]; then
+        compose_args="--force-recreate --remove-orphans"
+    fi
+    
+    if [[ "$FORCE_REBUILD" == "true" ]]; then
+        compose_args="$compose_args --build"
+    fi
+    
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << EOF
+        set -euo pipefail
+        cd $REMOTE_DIR
+        
+        # Stop existing containers if clean deploy
+        if [[ "$CLEAN_DEPLOY" == "true" ]]; then
+            echo "🧹 Cleaning up existing deployment..."
+            docker compose -f docker-compose.prod.yml down --volumes --remove-orphans 2>/dev/null || true
+            docker system prune -f 2>/dev/null || true
+        fi
+        
+        # Deploy application
+        echo "🚀 Starting KataCore services..."
+        docker compose -f docker-compose.prod.yml up -d $compose_args
+        
+        # Wait for services to be healthy
+        echo "⏳ Waiting for services to be ready..."
+        sleep 30
+        
+        # Check service status
+        docker compose -f docker-compose.prod.yml ps
+        
+        echo "✅ Deployment completed"
+EOF
+    
+    success "Application deployed successfully"
+}
+
+# Verify deployment
+verify_deployment() {
+    log "🔍 Verifying deployment..."
+    
+    # Test endpoints
+    local endpoints=(
+        "https://$SERVER_HOST/health"
+        "https://$SERVER_HOST/"
+    )
+    
+    for endpoint in "${endpoints[@]}"; do
+        if curl -fsSL -k "$endpoint" >/dev/null 2>&1; then
+            success "✓ $endpoint is accessible"
+        else
+            warning "✗ $endpoint is not accessible"
+        fi
+    done
+    
+    # Show service URLs
+    echo ""
+    echo -e "${GREEN}🎉 KataCore StartKit v1 Deployment Complete!${NC}"
+    echo ""
+    echo -e "${CYAN}📍 Service URLs:${NC}"
+    echo -e "  🌐 Frontend:    https://$SERVER_HOST/"
+    echo -e "  🔧 API:         https://$SERVER_HOST/api/"
+    echo -e "  📊 Admin:       https://$SERVER_HOST:8080/"
+    echo -e "  💾 Storage:     https://$SERVER_HOST:9001/"
+    echo ""
+    echo -e "${YELLOW}🔐 Security Info:${NC}"
+    echo -e "  📄 Environment: .env.prod (contains passwords)"
+    echo -e "  🔒 SSH:         $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
+    echo ""
+}
+
+# Main deployment function
+main() {
+    show_banner
+    parse_arguments "$@"
+    setup_deployment_logging
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        info "DRY RUN MODE - No changes will be made"
+    fi
+    
+    validate_environment
+    test_ssh_connection
+    setup_server
+    generate_environment
+    upload_files
+    deploy_application
+    verify_deployment
+    
+    success "🎉 KataCore StartKit v1 deployment completed successfully!"
+}
+
+# Execute main function with all arguments
+main "$@"

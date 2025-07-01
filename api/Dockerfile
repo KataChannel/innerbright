@@ -1,31 +1,43 @@
-# Multi-stage build for NestJS API
+# Multi-stage build for NestJS API - Optimized for production
 FROM oven/bun:1-alpine AS base
+
+# Install security updates and necessary packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /app
 
 # Install dependencies stage
 FROM base AS deps
 COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile --production=false
 
 # Build stage
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN bun run build
 
-# Production stage
+# Build the application
+RUN bun run build && \
+    bun run prisma generate
+
+# Production stage - Minimal image
 FROM base AS production
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nestjs
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/prisma ./prisma
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nestjs --ingroup nodejs
 
-# Generate Prisma client as root, then change ownership
-RUN bun run prisma generate
-RUN chown -R nestjs:nodejs /app
+# Copy only production files
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3001
 
 USER nestjs
 
