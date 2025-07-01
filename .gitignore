@@ -35,17 +35,11 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Dependency directories
-jspm_packages/
-
 # Optional npm cache directory
 .npm
 
 # Optional eslint cache
 .eslintcache
-
-# Optional REPL history
-.node_repl_history
 
 # Output of 'npm pack'
 *.tgz
@@ -71,12 +65,6 @@ jspm_packages/
 
 # FuseBox cache
 .fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
 
 # Docker
 .dockerignore
@@ -110,5 +98,11 @@ tmp/
 *.sqlite3
 *.db
 
-# Prisma
-prisma/migrations/
+# Deployment cache and logs
+.deploy-cache/
+.deploy-logs/
+*.deploy.log
+
+# Temporary and cache files
+.cache/
+.temp/
