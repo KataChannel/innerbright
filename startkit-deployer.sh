@@ -31,6 +31,7 @@ FORCE_REBUILD=false
 CONFIG_ONLY=false
 VERBOSE=false
 DRY_RUN=false
+CREATE_ENV_TEMPLATE=false
 
 # Deployment paths
 readonly REMOTE_DIR="/opt/katacore"
@@ -108,6 +109,7 @@ OPTIONS:
     --force-rebuild    Force rebuild all Docker images
     --verbose          Enable verbose logging
     --dry-run          Show what would be done without executing
+    --create-env-template  Create environment template only
     --help             Show this help message
 
 EXAMPLES:
@@ -125,6 +127,9 @@ EXAMPLES:
 
     # Update configuration only (fastest)
     $0 --host 192.168.1.100 --config-only
+
+    # Create environment template
+    $0 --create-env-template
 
 For more information, visit: https://github.com/your-org/katacore
 EOF
@@ -178,6 +183,10 @@ parse_arguments() {
                 DRY_RUN=true
                 shift
                 ;;
+            --create-env-template)
+                CREATE_ENV_TEMPLATE=true
+                shift
+                ;;
             --help)
                 show_help
                 exit 0
@@ -188,6 +197,11 @@ parse_arguments() {
                 ;;
         esac
     done
+
+    # Special case: create template doesn't need host
+    if [[ "$CREATE_ENV_TEMPLATE" == "true" ]]; then
+        return
+    fi
 
     # Validate required arguments
     if [[ -z "$SERVER_HOST" ]]; then
@@ -404,6 +418,74 @@ EOF
     success "Environment configuration generated"
 }
 
+# Create environment template file
+create_environment_template() {
+    log "📄 Creating environment template..."
+    
+    local template_file=".env.prod.template"
+    
+    # Check if template already exists
+    if [[ -f "$template_file" ]]; then
+        warning "Environment template already exists at $template_file"
+        return
+    fi
+    
+    # Create environment template with placeholders
+    cat > "$template_file" << 'EOF'
+# KataCore StartKit v1 - Production Environment Template
+# Copy this file to .env.prod and fill in the secure values
+
+# Database Configuration
+POSTGRES_DB=katacore_prod
+POSTGRES_USER=katacore_user
+POSTGRES_PASSWORD=__SECURE_POSTGRES_PASSWORD__
+DATABASE_URL=postgresql://katacore_user:__SECURE_POSTGRES_PASSWORD__@postgres:5432/katacore_prod
+
+# Redis Configuration
+REDIS_PASSWORD=__SECURE_REDIS_PASSWORD__
+REDIS_URL=redis://:__SECURE_REDIS_PASSWORD__@redis:6379
+
+# Application Secrets
+JWT_SECRET=__SECURE_JWT_SECRET__
+LOG_LEVEL=info
+NODE_ENV=production
+
+# MinIO Object Storage
+MINIO_ROOT_USER=katacore_admin
+MINIO_ROOT_PASSWORD=__SECURE_MINIO_PASSWORD__
+
+# pgAdmin Database Management
+PGADMIN_EMAIL=admin@your-domain.com
+PGADMIN_PASSWORD=__SECURE_PGADMIN_PASSWORD__
+
+# Grafana Monitoring
+GRAFANA_ADMIN_PASSWORD=__SECURE_GRAFANA_PASSWORD__
+
+# API Configuration
+API_VERSION=latest
+CORS_ORIGIN=https://your-domain.com
+
+# Frontend Configuration
+SITE_VERSION=latest
+NEXT_PUBLIC_API_URL=https://your-domain.com/api
+
+# Domain & SSL Configuration
+DOMAIN=your-domain.com
+LETSENCRYPT_EMAIL=admin@your-domain.com
+
+# Optional: Development overrides
+# POSTGRES_HOST=localhost
+# REDIS_HOST=localhost
+# MINIO_HOST=localhost
+EOF
+    
+    success "Environment template created at $template_file"
+    info "📋 To use this template:"
+    info "   1. Copy .env.prod.template to .env.prod"
+    info "   2. Replace all __SECURE_*__ placeholders with actual values"
+    info "   3. Update your-domain.com with your actual domain"
+}
+
 # Upload files to server
 upload_files() {
     if [[ "$CONFIG_ONLY" == "true" ]]; then
@@ -521,6 +603,14 @@ verify_deployment() {
 main() {
     show_banner
     parse_arguments "$@"
+    
+    # Handle environment template creation separately
+    if [[ "$CREATE_ENV_TEMPLATE" == "true" ]]; then
+        create_environment_template
+        success "🎉 Environment template created successfully!"
+        exit 0
+    fi
+    
     setup_deployment_logging
     
     if [[ "$DRY_RUN" == "true" ]]; then
