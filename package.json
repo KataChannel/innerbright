@@ -30,7 +30,19 @@
     "deploy:universal": "./universal-deployer.sh",
     "deploy:universal:clean": "./universal-deployer.sh --clean",
     "deploy:setup-only": "./universal-deployer.sh --setup-only",
-    "deploy:deploy-only": "./universal-deployer.sh --deploy-only"
+    "deploy:deploy-only": "./universal-deployer.sh --deploy-only",
+    "deploy:quick": "./quick-deploy.sh",
+    "deploy:config": "./quick-deploy.sh --config-only",
+    "deploy:rebuild": "./quick-deploy.sh --force-rebuild",
+    "deploy:full": "./quick-deploy.sh --full",
+    "deploy:source": "./quick-deploy.sh --source-only",
+    "deploy:smart": "./quick-deploy.sh --smart",
+    "deploy:cache:clear": "rm -rf .deploy-cache && echo '✅ Deployment cache cleared'",
+    "deploy:cache:info": "cat .deploy-cache/deploy-info.json 2>/dev/null || echo '❌ No deployment cache found'",
+    "deploy:history": "cat .deploy-cache/deployment-history.log 2>/dev/null || echo '❌ No deployment history found'",
+    "env:create-template": "echo '📝 Creating .env.prod.example...' && ./universal-deployer.sh --create-env-template",
+    "env:show-template": "cat .env.prod.example 2>/dev/null || echo '❌ No .env.prod.example found'",
+    "env:validate": "echo '🔍 Validating environment files...' && ./scripts/validate-env.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
