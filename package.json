@@ -26,6 +26,7 @@
     "git:push": "./scripts/auto-push.sh",
     "git:save": "./scripts/quick-save.sh",
     "git:build-push": "./scripts/build-and-push.sh",
+    "git:fix": "./scripts/fix-git-ownership.sh",
     "docker:install": "./scripts/install-docker.sh install",
     "deploy:universal": "./universal-deployer.sh",
     "deploy:universal:clean": "./universal-deployer.sh --clean",
