@@ -58,14 +58,17 @@ bun run dev
 ### 3. Deploy to Production 🎯
 
 ```bash
-# Deploy to any cloud server
-bun run startkit:deploy --host YOUR_SERVER_IP
+# 🚀 StartKit v1 Deployer (Direct script - Recommended)
+./startkit-deployer.sh --host YOUR_SERVER_IP
 
 # With custom domain + SSL
-bun run startkit:deploy --host YOUR_SERVER_IP --domain yourdomain.com
+./startkit-deployer.sh --host YOUR_SERVER_IP --domain yourdomain.com
 
 # Clean deployment (removes existing data)
-bun run startkit:deploy --host YOUR_SERVER_IP --clean
+./startkit-deployer.sh --host YOUR_SERVER_IP --clean
+
+# Interactive deployment
+./quick-start.sh    # Choose option 2 for guided deployment
 ```
 
 ## 🌐 Deployment Options
@@ -74,32 +77,39 @@ bun run startkit:deploy --host YOUR_SERVER_IP --clean
 
 ```bash
 # 🚀 Full deployment (recommended for first time)
-bun run startkit:deploy --host 192.168.1.100
+./startkit-deployer.sh --host 192.168.1.100
 
 # 🏗️ Setup server only (install Docker, create directories)
-bun run startkit:deploy --host 192.168.1.100 --setup-only
+./startkit-deployer.sh --host 192.168.1.100 --setup-only
 
 # ⚡ Configuration update only (fastest)
-bun run startkit:deploy --host 192.168.1.100 --config-only
+./startkit-deployer.sh --host 192.168.1.100 --config-only
 
 # 🔄 Force rebuild all containers
-bun run startkit:deploy --host 192.168.1.100 --force-rebuild
+./startkit-deployer.sh --host 192.168.1.100 --force-rebuild
 
 # 🧪 Dry run (see what would be done)
-bun run startkit:deploy --host 192.168.1.100 --dry-run
+./startkit-deployer.sh --host 192.168.1.100 --dry-run
+
+# 📝 Verbose logging
+./startkit-deployer.sh --host 192.168.1.100 --verbose
+
+# 🎯 Interactive deployment (easiest)
+./quick-start.sh
 ```
 
 ### Deployment with Custom Domain
 
 ```bash
 # Deploy with SSL certificate
-bun run startkit:deploy --host myserver.com --domain myapp.com
+./startkit-deployer.sh --host myserver.com --domain myapp.com
 
 # The script will automatically:
 # ✅ Setup Let's Encrypt SSL certificates
 # ✅ Configure Nginx with HTTPS
 # ✅ Setup automatic certificate renewal
 # ✅ Configure firewall rules
+# ✅ Validate domain configuration
 ```
 
 ## 🔧 Environment Configuration
@@ -109,11 +119,17 @@ bun run startkit:deploy --host myserver.com --domain myapp.com
 KataCore StartKit v1 automatically generates secure environment configurations:
 
 ```bash
-# Generate new environment file
-bun run env:generate
+# Generate new environment template
+./startkit-deployer.sh --create-env-template
+
+# Or using Bun script
+bun run env:create-template
 
 # Validate environment configuration
 bun run env:validate
+
+# Show template content
+bun run env:show-template
 ```
 
 ### Manual Environment Setup
@@ -153,13 +169,16 @@ After deployment, access your services at:
 
 ```bash
 # View deployment security info
-bun run cache:info
+ls -la .deploy-cache/
 
-# Check service status
-bun run status
+# Show deployment information
+cat .deploy-cache/current-deployment.env
+
+# Check service status remotely
+ssh root@yourserver "cd /opt/katacore && docker compose -f docker-compose.prod.yml ps"
 
 # View application logs
-bun run logs:app
+ssh root@yourserver "cd /opt/katacore && docker compose -f docker-compose.prod.yml logs -f"
 ```
 
 ## 🛠️ Development Workflow
@@ -184,13 +203,16 @@ bun run build
 
 ```bash
 # Test production build locally
-bun run local:test
+bun run local:dev
 
-# Test with clean environment
-bun run local:test --clean
+# Stop local environment
+bun run local:down
 
 # View local logs
-bun run local:test --logs
+bun run local:logs
+
+# Quick local test script
+bun run local:test
 ```
 
 ## 📈 Performance Optimizations
@@ -219,12 +241,14 @@ bun run local:test --logs
 # Check service health
 curl https://yourdomain.com/health
 
-# View service status
-bun run status
+# View service status remotely
+ssh root@yourserver "cd /opt/katacore && docker compose -f docker-compose.prod.yml ps"
 
 # View real-time logs
-bun run logs:deploy
-bun run logs:app
+ssh root@yourserver "cd /opt/katacore && docker compose -f docker-compose.prod.yml logs -f"
+
+# Check deployment information
+cat .deploy-cache/current-deployment.env
 ```
 
 ### Log Files
@@ -239,14 +263,17 @@ bun run logs:app
 ### Update Deployment
 
 ```bash
-# Update configuration only
-bun run startkit:deploy --host YOUR_SERVER --config-only
+# Update configuration only (fastest)
+./startkit-deployer.sh --host YOUR_SERVER --config-only
 
 # Update with new code
-bun run startkit:deploy --host YOUR_SERVER
+./startkit-deployer.sh --host YOUR_SERVER
 
-# Full rebuild
-bun run startkit:deploy --host YOUR_SERVER --force-rebuild
+# Full rebuild (if needed)
+./startkit-deployer.sh --host YOUR_SERVER --force-rebuild
+
+# Clean deployment (removes old data)
+./startkit-deployer.sh --host YOUR_SERVER --clean
 ```
 
 ### Backup & Recovery
@@ -270,9 +297,13 @@ KataCore/
 ├── 📁 nginx/                  # Nginx configuration
 ├── 📁 scripts/                # Deployment scripts
 ├── 🐳 docker-compose.prod.yml # Production containers
-├── 🚀 startkit-deployer.sh   # Main deployment script
+├── � docker-compose.local.yml # Local development
+├── �🚀 startkit-deployer.sh   # Main deployment script
+├── 🎯 quick-start.sh          # Interactive setup wizard
 ├── 📄 .env.prod.template      # Environment template
-└── 📄 README.md              # This file
+├── 📄 README.md               # Main documentation
+├── 📄 README.startkit.md      # This file
+└── 📄 package.json            # Root workspace
 ```
 
 ### API Documentation
@@ -301,18 +332,41 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
    ```bash
    # Check SSH key authentication
    ssh-copy-id root@yourserver
+   
+   # Or use password authentication
+   ./startkit-deployer.sh --host yourserver --user ubuntu
    ```
 
-2. **Domain Not Resolving**
+2. **"Server host is required" Error**
+   ```bash
+   # ❌ Wrong: Missing --host parameter
+   ./startkit-deployer.sh
+   
+   # ✅ Correct: Always provide --host
+   ./startkit-deployer.sh --host YOUR_SERVER_IP
+   ```
+
+3. **Domain Not Resolving**
    ```bash
    # Ensure DNS A record points to your server IP
    dig yourdomain.com
+   nslookup yourdomain.com
    ```
 
-3. **SSL Certificate Issues**
+4. **SSL Certificate Issues**
    ```bash
    # Check Let's Encrypt rate limits
    # Ensure domain points to server before SSL setup
+   ./startkit-deployer.sh --host yourserver --domain yourdomain.com --verbose
+   ```
+
+5. **Permission Denied**
+   ```bash
+   # Make script executable
+   chmod +x startkit-deployer.sh
+   
+   # Use correct SSH user
+   ./startkit-deployer.sh --host yourserver --user ubuntu
    ```
 
 ### Getting Help
