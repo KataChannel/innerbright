@@ -5,8 +5,8 @@ services:
     container_name: katacore-postgres-prod
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-katacore}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-katacore_prod}
+      POSTGRES_USER: ${POSTGRES_USER:-katacore_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /data/postgres
     volumes:
@@ -15,36 +15,50 @@ services:
     networks:
       - katacore-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-katacore_user}"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: katacore-redis-prod
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     networks:
       - katacore-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
 
   # MinIO Object Storage
   minio:
@@ -55,20 +69,28 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BROWSER_REDIRECT_URL: ${MINIO_BROWSER_REDIRECT_URL:-http://localhost:9001}
     volumes:
       - minio_data:/data
     networks:
       - katacore-network
-    # healthcheck:
-    #   test: ["CMD", "mc", "ready", "local"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   # pgAdmin (chỉ enable trong development, comment out trong production)
   pgadmin:
@@ -105,7 +127,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-katacore_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore_prod}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       MINIO_ENDPOINT: minio
       MINIO_PORT: 9000
@@ -114,24 +136,35 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       API_PORT: 3001
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     networks:
       - katacore-network
     depends_on:
-      - postgres
-      - redis
-      - minio
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     volumes:
       - api_logs:/app/logs
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
 
   # Next.js Frontend
   site:
@@ -151,17 +184,25 @@ services:
     networks:
       - katacore-network
     depends_on:
-      - api
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   # Nginx Reverse Proxy
   nginx:
@@ -202,12 +243,13 @@ services:
     image: katacore/api:${API_VERSION:-latest}
     container_name: katacore-prisma-migrate-prod
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-katacore_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-katacore_prod}
     command: ["bun", "run", "prisma", "migrate", "deploy"]
     networks:
       - katacore-network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: "no"
     logging:
       driver: "json-file"
@@ -220,9 +262,9 @@ services:
     image: postgres:16-alpine
     container_name: katacore-backup-prod
     environment:
-      PGUSER: ${POSTGRES_USER:-postgres}
+      PGUSER: ${POSTGRES_USER:-katacore_user}
       PGPASSWORD: ${POSTGRES_PASSWORD}
-      PGDATABASE: ${POSTGRES_DB:-katacore}
+      PGDATABASE: ${POSTGRES_DB:-katacore_prod}
       PGHOST: postgres
     volumes:
       - ./backups:/backups
@@ -230,7 +272,8 @@ services:
     networks:
       - katacore-network
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     command: ["sh", "-c", "while true; do sleep 24h; /backup.sh; done"]
     restart: unless-stopped
     profiles:

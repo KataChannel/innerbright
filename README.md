@@ -1,8 +1,13 @@
-# KataCore
+# 🚀 KataCore StartKit v1
 
-> 🚀 **Modern Full-stack Application with Universal Cloud Deployment**
+> **Production-ready full-stack application with universal cloud deployment**
 
-KataCore is a production-ready full-stack application built with the latest technologies. Deploy to any cloud server in minutes with zero configuration.
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/katacore-startkit)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Bun](https://img.shields.io/badge/bun-1.0+-yellow.svg)](https://bun.sh)
+[![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
+
+KataCore StartKit v1 is a complete, production-ready full-stack application that can be deployed to any cloud server in minutes with **zero configuration**. Built with modern technologies and optimized for performance, security, and scalability.
 
 ## ✨ Features
 
@@ -44,19 +49,31 @@ bun run dev
 # Backend: http://localhost:3001
 ```
 
-### 3. Deploy to Cloud ⭐
+### 3. **Deploy to Cloud (StartKit v1)** ⭐
 ```bash
 # Deploy to any server with one command!
-bun run deploy:universal --host YOUR_SERVER_IP
+bun run deploy:startkit YOUR_SERVER_IP
 
 # With custom domain + SSL
-bun run deploy:universal --host YOUR_SERVER_IP --domain yourdomain.com
+bun run deploy:startkit YOUR_SERVER_IP --domain yourdomain.com
 
-# Optimized subsequent deployments
-bun run deploy:smart YOUR_SERVER_IP    # Smart auto-detection
-bun run deploy:quick YOUR_SERVER_IP    # Fast deployment
-bun run deploy:config YOUR_SERVER_IP   # Config-only updates
+# StartKit deployment options
+bun run deploy:startkit:clean YOUR_SERVER_IP    # Clean deployment
+bun run deploy:startkit:setup YOUR_SERVER_IP    # Setup only  
+bun run deploy:startkit:config YOUR_SERVER_IP   # Config only
+
+# Legacy universal deployer (still supported)
+bun run deploy:universal --host YOUR_SERVER_IP
 ```
+
+### 4. **StartKit Features** 🎯
+After deployment, you get:
+- ✅ **Frontend**: https://your-domain.com
+- ✅ **API**: https://your-domain.com/api
+- ✅ **pgAdmin**: http://your-domain.com:8080
+- ✅ **MinIO Console**: http://your-domain.com:9001
+- ✅ **Auto SSL** with Let's Encrypt
+- ✅ **Security** hardening & monitoring
 
 ### 4. Environment Management 🔧
 ```bash

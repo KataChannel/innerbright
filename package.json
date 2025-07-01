@@ -1,8 +1,11 @@
 {
-  "name": "katacore",
+  "name": "katacore-startkit-v1",
   "version": "1.0.0",
-  "description": "KataCore - Modern Full-stack Application with Universal Cloud Deployment",
+  "description": "KataCore StartKit v1 - Production-ready full-stack application with universal cloud deployment",
+  "keywords": ["startkit", "nextjs", "nestjs", "typescript", "docker", "postgresql", "redis", "minio", "nginx", "ssl", "production"],
   "private": true,
+  "author": "KataCore Team",
+  "license": "MIT",
   "workspaces": [
     "site",
     "api"
@@ -28,6 +31,10 @@
     "git:build-push": "./scripts/build-and-push.sh",
     "git:fix": "./scripts/fix-git-ownership.sh",
     "docker:install": "./scripts/install-docker.sh install",
+    "deploy:startkit": "./startkit-deployer.sh",
+    "deploy:startkit:clean": "./startkit-deployer.sh --clean",
+    "deploy:startkit:setup": "./startkit-deployer.sh --setup-only", 
+    "deploy:startkit:config": "./startkit-deployer.sh --config-only",
     "deploy:universal": "./universal-deployer.sh",
     "deploy:universal:clean": "./universal-deployer.sh --clean",
     "deploy:setup-only": "./universal-deployer.sh --setup-only",
