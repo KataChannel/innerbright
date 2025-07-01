@@ -16,29 +16,7 @@ NC='\033[0m'
 
 # Logging
 log() { echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} $1"; }
-success() { echo -e "        # Clean deployment        echo "🗄️  Starting database services..."
-        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" up -d postgres redis minio" 2>/dev/null || true
-        
-        echo "⏳ Waiting for databases..."
-        sleep 30
-        
-        echo "🌐 Starting all services..."
-        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" up -d"
-        
-        echo "📊 Final status:"
-        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" ps"ed
-        if [[ "$CLEAN_INSTALL" == "true" ]]; then
-            echo "🧹 Cleaning old deployment..."
-            eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" down --volumes --remove-orphans" 2>/dev/null || true
-            docker system prune -af 2>/dev/null || true
-        else
-            echo "🛑 Stopping existing containers..."
-            eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" down" 2>/dev/null || true
-        fi
-        
-        # Build and start
-        echo "🔨 Building images..."
-        eval "\$COMPOSE_CMD -f \"\$COMPOSE_FILE\" build --no-cache"{NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
 warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 error() { echo -e "${RED}❌ $1${NC}"; exit 1; }
 info() { echo -e "${CYAN}ℹ️  $1${NC}"; }
@@ -395,6 +373,14 @@ ENVEOF
         
         echo "📊 Final status:"
         \${COMPOSE_CMD} -f "\${COMPOSE_FILE}" ps
+        
+        # Post-deployment cache cleanup for optimization
+        echo "🧹 Cleaning Docker cache for optimization..."
+        docker builder prune -af 2>/dev/null || true
+        docker image prune -a -f 2>/dev/null || true
+        docker volume prune -a -f 2>/dev/null || true
+        docker network prune -f 2>/dev/null || true
+        echo "✅ Cache cleanup completed - storage optimized"
         
         echo "✅ Deployment completed!"
 EOF

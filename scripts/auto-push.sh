@@ -5,13 +5,16 @@
 
 set -e  # Exit on any error
 
-# Setup Bun PATH - source the helper script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/bun-setup.sh"
-
-# Setup Bun for current session
-if ! setup_bun_for_session; then
-    exit 1
+# Setup Bun PATH if needed
+if ! command -v bun &> /dev/null; then
+    if [[ -f "$HOME/.bun/bin/bun" ]]; then
+        export PATH="$HOME/.bun/bin:$PATH"
+        echo "🔧 Added Bun to PATH for this session"
+    else
+        echo "❌ Error: Bun not found! Please install Bun first."
+        echo "💡 Run: curl -fsSL https://bun.sh/install | bash"
+        exit 1
+    fi
 fi
 
 echo "🚀 Starting auto git push for KataCore..."
