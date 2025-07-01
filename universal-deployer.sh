@@ -63,6 +63,91 @@ show_usage() {
     echo ""
 }
 
+# Auto-create .env.prod.example template
+create_env_example_template() {
+    local domain="$1"
+    
+    log "🔧 Creating .env.prod.example template..."
+    
+    cat > .env.prod.example << 'ENVEOF'
+# Production Environment Variables
+# Copy this file to .env.prod and update with your actual values
+
+# Database Configuration
+POSTGRES_DB=katacore_prod
+POSTGRES_USER=katacore_user
+POSTGRES_PASSWORD=your_super_secure_postgres_password_here
+DATABASE_URL=postgresql://katacore_user:your_super_secure_postgres_password_here@postgres:5432/katacore_prod
+
+# Redis Configuration
+REDIS_PASSWORD=your_super_secure_redis_password_here
+REDIS_URL=redis://:your_super_secure_redis_password_here@redis:6379
+
+# MinIO Configuration
+MINIO_ROOT_USER=katacore_minio_admin
+MINIO_ROOT_PASSWORD=your_super_secure_minio_password_here
+
+# PgAdmin Configuration
+PGADMIN_EMAIL=admin@yourcompany.com
+PGADMIN_PASSWORD=your_super_secure_pgadmin_password_here
+
+# API Configuration
+JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters_long
+API_VERSION=latest
+CORS_ORIGIN=https://yourdomain.com,https://www.yourdomain.com
+
+# Frontend Configuration
+SITE_VERSION=latest
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+
+# Domain Configuration
+DOMAIN=yourdomain.com
+API_DOMAIN=api.yourdomain.com
+ADMIN_DOMAIN=admin.yourdomain.com
+STORAGE_DOMAIN=storage.yourdomain.com
+
+# SSL Configuration (if using Let's Encrypt)
+LETSENCRYPT_EMAIL=admin@yourcompany.com
+
+# Backup Configuration
+BACKUP_RETENTION_DAYS=7
+BACKUP_SCHEDULE="0 2 * * *"  # Daily at 2 AM
+
+# Monitoring (Optional)
+ENABLE_MONITORING=false
+GRAFANA_PASSWORD=your_grafana_password_here
+
+# Security
+FAIL2BAN_ENABLED=true
+RATE_LIMIT=100
+
+# Logging
+LOG_LEVEL=info
+LOG_MAX_SIZE=10m
+LOG_MAX_FILES=3
+
+# Performance
+MEMORY_LIMIT=1g
+CPU_LIMIT=1.0
+
+# Application Settings
+NODE_ENV=production
+APP_NAME=KataCore
+APP_VERSION=1.0.0
+ENVEOF
+
+    # Replace domain placeholders with actual domain
+    if [[ -n "$domain" ]]; then
+        sed -i "s/yourdomain.com/$domain/g" .env.prod.example
+        sed -i "s/api.yourdomain.com/api.$domain/g" .env.prod.example
+        sed -i "s/admin.yourdomain.com/admin.$domain/g" .env.prod.example
+        sed -i "s/storage.yourdomain.com/storage.$domain/g" .env.prod.example
+        sed -i "s/admin@yourcompany.com/admin@$domain/g" .env.prod.example
+    fi
+    
+    success "✅ Created .env.prod.example template"
+}
+
 # Default values
 SERVER_HOST=""
 SERVER_USER="root"
@@ -75,6 +160,10 @@ DEPLOY_ONLY=false
 FORCE_REBUILD=false
 SKIP_UPLOAD=false
 CREATE_ENV_TEMPLATE=false
+DEPLOY_MODE=""
+ENABLE_SSL=false
+ENABLE_MONITORING=false
+LETSENCRYPT_EMAIL=""
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -148,39 +237,358 @@ if [[ -z "$DOMAIN" ]]; then
     DOMAIN="$SERVER_HOST"
 fi
 
+# Enhanced error handling and retry logic
+MAX_RETRIES=3
+RETRY_DELAY=5
+
+# Retry function with exponential backoff
+retry_with_backoff() {
+    local command="$1"
+    local description="$2"
+    local max_attempts="${3:-$MAX_RETRIES}"
+    local delay="${4:-$RETRY_DELAY}"
+    
+    for ((i=1; i<=max_attempts; i++)); do
+        if eval "$command"; then
+            return 0
+        else
+            if [[ $i -eq $max_attempts ]]; then
+                error "❌ Failed: $description after $max_attempts attempts"
+                return 1
+            fi
+            warning "⚠️  Attempt $i failed: $description. Retrying in ${delay}s..."
+            sleep $delay
+            delay=$((delay * 2)) # Exponential backoff
+        fi
+    done
+}
+
+# Enhanced SSH connection test with detailed feedback
+test_ssh_connection() {
+    local host="$1"
+    local user="$2"
+    local port="$3"
+    
+    log "🔐 Testing SSH connection to $user@$host:$port..."
+    
+    # Test basic connectivity
+    if ! timeout 10 nc -z "$host" "$port" 2>/dev/null; then
+        error "Cannot reach $host:$port (connection timeout or port closed)"
+    fi
+    
+    # Test SSH authentication
+    if ! ssh -p "$port" -o ConnectTimeout=15 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes "$user@$host" "echo 'SSH_TEST_OK'" 2>/dev/null | grep -q "SSH_TEST_OK"; then
+        echo ""
+        warning "SSH authentication failed. Please ensure:"
+        echo "  1. SSH key is properly configured"
+        echo "  2. User '$user' exists on the server"
+        echo "  3. SSH service is running on port $port"
+        echo ""
+        read -p "Do you want to try with password authentication? (y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if ! ssh -p "$port" -o ConnectTimeout=15 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$user@$host" "echo 'SSH_TEST_OK'" 2>/dev/null | grep -q "SSH_TEST_OK"; then
+                error "SSH connection failed even with password authentication"
+            fi
+        else
+            error "SSH connection required for deployment"
+        fi
+    fi
+    
+    success "SSH connection verified successfully"
+}
+
+# Interactive deployment menu
+show_deployment_menu() {
+    clear
+    show_banner
+    
+    echo -e "${CYAN}🎯 KataCore Deployment Assistant${NC}"
+    echo ""
+    echo "Please select deployment option:"
+    echo ""
+    echo "1. 🚀 Quick Deploy (Recommended)"
+    echo "2. 🧹 Clean Deploy (Remove all containers)"
+    echo "3. 🔄 Force Rebuild (Rebuild all images)"
+    echo "4. ⚙️  Setup Server Only"
+    echo "5. 📤 Deploy App Only"
+    echo "6. 🔧 Interactive Configuration"
+    echo "7. 📊 Show Server Status"
+    echo "8. 📋 Show Deployment History"
+    echo "9. ❌ Exit"
+    echo ""
+    read -p "Enter your choice (1-9): " choice
+    
+    case $choice in
+        1) DEPLOY_MODE="quick" ;;
+        2) DEPLOY_MODE="clean"; CLEAN_INSTALL=true ;;
+        3) DEPLOY_MODE="rebuild"; FORCE_REBUILD=true ;;
+        4) DEPLOY_MODE="setup"; SETUP_ONLY=true ;;
+        5) DEPLOY_MODE="deploy"; DEPLOY_ONLY=true ;;
+        6) DEPLOY_MODE="interactive" ;;
+        7) DEPLOY_MODE="status" ;;
+        8) DEPLOY_MODE="history" ;;
+        9) echo "Goodbye!"; exit 0 ;;
+        *) warning "Invalid choice. Using quick deploy mode."; DEPLOY_MODE="quick" ;;
+    esac
+}
+
+# Interactive configuration
+interactive_config() {
+    echo ""
+    echo -e "${CYAN}🔧 Interactive Configuration${NC}"
+    echo ""
+    
+    # Server details
+    if [[ -z "$SERVER_HOST" ]]; then
+        read -p "Enter server IP or domain: " SERVER_HOST
+    fi
+    
+    read -p "SSH user [default: $SERVER_USER]: " user_input
+    if [[ -n "$user_input" ]]; then
+        SERVER_USER="$user_input"
+    fi
+    
+    read -p "SSH port [default: $SERVER_PORT]: " port_input
+    if [[ -n "$port_input" ]]; then
+        SERVER_PORT="$port_input"
+    fi
+    
+    read -p "Deploy path [default: $DEPLOY_PATH]: " path_input
+    if [[ -n "$path_input" ]]; then
+        DEPLOY_PATH="$path_input"
+    fi
+    
+    read -p "Domain name [default: $SERVER_HOST]: " domain_input
+    if [[ -n "$domain_input" ]]; then
+        DOMAIN="$domain_input"
+    else
+        DOMAIN="$SERVER_HOST"
+    fi
+    
+    # Advanced options
+    echo ""
+    echo "Advanced options:"
+    read -p "Enable SSL/HTTPS? (y/n) [default: n]: " ssl_input
+    if [[ "$ssl_input" =~ ^[Yy]$ ]]; then
+        ENABLE_SSL=true
+        read -p "Let's Encrypt email: " LETSENCRYPT_EMAIL
+    fi
+    
+    read -p "Enable monitoring? (y/n) [default: n]: " monitoring_input
+    if [[ "$monitoring_input" =~ ^[Yy]$ ]]; then
+        ENABLE_MONITORING=true
+    fi
+    
+    # Confirm configuration
+    echo ""
+    echo -e "${YELLOW}📋 Configuration Summary:${NC}"
+    echo "  Server: $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
+    echo "  Deploy path: $DEPLOY_PATH"
+    echo "  Domain: $DOMAIN"
+    echo "  SSL: ${ENABLE_SSL:-false}"
+    echo "  Monitoring: ${ENABLE_MONITORING:-false}"
+    echo ""
+    read -p "Proceed with deployment? (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Deployment cancelled."
+        exit 0
+    fi
+}
+
+# Show server status
+show_server_status() {
+    log "📊 Checking server status..."
+    
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << 'STATUS_EOF'
+        echo "🖥️  System Information:"
+        echo "  OS: $(lsb_release -d 2>/dev/null | cut -f2 || cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)"
+        echo "  Uptime: $(uptime | awk '{print $3,$4}' | sed 's/,//')"
+        echo "  Load: $(uptime | awk -F'load average:' '{print $2}')"
+        echo "  Memory: $(free -h | awk '/^Mem:/ {printf "%s/%s (%.1f%%)", $3, $2, $3/$2*100}')"
+        echo "  Disk: $(df -h / | awk 'NR==2 {printf "%s/%s (%s used)", $3, $2, $5}')"
+        echo ""
+        
+        if command -v docker >/dev/null 2>&1; then
+            echo "🐳 Docker Status:"
+            echo "  Version: $(docker --version | cut -d' ' -f3 | tr -d ',')"
+            echo "  Status: $(systemctl is-active docker)"
+            echo "  Containers: $(docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>/dev/null || echo 'None running')"
+            echo ""
+        else
+            echo "🐳 Docker: Not installed"
+            echo ""
+        fi
+        
+        if [[ -d "/opt/katacore" ]]; then
+            echo "📁 KataCore Deployment:"
+            cd /opt/katacore
+            if [[ -f "docker-compose.prod.yml" ]]; then
+                if command -v docker >/dev/null 2>&1; then
+                    if docker compose version >/dev/null 2>&1; then
+                        COMPOSE_CMD="docker compose"
+                    else
+                        COMPOSE_CMD="docker-compose"
+                    fi
+                    echo "  Services:"
+                    $COMPOSE_CMD -f docker-compose.prod.yml ps 2>/dev/null || echo "    No services running"
+                fi
+            else
+                echo "  Status: Not deployed yet"
+            fi
+        else
+            echo "📁 KataCore: Not deployed"
+        fi
+STATUS_EOF
+}
+
+# Show deployment history
+show_deployment_history() {
+    log "📋 Fetching deployment history..."
+    
+    ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << 'HISTORY_EOF'
+        if [[ -f "/opt/katacore/.deploy-cache/deployment-history.log" ]]; then
+            echo "📈 Recent Deployments:"
+            echo "Date/Time               | Strategy    | Host        | Domain"
+            echo "------------------------|-------------|-------------|------------------"
+            tail -10 /opt/katacore/.deploy-cache/deployment-history.log | while IFS='|' read -r timestamp strategy host domain; do
+                printf "%-22s | %-11s | %-11s | %s\n" "$timestamp" "$strategy" "$host" "$domain"
+            done
+        else
+            echo "📋 No deployment history found"
+        fi
+        
+        if [[ -f "/opt/katacore/.deploy-cache/deploy-info.json" ]]; then
+            echo ""
+            echo "📊 Last Deployment Info:"
+            cat /opt/katacore/.deploy-cache/deploy-info.json | python3 -m json.tool 2>/dev/null || cat /opt/katacore/.deploy-cache/deploy-info.json
+        fi
+HISTORY_EOF
+}
+
+# Validate environment before deployment
+validate_environment() {
+    log "🔍 Validating deployment environment..."
+    
+    # Check local prerequisites
+    local missing_tools=()
+    
+    if ! command -v rsync >/dev/null 2>&1; then
+        missing_tools+=("rsync")
+    fi
+    
+    if ! command -v ssh >/dev/null 2>&1; then
+        missing_tools+=("ssh")
+    fi
+    
+    if ! command -v openssl >/dev/null 2>&1; then
+        missing_tools+=("openssl")
+    fi
+    
+    if [[ ${#missing_tools[@]} -gt 0 ]]; then
+        error "Missing required tools: ${missing_tools[*]}. Please install them first."
+    fi
+    
+    # Check project structure
+    local missing_files=()
+    
+    if [[ ! -f "docker-compose.yml" && ! -f "docker-compose.prod.yml" ]]; then
+        missing_files+=("docker-compose.yml")
+    fi
+    
+    if [[ ! -f "package.json" ]]; then
+        missing_files+=("package.json")
+    fi
+    
+    if [[ ! -d "api" || ! -d "site" ]]; then
+        missing_files+=("api/ and site/ directories")
+    fi
+    
+    if [[ ${#missing_files[@]} -gt 0 ]]; then
+        error "Missing required files/directories: ${missing_files[*]}"
+    fi
+    
+    success "Environment validation passed"
+}
+
+# Enhanced logging with deployment tracking
+setup_deployment_logging() {
+    local log_dir=".deploy-logs"
+    mkdir -p "$log_dir"
+    
+    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local log_file="$log_dir/deploy_${SERVER_HOST}_${timestamp}.log"
+    
+    # Start logging to file
+    exec 1> >(tee -a "$log_file")
+    exec 2> >(tee -a "$log_file" >&2)
+    
+    log "📝 Deployment logging started: $log_file"
+    echo "DEPLOYMENT_LOG_FILE=$log_file" > .deploy-cache/current-deployment.env
+}
+
 # Main function
 main() {
+    # Setup deployment logging
+    setup_deployment_logging
+    
+    # If no arguments provided, show interactive menu
+    if [[ $# -eq 0 || -z "$SERVER_HOST" ]]; then
+        show_deployment_menu
+        if [[ "$DEPLOY_MODE" == "interactive" ]]; then
+            interactive_config
+        fi
+    fi
+    
+    # Handle special modes
+    case "${DEPLOY_MODE:-}" in
+        "status")
+            if [[ -n "$SERVER_HOST" ]]; then
+                test_ssh_connection "$SERVER_HOST" "$SERVER_USER" "$SERVER_PORT"
+                show_server_status
+            else
+                error "Server host required for status check"
+            fi
+            exit 0
+            ;;
+        "history")
+            if [[ -n "$SERVER_HOST" ]]; then
+                test_ssh_connection "$SERVER_HOST" "$SERVER_USER" "$SERVER_PORT"
+                show_deployment_history
+            else
+                error "Server host required for history check"
+            fi
+            exit 0
+            ;;
+    esac
+    
     show_banner
+    
+    # Validate environment
+    validate_environment
     
     log "🎯 Target: $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
     log "📁 Deploy path: $DEPLOY_PATH"
     log "🌐 Domain: $DOMAIN"
+    log "🔧 Mode: ${DEPLOY_MODE:-standard}"
     
-    # Test SSH
-    log "🔐 Testing SSH connection..."
-    if ! ssh -p "$SERVER_PORT" -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SERVER_USER@$SERVER_HOST" "echo 'SSH OK'" 2>/dev/null; then
-        error "Cannot connect to $SERVER_USER@$SERVER_HOST:$SERVER_PORT"
-    fi
-    success "SSH connection verified"
-    
-    # Check local files
-    log "📋 Checking local files..."
-    [[ ! -f "docker-compose.yml" ]] && error "docker-compose.yml not found"
-    [[ ! -f "package.json" ]] && error "package.json not found"
-    success "Local files verified"
+    # Enhanced SSH connection test
+    test_ssh_connection "$SERVER_HOST" "$SERVER_USER" "$SERVER_PORT"
     
     # Server setup (if not deploy-only)
     if [[ "$DEPLOY_ONLY" != "true" ]]; then
-        setup_server
+        retry_with_backoff "setup_server" "Server setup" 2 10
     fi
     
     # Deployment (if not setup-only)
     if [[ "$SETUP_ONLY" != "true" ]]; then
-        deploy_application
+        retry_with_backoff "deploy_application" "Application deployment" 3 5
         show_deployment_info
     fi
     
-    success "🎉 All done!"
+    success "🎉 Deployment completed successfully!"
+    log "📝 Deployment log saved to: $(cat .deploy-cache/current-deployment.env | grep DEPLOYMENT_LOG_FILE | cut -d'=' -f2)"
 }
 
 # Setup server
@@ -844,90 +1252,7 @@ update_deployment_cache() {
     mv .deploy-cache/deployment-history.log.tmp .deploy-cache/deployment-history.log
 }
 
-# Auto-create .env.prod.example template
-create_env_example_template() {
-    local domain="$1"
-    
-    log "🔧 Creating .env.prod.example template..."
-    
-    cat > .env.prod.example << 'ENVEOF'
-# Production Environment Variables
-# Copy this file to .env.prod and update with your actual values
 
-# Database Configuration
-POSTGRES_DB=katacore_prod
-POSTGRES_USER=katacore_user
-POSTGRES_PASSWORD=your_super_secure_postgres_password_here
-DATABASE_URL=postgresql://katacore_user:your_super_secure_postgres_password_here@postgres:5432/katacore_prod
-
-# Redis Configuration
-REDIS_PASSWORD=your_super_secure_redis_password_here
-REDIS_URL=redis://:your_super_secure_redis_password_here@redis:6379
-
-# MinIO Configuration
-MINIO_ROOT_USER=katacore_minio_admin
-MINIO_ROOT_PASSWORD=your_super_secure_minio_password_here
-
-# PgAdmin Configuration
-PGADMIN_EMAIL=admin@yourcompany.com
-PGADMIN_PASSWORD=your_super_secure_pgadmin_password_here
-
-# API Configuration
-JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters_long
-API_VERSION=latest
-CORS_ORIGIN=https://yourdomain.com,https://www.yourdomain.com
-
-# Frontend Configuration
-SITE_VERSION=latest
-NEXT_PUBLIC_API_URL=https://api.yourdomain.com
-
-# Domain Configuration
-DOMAIN=yourdomain.com
-API_DOMAIN=api.yourdomain.com
-ADMIN_DOMAIN=admin.yourdomain.com
-STORAGE_DOMAIN=storage.yourdomain.com
-
-# SSL Configuration (if using Let's Encrypt)
-LETSENCRYPT_EMAIL=admin@yourcompany.com
-
-# Backup Configuration
-BACKUP_RETENTION_DAYS=7
-BACKUP_SCHEDULE="0 2 * * *"  # Daily at 2 AM
-
-# Monitoring (Optional)
-ENABLE_MONITORING=false
-GRAFANA_PASSWORD=your_grafana_password_here
-
-# Security
-FAIL2BAN_ENABLED=true
-RATE_LIMIT=100
-
-# Logging
-LOG_LEVEL=info
-LOG_MAX_SIZE=10m
-LOG_MAX_FILES=3
-
-# Performance
-MEMORY_LIMIT=1g
-CPU_LIMIT=1.0
-
-# Application Settings
-NODE_ENV=production
-APP_NAME=KataCore
-APP_VERSION=1.0.0
-ENVEOF
-
-    # Replace domain placeholders with actual domain
-    if [[ -n "$domain" ]]; then
-        sed -i "s/yourdomain.com/$domain/g" .env.prod.example
-        sed -i "s/api.yourdomain.com/api.$domain/g" .env.prod.example
-        sed -i "s/admin.yourdomain.com/admin.$domain/g" .env.prod.example
-        sed -i "s/storage.yourdomain.com/storage.$domain/g" .env.prod.example
-        sed -i "s/admin@yourcompany.com/admin@$domain/g" .env.prod.example
-    fi
-    
-    success "✅ Created .env.prod.example template"
-}
 
 # Export variables for SSH sessions
 export CLEAN_INSTALL DOMAIN FORCE_REBUILD
