@@ -1,9 +1,9 @@
 # Multi-stage build for Next.js Frontend - Optimized for production
 FROM oven/bun:1-alpine AS base
 
-# Install security updates and necessary packages
+# Install security updates and necessary packages for health checks
 RUN apk update && apk upgrade && \
-    apk add --no-cache libc6-compat dumb-init && \
+    apk add --no-cache libc6-compat dumb-init curl wget && \
     rm -rf /var/cache/apk/*
 
 # Install dependencies stage
@@ -38,9 +38,6 @@ ENV NODE_ENV=production
 ENV PORT=3000
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
