@@ -1,0 +1,37 @@
+# KataCore Deployment Configuration
+# Copy this file to .deploy.config and customize for your environment
+
+# Default server configuration
+DEFAULT_SERVER_HOST=""
+DEFAULT_SERVER_USER="root"
+DEFAULT_SERVER_PORT="22"
+DEFAULT_DEPLOY_PATH="/opt/katacore"
+
+# Domain configuration
+DEFAULT_DOMAIN=""
+USE_SSL=false
+LETSENCRYPT_EMAIL=""
+
+# Deployment optimization settings
+ENABLE_INCREMENTAL_DEPLOY=true
+ENABLE_SMART_CACHING=true
+AUTO_CLEANUP_STORAGE=true
+
+# Backup settings (if enabled)
+ENABLE_AUTO_BACKUP=false
+BACKUP_RETENTION_DAYS=7
+
+# Monitoring settings (if enabled)
+ENABLE_MONITORING=false
+
+# Notification settings (optional)
+SLACK_WEBHOOK=""
+DISCORD_WEBHOOK=""
+
+# Custom deployment hooks (optional scripts to run)
+PRE_DEPLOY_HOOK=""
+POST_DEPLOY_HOOK=""
+
+# Advanced settings
+DOCKER_BUILD_ARGS=""
+COMPOSE_FILE_OVERRIDE=""
