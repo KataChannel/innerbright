@@ -370,8 +370,16 @@ generate_environment() {
     
     # Check if environment file already exists
     if [[ -f "$env_file" ]] && [[ "$FORCE_REBUILD" != "true" ]]; then
-        info "Environment file exists, using existing configuration"
-        return
+        info "Environment file exists, checking for placeholder values..."
+        
+        # Check for placeholder values that need to be replaced
+        if grep -q "__SECURE_.*__\|your-domain.com\|innerbright.vn" "$env_file"; then
+            warning "Found placeholder values in existing .env.prod, updating..."
+            # Continue to update placeholders
+        else
+            info "Environment file is properly configured, using existing configuration"
+            return
+        fi
     fi
     
     # Generate secure passwords
@@ -409,35 +417,55 @@ NODE_ENV=production
 # MinIO
 MINIO_ROOT_USER=katacore_admin
 MINIO_ROOT_PASSWORD=$minio_pass
+MINIO_BROWSER_REDIRECT_URL=http://${SERVER_HOST:-localhost}:9001
 
 # pgAdmin
-PGADMIN_EMAIL=admin@${DOMAIN:-localhost}
+PGADMIN_EMAIL=admin@${DOMAIN:-${SERVER_HOST:-localhost}}
 PGADMIN_PASSWORD=$pgadmin_pass
 
 # API Configuration
 API_VERSION=latest
-CORS_ORIGIN=https://${DOMAIN:-*}
+CORS_ORIGIN=http://${SERVER_HOST:-localhost}
 
 # Frontend
 SITE_VERSION=latest
-NEXT_PUBLIC_API_URL=https://${DOMAIN:-localhost}/api
+NEXT_PUBLIC_API_URL=http://${SERVER_HOST:-localhost}/api
 
 # Domain
-DOMAIN=${DOMAIN:-localhost}
-LETSENCRYPT_EMAIL=admin@${DOMAIN:-localhost.com}
+DOMAIN=${DOMAIN:-${SERVER_HOST:-localhost}}
+LETSENCRYPT_EMAIL=admin@${DOMAIN:-${SERVER_HOST:-localhost}}
+ENABLE_SSL=false
 EOF
     fi
     
-    # Replace placeholders with actual values
+    # Replace template placeholders with actual values
     sed -i "s/__SECURE_POSTGRES_PASSWORD__/$postgres_pass/g" "$env_file"
     sed -i "s/__SECURE_REDIS_PASSWORD__/$redis_pass/g" "$env_file"
     sed -i "s/__SECURE_JWT_SECRET__/$jwt_secret/g" "$env_file"
     sed -i "s/__SECURE_MINIO_PASSWORD__/$minio_pass/g" "$env_file"
-    sed -i "s/__SECURE_PGADMIN_PASSWORD__/$pgadmin_pass/g" "$env_file"
-    sed -i "s/__SECURE_GRAFANA_PASSWORD__/$grafana_pass/g" "$env_file"
-    sed -i "s/your-domain.com/${DOMAIN:-localhost}/g" "$env_file"
+    sed -i "s/__SECURE_PGLADMIN_PASSWORD__/$pgadmin_pass/g" "$env_file"
+    sed -i "s/__SECURE_GRAFLADMIN_PASSWORD__/$grafana_pass/g" "$env_file"
     
-    success "Environment configuration generated"
+    # Replace domain placeholders
+    sed -i "s/your-domain.com/${DOMAIN:-${SERVER_HOST:-localhost}}/g" "$env_file"
+    sed -i "s/innerbright.vn/${DOMAIN:-${SERVER_HOST:-localhost}}/g" "$env_file"
+    
+    # Replace specific template values with generated ones
+    sed -i "s/puwIRuLehf8jDeb98oFUUjzz/$postgres_pass/g" "$env_file"
+    sed -i "s/YbyKUZUKS0Md8JJf0ABR/$redis_pass/g" "$env_file"
+    sed -i "s/5Bjbnwyj5h23PSrd/$jwt_secret/g" "$env_file"
+    
+    # Update URLs to use correct server host
+    if [[ -n "$SERVER_HOST" ]]; then
+        sed -i "s|http://localhost|http://$SERVER_HOST|g" "$env_file"
+        sed -i "s|https://localhost|http://$SERVER_HOST|g" "$env_file"
+        sed -i "s/localhost:9001/$SERVER_HOST:9001/g" "$env_file"
+    fi
+    
+    # Set proper permissions
+    chmod 600 "$env_file"
+    
+    success "Environment configuration generated and secured"
 }
 
 # Create environment template file
@@ -512,9 +540,21 @@ EOF
 upload_files() {
     if [[ "$CONFIG_ONLY" == "true" ]]; then
         log "📤 Uploading configuration files only..."
-        scp -P "$SERVER_PORT" .env.prod nginx/conf.d/* "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/"
+        scp -P "$SERVER_PORT" .env.prod "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/"
+        
+        # Upload nginx config if it exists
+        if [[ -d "nginx/conf.d" ]]; then
+            scp -P "$SERVER_PORT" nginx/conf.d/* "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/nginx/conf.d/" 2>/dev/null || true
+        fi
     else
         log "📤 Uploading project files..."
+        
+        # Ensure clean Nginx configuration
+        if [[ -f "nginx/conf.d/simple-ip.conf" ]]; then
+            # Remove potentially conflicting configs
+            rm -f nginx/conf.d/katacore.optimized.conf 2>/dev/null || true
+            rm -f nginx/conf.d/katacore.conf 2>/dev/null || true
+        fi
         
         # Create exclude file for rsync
         cat > .rsync-exclude << EOF
@@ -527,6 +567,8 @@ dist/
 .deploy-logs/
 .DS_Store
 Thumbs.db
+nginx/conf.d/backup/
+nginx/conf.d/*.backup
 EOF
         
         # Upload files using rsync
@@ -535,6 +577,24 @@ EOF
             ./ "$SERVER_USER@$SERVER_HOST:$REMOTE_DIR/"
         
         rm -f .rsync-exclude
+        
+        # Ensure proper permissions on remote server
+        ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" << 'EOF'
+            cd /opt/katacore
+            chmod 600 .env.prod 2>/dev/null || true
+            chmod +x scripts/*.sh 2>/dev/null || true
+            
+            # Clean up conflicting Nginx configs
+            if [[ -f "nginx/conf.d/simple-ip.conf" ]]; then
+                cd nginx/conf.d
+                # Keep only the simple-ip.conf
+                for conf in *.conf; do
+                    if [[ "$conf" != "simple-ip.conf" ]]; then
+                        mv "$conf" "$conf.backup" 2>/dev/null || true
+                    fi
+                done
+            fi
+EOF
     fi
     
     success "Files uploaded successfully"
@@ -563,23 +623,29 @@ deploy_application() {
         set -euo pipefail
         cd $REMOTE_DIR
         
+        # Ensure environment file exists
+        if [[ ! -f ".env.prod" ]]; then
+            echo "❌ Environment file .env.prod not found!"
+            exit 1
+        fi
+        
         # Stop existing containers if clean deploy
         if [[ "$CLEAN_DEPLOY" == "true" ]]; then
             echo "🧹 Cleaning up existing deployment..."
-            docker compose -f docker-compose.prod.yml down --volumes --remove-orphans 2>/dev/null || true
+            docker compose -f docker-compose.prod.yml --env-file .env.prod down --volumes --remove-orphans 2>/dev/null || true
             docker system prune -f 2>/dev/null || true
         fi
         
         # Deploy application
         echo "🚀 Starting KataCore services..."
-        docker compose -f docker-compose.prod.yml up -d $compose_args
+        docker compose -f docker-compose.prod.yml --env-file .env.prod up -d $compose_args
         
         # Wait for services to be healthy
         echo "⏳ Waiting for services to be ready..."
         sleep 30
         
         # Check service status
-        docker compose -f docker-compose.prod.yml ps
+        docker compose -f docker-compose.prod.yml --env-file .env.prod ps
         
         echo "✅ Deployment completed"
 EOF
@@ -643,6 +709,16 @@ main() {
     
     setup_deployment_logging
     
+    # Run pre-deployment checks
+    if [[ -f "scripts/pre-deploy-check.sh" ]]; then
+        log "🔍 Running pre-deployment checks..."
+        if bash scripts/pre-deploy-check.sh; then
+            success "Pre-deployment checks passed"
+        else
+            error "Pre-deployment checks failed. Please fix the issues before proceeding."
+        fi
+    fi
+    
     if [[ "$DRY_RUN" == "true" ]]; then
         info "DRY RUN MODE - No changes will be made"
     fi
@@ -654,6 +730,16 @@ main() {
     upload_files
     deploy_application
     verify_deployment
+    
+    # Run post-deployment verification
+    if [[ -f "scripts/post-deploy-verify.sh" ]]; then
+        log "🔍 Running post-deployment verification..."
+        if bash scripts/post-deploy-verify.sh "$SERVER_HOST" "$SERVER_PORT" "$SERVER_USER"; then
+            success "Post-deployment verification completed"
+        else
+            warning "Post-deployment verification found some issues"
+        fi
+    fi
     
     success "🎉 KataCore StartKit v1 deployment completed successfully!"
 }

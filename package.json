@@ -39,7 +39,11 @@
     
     "env:create-template": "./startkit-deployer.sh --create-env-template",
     "env:show-template": "cat .env.prod.template 2>/dev/null || echo '❌ No .env.prod.template found'",
-    "env:validate": "./scripts/validate-env.sh"
+    "env:validate": "./scripts/validate-env.sh",
+    "pre-deploy": "./scripts/pre-deploy-check.sh",
+    "cleanup": "./scripts/cleanup-deploy.sh",
+    "deploy:clean": "./scripts/cleanup-deploy.sh && ./startkit-deployer.sh",
+    "deploy:safe": "./scripts/pre-deploy-check.sh && ./startkit-deployer.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

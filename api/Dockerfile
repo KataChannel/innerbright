@@ -1,9 +1,9 @@
 # Multi-stage build for NestJS API - Optimized for production
 FROM oven/bun:1-alpine AS base
 
-# Install security updates and necessary packages
+# Install security updates and necessary packages for health checks
 RUN apk update && apk upgrade && \
-    apk add --no-cache dumb-init && \
+    apk add --no-cache dumb-init curl wget && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
@@ -11,7 +11,7 @@ WORKDIR /app
 # Install dependencies stage
 FROM base AS deps
 COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile --production=false
+RUN bun install --frozen-lockfile
 
 # Build stage
 FROM base AS builder
