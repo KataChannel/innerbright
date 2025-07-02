@@ -1,369 +1,352 @@
-# 🚀 KataCore StartKit v1
+# 🚀 KataCore StartKit v2
 
-> **Production-ready full-stack application with universal cloud deployment**
+> **Production-ready full-stack deployment with zero configuration**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/katacore-startkit)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/yourusername/katacore-startkit)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/bun-1.0+-yellow.svg)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
 
-KataCore StartKit v1 is a complete, production-ready full-stack application that can be deployed to any cloud server in minutes with **zero configuration**. Built with modern technologies and optimized for performance, security, and scalability.
+**KataCore StartKit v2** revolutionizes full-stack deployment with intelligent auto-configuration. Deploy production-ready applications with automatically generated environments, SSL certificates, and zero manual setup required.
 
-## 🌟 What's New in StartKit v1
+---
 
-- 🎯 **Interactive Setup Wizard** - `./quick-start.sh` for guided setup
-- 🚀 **Enhanced StartKit Deployer** - Improved `startkit-deployer.sh` with advanced options
-- 🔧 **Smart Environment Management** - Automatic secure password generation
-- ⚡ **Optimized Performance** - Docker layer caching and smart rebuild strategies
-- 🛡️ **Enhanced Security** - UFW firewall, Fail2ban, and SSL automation
-- 📊 **Better Monitoring** - Health checks, logging, and admin interfaces
+## 🌟 **What's New in v2.0**
 
-## ✨ Features
+- 🎯 **One-Command Deployment** - Deploy with just `./startkit-deployer.sh --host IP --domain DOMAIN`
+- 🔒 **Auto-SSL Configuration** - Let's Encrypt certificates with auto-renewal
+- 🛡️ **Auto-Environment Generation** - Secure 16-64 character passwords for all services
+- 🚀 **Smart Deployment Detection** - Automatically detects first-time vs updates
+- ⚡ **80% Less Code** - Consolidated from 15+ scripts to 3 core files
+- 🔧 **Zero Manual Setup** - Complete automation from server prep to SSL
+- 📊 **Enterprise Security** - Auto-hardening with firewall, fail2ban, and monitoring
 
-- 🌐 **Universal Cloud Deployment** - Deploy to ANY server with one command
-- 🎯 **Interactive Setup Wizard** - Guided setup with `./quick-start.sh`
-- 🚀 **StartKit Deployer** - Advanced deployment with `./startkit-deployer.sh`
-- 🔧 **Zero-configuration Setup** - Automatic server setup and security
-- ⚡ **Ultra-fast Development** - Powered by Bun.js and Next.js 15
-- 🛡️ **Production Ready** - Docker, SSL, monitoring included
-- 🔐 **Secure by Default** - Auto-generated passwords, firewall, SSL
-- 📊 **Advanced Caching** - Docker layer caching and smart rebuild strategies
-- 🎯 **Environment Management** - Auto-generation and validation of environment files
-- 🔍 **Multiple Deploy Modes** - Full, setup-only, config-only, and clean deployments
+---
 
-## 🏗️ Tech Stack
+## 🏗️ **Technology Stack**
 
-- **Frontend**: Next.js 15 + React 19 + Tailwind CSS 4
-- **Backend**: NestJS 11 + TypeScript 5  
-- **Runtime**: Bun.js
-- **Database**: PostgreSQL + Redis + MinIO
-- **Deployment**: Docker + Nginx + SSL
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| **Frontend** | Next.js + React | 15.x + 19.x | Modern web application |
+| **Backend** | NestJS + TypeScript | 11.x + 5.x | Scalable API server |
+| **Runtime** | Bun.js | 1.x | Ultra-fast JavaScript runtime |
+| **Database** | PostgreSQL | 16.x | Reliable relational database |
+| **Cache** | Redis | 7.x | High-performance caching |
+| **Storage** | MinIO | Latest | S3-compatible object storage |
+| **Proxy** | Nginx | Latest | Reverse proxy with SSL |
+| **Container** | Docker + Compose | Latest | Containerized deployment |
 
-## 🚀 Quick Start
+---
+
+## 🚀 **Quick Start**
 
 ### Prerequisites
 - **Bun.js** (v1.0.0+) - [Install here](https://bun.sh)
-- **Linux server** for production deployment
+- **Linux server** with SSH access for production deployment
 
-### 1. Clone & Install
+### 1. **Clone & Install**
 ```bash
 git clone <your-repo-url>
 cd KataCore
 bun run install:all
 ```
 
-### 2. Interactive Setup 🎯
-```bash
-# Run the interactive setup wizard
-./quick-start.sh
-
-# Or use individual commands:
-bun run dev                # Start development
-bun run test               # Run tests
-```
-
-### 3. Development
+### 2. **Development Mode**
 ```bash
 # Start both frontend and backend
 bun run dev
 
+# Access your application:
 # Frontend: http://localhost:3000
 # Backend: http://localhost:3001
 # API Docs: http://localhost:3001/api/docs
 ```
 
-### 4. **Deploy to Production** ⭐
+### 3. **Production Deployment** ⚡
+
+#### **First Deployment (Auto-Setup Everything)**
 ```bash
-# 🎯 StartKit v1 Deployer (Recommended)
+# HTTP deployment
 ./startkit-deployer.sh --host YOUR_SERVER_IP
 
-# With custom domain + SSL
+# HTTPS deployment with SSL (Recommended)
 ./startkit-deployer.sh --host YOUR_SERVER_IP --domain yourdomain.com
-
-# Advanced deployment options
-./startkit-deployer.sh --host YOUR_SERVER_IP --clean           # Clean deployment  
-./startkit-deployer.sh --host YOUR_SERVER_IP --setup-only      # Setup only
-./startkit-deployer.sh --host YOUR_SERVER_IP --config-only     # Config only
-./startkit-deployer.sh --host YOUR_SERVER_IP --force-rebuild   # Force rebuild
-./startkit-deployer.sh --host YOUR_SERVER_IP --dry-run         # Preview changes
-
-# Interactive deployment via quick-start
-./quick-start.sh    # Choose option 2 for guided deployment
 ```
 
-### 5. **Post-Deployment Access** 🎯
-After deployment, you get instant access to:
-- ✅ **Frontend**: https://your-domain.com
-- ✅ **API**: https://your-domain.com/api
-- ✅ **API Docs**: https://your-domain.com/api/docs
-- ✅ **pgAdmin**: https://your-domain.com:8080
-- ✅ **MinIO Console**: https://your-domain.com:9001
-- ✅ **Health Check**: https://your-domain.com/health
-- ✅ **Auto SSL** with Let's Encrypt
-- ✅ **Security** hardening & monitoring
-
-### 6. **Environment Management** 🔧
+#### **Update Existing Deployment**
 ```bash
-# Create environment template
-./startkit-deployer.sh --create-env-template
-# Or: bun run env:create-template
+# Smart updates (only updates what changed)
+./startkit-deployer.sh --host YOUR_SERVER_IP --update
 
-# Show template content
-bun run env:show-template
-
-# Validate configuration
-bun run env:validate
+# Clean deployment (fresh start)
+./startkit-deployer.sh --host YOUR_SERVER_IP --clean
 ```
 
-## 🎯 **StartKit v1 Deployment Options**
-
-### 🚀 **Interactive Setup**
+#### **Interactive Setup**
 ```bash
-# Get started with the interactive wizard
-./quick-start.sh    # Guided setup with menu options
+# Guided deployment wizard
+./quick-start-v2.sh
 ```
 
-### ⚡ **Direct Deployment**
-```bash
-# Basic deployment
-./startkit-deployer.sh --host 192.168.1.100
+---
 
-# With custom domain + SSL
-./startkit-deployer.sh --host myserver.com --domain myapp.com
+## 🎯 **Deployment Features**
+
+### **🔥 Auto-Configuration**
+- ✅ **Environment Generation** - Secure credentials for all services
+- ✅ **SSL Certificates** - Let's Encrypt with auto-renewal
+- ✅ **Server Setup** - Docker, Nginx, security hardening
+- ✅ **Firewall Configuration** - UFW rules with minimal ports
+- ✅ **Database Migrations** - Prisma schema auto-deployment
+
+### **🧠 Smart Detection**
+- ✅ **First vs Update** - Automatically detects deployment type
+- ✅ **Code Changes** - Only updates modified components
+- ✅ **Environment Preservation** - Keeps existing settings during updates
+- ✅ **SSL Persistence** - Maintains certificates across deployments
+
+### **🛡️ Enterprise Security**
+- ✅ **Auto-Generated Passwords** (16-64 characters)
+  - PostgreSQL: 24-char password
+  - Redis: 20-char password
+  - MinIO: 20-char password
+  - pgAdmin: 16-char password
+  - JWT Secret: 64-char base64
+- ✅ **SSL/TLS** - TLSv1.2 + TLSv1.3 with strong ciphers
+- ✅ **Security Headers** - HSTS, CSP, X-Frame-Options, XSS protection
+- ✅ **Rate Limiting** - API and general request limiting
+- ✅ **Fail2ban** - Automatic intrusion prevention
+
+---
+
+## 🌐 **Deployment Options**
+
+### **Basic Commands**
+```bash
+# Show all options
+./startkit-deployer.sh --help
+
+# Deployment modes
+./startkit-deployer.sh --host SERVER_IP                    # First deployment
+./startkit-deployer.sh --host SERVER_IP --domain DOMAIN   # With SSL
+./startkit-deployer.sh --host SERVER_IP --update          # Update only
+./startkit-deployer.sh --host SERVER_IP --clean           # Clean install
 
 # Advanced options
-./startkit-deployer.sh --host 192.168.1.100 --clean --verbose
-./startkit-deployer.sh --host 192.168.1.100 --setup-only --dry-run
+./startkit-deployer.sh --host SERVER_IP --verbose         # Detailed logs
+./startkit-deployer.sh --host SERVER_IP --dry-run         # Preview only
+./startkit-deployer.sh --host SERVER_IP --no-ssl          # Disable SSL
 ```
 
-### 📋 **Deployment Modes**
+### **Deployment Modes**
 
-| Mode | Command | Description |
-|------|---------|-------------|
-| **Full Deploy** | `--host SERVER_IP` | Complete deployment (recommended) |
-| **Clean Deploy** | `--clean` | Remove existing containers first |
-| **Setup Only** | `--setup-only` | Install Docker & setup server |
-| **Config Only** | `--config-only` | Update configuration files |
-| **Force Rebuild** | `--force-rebuild` | Rebuild all Docker images |
-| **Dry Run** | `--dry-run` | Preview what would be done |
+| Mode | Command | Description | Use Case |
+|------|---------|-------------|----------|
+| **Auto** | `--host IP` | Smart detection | First deployment or updates |
+| **Update** | `--update` | Code updates only | Regular application updates |
+| **Clean** | `--clean` | Fresh installation | Complete reset |
+| **SSL** | `--domain` | HTTPS with certificates | Production with domain |
 
-### 🛡️ **Production Security**
-- 🔐 Auto-generated secure passwords (16-24 chars)
-- 🔥 UFW Firewall + Fail2ban intrusion prevention  
-- 🛡️ HTTPS with Let's Encrypt SSL automation
-- 🚨 Security headers (HSTS, CSP, X-Frame-Options)
-- 🔒 Non-root Docker containers
-- 🚫 Rate limiting on API endpoints
-
-### 📊 **Monitoring & Administration**
-Post-deployment interfaces:
-- **pgAdmin**: Database management at `:8080`
-- **MinIO Console**: Object storage admin at `:9001`
-- **Health Checks**: Automatic service monitoring at `/health`
-- **API Documentation**: Interactive docs at `/api/docs`
-- **Log Aggregation**: Centralized logging with Docker
-
-## 🌐 StartKit v1 Deployment
-
-Deploy to **any** cloud server (AWS, DigitalOcean, Vultr, Hetzner, etc.) with zero configuration!
-
-### Quick Deploy Commands
-
+### **SSH Options**
 ```bash
-# 🚀 StartKit v1 Deployer (Recommended)
-./startkit-deployer.sh --host 192.168.1.100
+# Custom SSH settings
+./startkit-deployer.sh --host IP --user ubuntu --port 2222
 
-# With custom domain + SSL
-./startkit-deployer.sh --host myserver.com --domain mydomain.com
-
-# Clean installation (removes old containers)
-./startkit-deployer.sh --host 192.168.1.100 --clean
-
-# Setup server only (install Docker, security)
-./startkit-deployer.sh --host 192.168.1.100 --setup-only
-
-# Configuration update only (fastest)
-./startkit-deployer.sh --host 192.168.1.100 --config-only
+# Different authentication
+./startkit-deployer.sh --host IP --user root
 ```
 
-### Deployment Options
+---
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--host` | Server IP or domain | `--host 192.168.1.100` |
-| `--domain` | Custom domain for SSL | `--domain mydomain.com` |
-| `--user` | SSH user (default: root) | `--user ubuntu` |
-| `--port` | SSH port (default: 22) | `--port 2222` |
-| `--clean` | Remove old containers | `--clean` |
-| `--setup-only` | Server setup only | `--setup-only` |
-| `--config-only` | Configuration only | `--config-only` |
-| `--force-rebuild` | Force rebuild images | `--force-rebuild` |
-| `--dry-run` | Preview changes | `--dry-run` |
-| `--verbose` | Detailed logging | `--verbose` |
+## 📦 **Available Scripts**
 
-## 📦 Available Scripts
-
-### Development
+### **Development**
 ```bash
 bun run dev              # Start both frontend and backend
-bun run dev:site         # Start Next.js frontend only
-bun run dev:api          # Start NestJS backend only
+bun run dev:site         # Next.js frontend only
+bun run dev:api          # NestJS backend only
 bun run build            # Build both applications
-bun run test             # Run tests
-bun run lint             # Lint code
+bun run test             # Run test suites
+bun run lint             # Code linting
 ```
 
-### Local Testing
+### **Local Testing**
 ```bash
-bun run local:dev        # Start local Docker environment
-bun run local:down       # Stop local Docker environment
-bun run local:test       # Quick local test deployment
-bun run local:logs       # View local container logs
+bun run local:dev        # Local Docker environment
+bun run local:down       # Stop local environment
+bun run local:test       # Test production build locally
+bun run local:logs       # View container logs
 ```
 
-### StartKit v1 Deployment
+### **Environment Management**
 ```bash
-# Direct script usage (recommended for full control)
-./startkit-deployer.sh --host SERVER_IP           # Deploy with StartKit v1
-./startkit-deployer.sh --host SERVER_IP --clean   # Clean deployment
-./startkit-deployer.sh --host SERVER_IP --setup-only      # Server setup only
-./startkit-deployer.sh --host SERVER_IP --config-only     # Configuration only
-
-# With domain and advanced options
-./startkit-deployer.sh --host SERVER_IP --domain DOMAIN
-./startkit-deployer.sh --host SERVER_IP --clean --verbose
-./startkit-deployer.sh --host SERVER_IP --dry-run
-
-# Note: Package.json scripts are for basic commands without parameters
-# For deployment with parameters, use the script directly
-```
-
-### Environment Management
-```bash
-bun run env:create-template  # Create environment template
+bun run env:create-template  # Generate environment template
 bun run env:show-template    # Display template content
 bun run env:validate         # Validate configuration
 ```
 
-## 🏗️ **Tech Stack**
+---
 
-- **Frontend**: Next.js 15 + React 19 + Tailwind CSS 4
-- **Backend**: NestJS 11 + TypeScript 5  
-- **Runtime**: Bun.js
-- **Database**: PostgreSQL + Redis + MinIO
-- **Deployment**: Docker + Nginx + SSL
+## 🌍 **Post-Deployment Access**
 
-## 🌐 **Universal Cloud Deployment**
+After successful deployment, access your services:
 
-Deploy to **any** cloud server (AWS, DigitalOcean, Vultr, etc.) with zero configuration!
+| Service | URL | Purpose | Authentication |
+|---------|-----|---------|----------------|
+| **Frontend** | `https://yourdomain.com` | Main web application | Public |
+| **API** | `https://yourdomain.com/api` | REST API endpoints | API keys |
+| **API Docs** | `https://yourdomain.com/api/docs` | Interactive documentation | Public |
+| **pgAdmin** | `https://yourdomain.com/pgadmin` | Database management | HTTP auth |
+| **MinIO Console** | `https://yourdomain.com/minio` | Object storage admin | HTTP auth |
+| **Health Check** | `https://yourdomain.com/nginx-health` | Service status | Public |
 
-### StartKit v1 Commands
+### **Admin Panel Access**
+Admin panels are protected with HTTP authentication. Credentials are automatically generated and stored in `.env.prod`.
+
+---
+
+## 🔧 **Configuration**
+
+### **Auto-Generated Environment**
+StartKit v2 automatically creates `.env.prod` with:
 ```bash
-# Basic deployment
-bun run deploy:startkit YOUR_SERVER_IP
+# Database & Cache
+POSTGRES_PASSWORD=<24-char-secure-password>
+REDIS_PASSWORD=<20-char-secure-password>
 
-# With custom domain + SSL
-bun run deploy:startkit YOUR_SERVER_IP --domain yourdomain.com
+# Application Secrets  
+JWT_SECRET=<64-char-base64-secret>
+ENCRYPTION_KEY=<64-char-hex-key>
 
-# Clean deployment (removes old containers)
-bun run deploy:startkit:clean YOUR_SERVER_IP
+# Object Storage
+MINIO_ROOT_PASSWORD=<20-char-secure-password>
+
+# Admin Access
+PGADMIN_PASSWORD=<16-char-secure-password>
+
+# SSL & Security
+ENABLE_SSL=true
+LETSENCRYPT_EMAIL=admin@yourdomain.com
 ```
 
-### Deployment Options
-| Option | Description | Example |
-|--------|-------------|---------|
-| `SERVER_IP` | Server IP or domain | `192.168.1.100` |
-| `--domain` | Custom domain for SSL | `--domain mydomain.com` |
-| `--clean` | Remove old containers | `--clean` |
-| `--setup-only` | Server setup only | `--setup-only` |
+### **Manual Customization**
+```bash
+# View current environment
+cat .env.prod
 
-📚 **For detailed optimization features, see [OPTIMIZATION_FEATURES.md](OPTIMIZATION_FEATURES.md)**
+# Edit if needed (backup created automatically)
+nano .env.prod
 
-## 🏗️ Project Structure
-
-```
-KataCore/
-├── 📁 site/                      # Next.js Frontend
-│   ├── src/app/                  # App Router pages
-│   ├── src/components/           # React components
-│   └── package.json
-├── 📁 api/                       # NestJS Backend
-│   ├── src/                      # Source code
-│   ├── prisma/                   # Database schema
-│   └── package.json
-├── 📁 nginx/                     # Nginx configuration
-│   ├── nginx.conf               # Main config
-│   └── conf.d/                  # Virtual hosts
-├── 📁 scripts/                   # Deployment scripts
-│   ├── backup.sh                # Database backup
-│   ├── install-docker.sh        # Docker installation
-│   └── validate-env.sh          # Environment validation
-├── 🐳 docker-compose.local.yml   # Local development
-├── 🐳 docker-compose.prod.yml    # Production deployment
-├── 🚀 startkit-deployer.sh      # Main deployment script
-├── 🎯 quick-start.sh             # Interactive setup wizard
-├── 📄 .env.prod.template         # Environment template
-├── 📄 README.md                  # Main documentation
-├── 📄 README.startkit.md         # StartKit v1 guide
-└── 📄 package.json               # Root workspace
+# Validate changes
+bun run env:validate
 ```
 
-## 🌍 Cloud Provider Support
+---
 
-Works with **any** cloud provider and VPS:
-- ✅ **Major Clouds**: AWS EC2, Google Cloud, Azure, DigitalOcean
-- ✅ **VPS Providers**: Vultr, Linode, Hetzner, OVH
-- ✅ **Linux Distros**: Ubuntu, Debian, CentOS, RHEL, Fedora
-- ✅ **Architectures**: x86_64, ARM64 (Apple Silicon compatible)
+## 🛠️ **Development Workflow**
 
-## 🔐 Security Features
+### **Local Development**
+```bash
+# 1. Start development environment
+bun run dev
 
-- ✅ **Auto-generated secure passwords** for all services (16-24 characters)
-- ✅ **UFW Firewall** automatically configured with minimal ports
-- ✅ **Fail2Ban** intrusion prevention system
-- ✅ **SSL certificates** via Let's Encrypt with auto-renewal
-- ✅ **Security headers** (HSTS, CSP, X-Frame-Options, etc.)
-- ✅ **Non-root Docker containers** for enhanced security
-- ✅ **Rate limiting** on API endpoints and Nginx
-- ✅ **Secure environment** variable handling
+# 2. Make your changes to:
+#    - Frontend: site/src/
+#    - Backend: api/src/
+#    - Database: api/prisma/schema.prisma
 
-## 🎯 Production Architecture
+# 3. Test changes
+bun run test
+bun run lint
 
-```
-Internet → Nginx (80/443) → Next.js (3000) + NestJS (3001)
-                     ↓
-               PostgreSQL (5432) + Redis (6379) + MinIO (9000)
-                     ↓
-            pgAdmin (8080) + MinIO Console (9001)
+# 4. Build for production
+bun run build
 ```
 
-**Ports & Services:**
-- **80/443**: Nginx reverse proxy with SSL
-- **3000**: Next.js frontend (internal)
-- **3001**: NestJS API (internal)
-- **5432**: PostgreSQL database (internal)
-- **6379**: Redis cache (internal)
-- **9000**: MinIO storage (internal)
-- **8080**: pgAdmin interface (external)
-- **9001**: MinIO console (external)
+### **Database Management**
+```bash
+# Generate Prisma client
+cd api && bunx prisma generate
 
-## 🚨 Troubleshooting
+# Create migration
+cd api && bunx prisma migrate dev --name your-migration
 
-### Common Issues & Solutions
+# Deploy to production (automatic during deployment)
+cd api && bunx prisma migrate deploy
+```
 
-1. **"❌ Server host is required. Use --host SERVER_IP" Error**
+---
+
+## 📊 **Monitoring & Maintenance**
+
+### **Health Monitoring**
+```bash
+# Check service health
+curl https://yourdomain.com/nginx-health
+
+# View service status
+ssh root@yourserver "cd /opt/katacore && docker compose ps"
+
+# Real-time logs
+ssh root@yourserver "cd /opt/katacore && docker compose logs -f"
+```
+
+### **Updates & Maintenance**
+```bash
+# Update application code
+./startkit-deployer.sh --host YOUR_SERVER --update
+
+# Update with new dependencies
+./startkit-deployer.sh --host YOUR_SERVER --force-rebuild
+
+# Clean deployment (removes old data)
+./startkit-deployer.sh --host YOUR_SERVER --clean
+```
+
+### **Backup & Recovery**
+```bash
+# Database backups (automated daily)
+# Location: /opt/katacore/backups/
+
+# Manual backup
+ssh root@yourserver "cd /opt/katacore && docker compose exec postgres pg_dump -U katacore_user katacore_prod > backup.sql"
+```
+
+---
+
+## 🌐 **Cloud Provider Support**
+
+StartKit v2 works with **any** cloud provider:
+
+### **Tested Platforms**
+- ✅ **AWS EC2** - All instance types
+- ✅ **Google Cloud Compute** - All machine types  
+- ✅ **DigitalOcean Droplets** - All sizes
+- ✅ **Vultr Cloud Compute** - All plans
+- ✅ **Linode** - All instances
+- ✅ **Hetzner Cloud** - All server types
+- ✅ **Azure VMs** - All series
+
+### **Linux Distributions**
+- ✅ **Ubuntu** 20.04, 22.04, 24.04
+- ✅ **Debian** 11, 12
+- ✅ **CentOS** 8, 9
+- ✅ **RHEL** 8, 9
+- ✅ **Fedora** 36+
+
+---
+
+## 🚨 **Troubleshooting**
+
+### **Common Issues**
+
+1. **"Server host is required" Error**
    ```bash
    # ❌ Wrong: Missing --host parameter
    ./startkit-deployer.sh
    
-   # ❌ Wrong: Package scripts don't accept parameters
-   bun run deploy:startkit --host 192.168.1.100
-   
-   # ✅ Correct: Always use direct script with --host
-   ./startkit-deployer.sh --host 192.168.1.100
-   
-   # ✅ Correct: Use interactive setup
-   ./quick-start.sh
+   # ✅ Correct: Always provide --host
+   ./startkit-deployer.sh --host YOUR_SERVER_IP
    ```
 
 2. **SSH Connection Failed**
@@ -378,34 +361,24 @@ Internet → Nginx (80/443) → Next.js (3000) + NestJS (3001)
    ./startkit-deployer.sh --host YOUR_SERVER_IP --port 2222
    ```
 
-3. **Port Already in Use**
+3. **SSL Certificate Issues**
    ```bash
-   # Clean deploy removes old containers
-   ./startkit-deployer.sh --host YOUR_SERVER_IP --clean
-   ```
-
-4. **SSL Certificate Issues**
-   ```bash
-   # Ensure domain points to server IP first
+   # Ensure domain points to server IP
    dig yourdomain.com
    
    # Then deploy with domain
    ./startkit-deployer.sh --host YOUR_SERVER_IP --domain yourdomain.com
    ```
 
-5. **Environment Issues**
+4. **Port Conflicts**
    ```bash
-   # Create environment template
-   ./startkit-deployer.sh --create-env-template
-   
-   # Validate environment
-   bun run env:validate
+   # Clean deployment removes old containers
+   ./startkit-deployer.sh --host YOUR_SERVER_IP --clean
    ```
 
-### Debug Options
-
+### **Debug Options**
 ```bash
-# Preview what will be done
+# Preview deployment actions
 ./startkit-deployer.sh --host YOUR_SERVER_IP --dry-run
 
 # Verbose logging
@@ -415,17 +388,60 @@ Internet → Nginx (80/443) → Next.js (3000) + NestJS (3001)
 ls -la .deploy-logs/
 ```
 
-## 🤝 Contributing
+---
+
+## 📈 **Performance Features**
+
+### **Frontend Optimizations**
+- ⚡ **Next.js 15** - App Router with RSC
+- 🗜️ **Bundle Optimization** - Automatic code splitting
+- 📱 **Progressive Web App** - Service worker support
+- 🎨 **Tailwind CSS 4** - Optimized utility classes
+
+### **Backend Optimizations**
+- 🚀 **NestJS 11** - Modular architecture
+- 🔄 **Connection Pooling** - Database connection management
+- 📊 **Redis Caching** - High-performance caching layer
+- 🔍 **Query Optimization** - Prisma ORM optimizations
+
+### **Infrastructure Optimizations**
+- 🐳 **Multi-stage Docker builds** - Smaller production images
+- 🌐 **Nginx Performance** - Compression, caching, keep-alive
+- 📈 **Load Balancing** - Upstream server configuration
+- 🛡️ **Security Headers** - Modern security standards
+
+---
+
+## 🔄 **Migration from v1**
+
+### **Automatic Migration**
+```bash
+# StartKit v2 automatically handles migration
+./startkit-deployer.sh --host YOUR_SERVER_IP --update
+
+# Your existing .env.prod will be backed up
+# New secure environment will be generated
+# SSL configuration will be preserved
+```
+
+### **Manual Migration Steps**
+1. **Backup current deployment**
+2. **Update to v2 commands** 
+3. **Environment auto-generated**
+4. **SSL auto-configured**
+
+---
+
+## 🤝 **Contributing**
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Test deployment: `./startkit-deployer.sh --host test-server --dry-run`
-5. Commit changes: `git commit -m 'Add amazing feature'`
-6. Push to branch: `git push origin feature/amazing-feature`
-7. Submit a pull request
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Test deployment: `./startkit-deployer.sh --host test-server --dry-run`
+4. Commit changes: `git commit -m 'Add amazing feature'`
+5. Push to branch: `git push origin feature/amazing-feature`
+6. Submit pull request
 
-### Development Guidelines
+### **Development Guidelines**
 - Follow TypeScript best practices
 - Test both local and production deployments
 - Update documentation for new features
@@ -433,13 +449,28 @@ ls -la .deploy-logs/
 
 ---
 
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📞 **Support**
+
+- 📖 **Documentation**: This README + inline help (`--help`)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/your-org/katacore-startkit/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/your-org/katacore-startkit/discussions)
+- 📧 **Email**: support@katacore.com
+
+---
+
 <div align="center">
 
 **🚀 Ready to deploy?**
 
-**Interactive Setup:** `./quick-start.sh`
+**Quick Start:** `./quick-start-v2.sh`
 
-**Direct Deploy:** `./startkit-deployer.sh --host YOUR_SERVER_IP`
+**Direct Deploy:** `./startkit-deployer.sh --host YOUR_SERVER_IP --domain yourdomain.com`
 
 ---
 
