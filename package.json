@@ -1,11 +1,8 @@
 {
-  "name": "katacore-startkit-v1",
+  "name": "katacore",
   "version": "1.0.0",
-  "description": "KataCore StartKit v1 - Production-ready full-stack application with universal cloud deployment",
-  "keywords": ["startkit", "nextjs", "nestjs", "typescript", "docker", "postgresql", "redis", "minio", "nginx", "ssl", "production"],
+  "description": "KataCore - Modern Full-stack Application with Universal Cloud Deployment",
   "private": true,
-  "author": "KataCore Team",
-  "license": "MIT",
   "workspaces": [
     "site",
     "api"
@@ -26,24 +23,26 @@
     "lint": "bun run lint:site && bun run lint:api",
     "lint:site": "cd site && bun run lint",
     "lint:api": "cd api && bun run lint",
-    
-    "deploy:startkit": "./startkit-deployer.sh",
-    "deploy:startkit:clean": "./startkit-deployer.sh --clean",
-    "deploy:startkit:setup": "./startkit-deployer.sh --setup-only", 
-    "deploy:startkit:config": "./startkit-deployer.sh --config-only",
-    
-    "local:dev": "docker compose -f docker-compose.local.yml up -d",
-    "local:down": "docker compose -f docker-compose.local.yml down",
-    "local:logs": "docker compose -f docker-compose.local.yml logs -f",
-    "local:test": "./local-test.sh",
-    
-    "env:create-template": "./startkit-deployer.sh --create-env-template",
-    "env:show-template": "cat .env.prod.template 2>/dev/null || echo '❌ No .env.prod.template found'",
-    "env:validate": "./scripts/validate-env.sh",
-    "pre-deploy": "./scripts/pre-deploy-check.sh",
-    "cleanup": "./scripts/cleanup-deploy.sh",
-    "deploy:clean": "./scripts/cleanup-deploy.sh && ./startkit-deployer.sh",
-    "deploy:safe": "./scripts/pre-deploy-check.sh && ./startkit-deployer.sh"
+    "git:push": "./scripts/auto-push.sh",
+    "git:save": "./scripts/quick-save.sh",
+    "git:build-push": "./scripts/build-and-push.sh",
+    "docker:install": "./scripts/install-docker.sh install",
+    "deploy:universal": "./universal-deployer.sh",
+    "deploy:universal:clean": "./universal-deployer.sh --clean",
+    "deploy:setup-only": "./universal-deployer.sh --setup-only",
+    "deploy:deploy-only": "./universal-deployer.sh --deploy-only",
+    "deploy:quick": "./quick-deploy.sh",
+    "deploy:config": "./quick-deploy.sh --config-only",
+    "deploy:rebuild": "./quick-deploy.sh --force-rebuild",
+    "deploy:full": "./quick-deploy.sh --full",
+    "deploy:source": "./quick-deploy.sh --source-only",
+    "deploy:smart": "./quick-deploy.sh --smart",
+    "deploy:cache:clear": "rm -rf .deploy-cache && echo '✅ Deployment cache cleared'",
+    "deploy:cache:info": "cat .deploy-cache/deploy-info.json 2>/dev/null || echo '❌ No deployment cache found'",
+    "deploy:history": "cat .deploy-cache/deployment-history.log 2>/dev/null || echo '❌ No deployment history found'",
+    "env:create-template": "echo '📝 Creating .env.prod.example...' && ./universal-deployer.sh --create-env-template",
+    "env:show-template": "cat .env.prod.example 2>/dev/null || echo '❌ No .env.prod.example found'",
+    "env:validate": "echo '🔍 Validating environment files...' && ./scripts/validate-env.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

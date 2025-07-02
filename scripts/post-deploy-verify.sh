@@ -69,7 +69,7 @@ log "🔍 Starting post-deployment verification for $SERVER_HOST..."
 
 # 1. Check if Docker containers are running
 log "🐳 Checking Docker containers..."
-if ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml ps --filter status=running" | grep -q "healthy\|running"; then
+if ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml --env-file .env.prod ps --filter status=running" | grep -q "healthy\|running"; then
     success "Docker containers are running"
 else
     warning "Some containers may not be running properly"
@@ -107,7 +107,7 @@ fi
 
 # 4. Check container health status
 log "🏥 Checking container health status..."
-HEALTH_OUTPUT=$(ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml ps" 2>/dev/null || echo "")
+HEALTH_OUTPUT=$(ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml --env-file .env.prod ps" 2>/dev/null || echo "")
 
 if echo "$HEALTH_OUTPUT" | grep -q "healthy"; then
     success "All critical containers are healthy"
@@ -117,7 +117,7 @@ fi
 
 # 5. Check logs for errors
 log "📋 Checking for critical errors in logs..."
-CRITICAL_ERRORS=$(ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml logs --tail=20 2>/dev/null | grep -i 'error\|fail\|exception' | grep -v 'level=info' || true")
+CRITICAL_ERRORS=$(ssh -p "$SERVER_PORT" "$SERVER_USER@$SERVER_HOST" "cd /opt/katacore && docker compose -f docker-compose.prod.yml --env-file .env.prod logs --tail=20 2>/dev/null | grep -i 'error\|fail\|exception' | grep -v 'level=info' || true")
 
 if [[ -z "$CRITICAL_ERRORS" ]]; then
     success "No critical errors found in recent logs"
