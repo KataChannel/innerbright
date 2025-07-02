@@ -699,7 +699,7 @@ server {
         proxy_set_header X-Forwarded-Proto \$scheme;
     }
     
-    # pgAdmin (Database Admin) - Protected
+    # pgAdmin (Database Admin) - Protected - ENABLED (running on port 5050)
     location /pgadmin/ {
         auth_basic "Database Admin";
         auth_basic_user_file /etc/nginx/.htpasswd;
@@ -938,7 +938,7 @@ log() {
 
 # Stop existing containers if any
 log "Stopping existing containers..."
-docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
+docker-compose -f docker-compose.prod.yml --env-file .env.prod down 2>/dev/null || true
 
 # Copy nginx configuration
 log "Configuring Nginx..."
@@ -951,7 +951,7 @@ nginx -t
 
 # Start application
 log "Starting application..."
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 # Start nginx
 systemctl restart nginx
@@ -1008,16 +1008,16 @@ log() {
     echo "[$(date +'%H:%M:%S')] $1"
 }
 
-# Pull latest images and rebuild
-log "Pulling latest images..."
-docker-compose -f docker-compose.prod.yml pull
+# Pull latest base images and rebuild application images
+log "Pulling latest base images..."
+docker-compose -f docker-compose.prod.yml --env-file .env.prod pull postgres redis minio nginx pgadmin 2>/dev/null || true
 
-log "Rebuilding and restarting services..."
-docker-compose -f docker-compose.prod.yml up -d --build
+log "Building and starting services..."
+docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 # Run Prisma migrations if needed
 log "Running database migrations..."
-docker-compose -f docker-compose.prod.yml exec -T api npx prisma migrate deploy 2>/dev/null || true
+docker-compose -f docker-compose.prod.yml --env-file .env.prod exec -T api npx prisma migrate deploy 2>/dev/null || true
 
 log "✅ Update deployment completed"
 UPDATE_EOF
@@ -1055,8 +1055,8 @@ show_deployment_summary() {
     
     echo -e "📝 ${BLUE}Next Steps:${NC}"
     echo -e "   1. Visit $protocol://$domain_name to access your application"
-    echo -e "   2. Check logs: ${CYAN}ssh $SERVER_USER@$SERVER_HOST 'cd $REMOTE_DIR && docker-compose logs'${NC}"
-    echo -e "   3. Monitor status: ${CYAN}ssh $SERVER_USER@$SERVER_HOST 'cd $REMOTE_DIR && docker-compose ps'${NC}"
+    echo -e "   2. Check logs: ${CYAN}ssh $SERVER_USER@$SERVER_HOST 'cd $REMOTE_DIR && docker-compose --env-file .env.prod logs'${NC}"
+    echo -e "   3. Monitor status: ${CYAN}ssh $SERVER_USER@$SERVER_HOST 'cd $REMOTE_DIR && docker-compose --env-file .env.prod ps'${NC}"
     echo ""
     
     if [[ "$FIRST_DEPLOY" == "true" ]]; then
