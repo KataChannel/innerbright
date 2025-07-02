@@ -16,9 +16,6 @@ export class AppController {
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: 'KataCore API',
-      version: process.env.API_VERSION || 'latest',
-      environment: process.env.NODE_ENV || 'development',
-      uptime: process.uptime(),
     };
   }
 }
