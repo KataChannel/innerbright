@@ -1,5 +1,5 @@
 # KataCore StartKit v2 - Optimized Nginx Configuration
-# Auto-generated on 2025-07-02T18:04:43+07:00
+# Auto-generated on 2025-07-02T18:01:33+07:00
 
 # Rate limiting zones
 limit_req_zone $binary_remote_addr zone=general:10m rate=10r/s;
