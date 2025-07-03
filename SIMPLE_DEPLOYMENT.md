@@ -7,10 +7,10 @@ This guide covers the enhanced simplified deployment approach for KataCore with 
 ### Option 1: Complete First-time Setup (Recommended)
 ```bash
 # Complete server setup with Nginx and SSL
-sudo ./deploy-complete.sh --first-time
+sudo ./deploy-simple.sh --first-time
 
 # With git autopush
-sudo ./deploy-complete.sh --first-time --autopush
+sudo ./deploy-simple.sh --first-time --autopush
 ```
 
 ### Option 2: Container Deployment Only
@@ -31,7 +31,7 @@ chmod +x deploy-simple.sh
 ### Option 3: Nginx Setup Only
 ```bash
 # Setup Nginx with SSL (requires root)
-sudo ./setup-nginx-server.sh
+sudo ./deploy-simple.sh --setup-nginx
 ```
 
 ## Overview
