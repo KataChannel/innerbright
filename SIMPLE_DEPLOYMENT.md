@@ -1,9 +1,19 @@
 # KataCore Simple Deployment Guide v2
 
-This guide covers the enhanced simplified deployment approach for KataCore with **automatic password generation**, **Git autopush functionality**, and **secure container deployment**.
+This guide covers the enhanced simplified deployment approach for KataCore with **automatic password generation**, **Git autopush functionality**, **automated Nginx setup**, and **secure container deployment**.
 
 ## 🚀 Quick Start
 
+### Option 1: Complete First-time Setup (Recommended)
+```bash
+# Complete server setup with Nginx and SSL
+sudo ./deploy-complete.sh --first-time
+
+# With git autopush
+sudo ./deploy-complete.sh --first-time --autopush
+```
+
+### Option 2: Container Deployment Only
 ```bash
 # Make script executable
 chmod +x deploy-simple.sh
@@ -16,6 +26,12 @@ chmod +x deploy-simple.sh
 
 # Force regenerate all passwords
 ./deploy-simple.sh --force-regen
+```
+
+### Option 3: Nginx Setup Only
+```bash
+# Setup Nginx with SSL (requires root)
+sudo ./setup-nginx-server.sh
 ```
 
 ## Overview
@@ -31,6 +47,13 @@ chmod +x deploy-simple.sh
 - 📦 MinIO object storage
 
 ## 🆕 New Features in v2
+
+### 🌐 **Automated Nginx Setup**
+- **Complete server configuration** with single command
+- **SSL certificate** automatic setup with Let's Encrypt
+- **Firewall configuration** for security
+- **Health monitoring** endpoints
+- **Domain-based routing** with rate limiting
 
 ### 🔐 **Auto-Password Generation**
 The deployment script automatically generates **cryptographically secure passwords** for all services:
@@ -57,6 +80,8 @@ Automatic git operations after successful deployment:
 - Pushes to remote repository if configured
 
 ### 🎛️ **Advanced Options**
+- `--first-time`: Complete first-time server setup
+- `--setup-nginx`: Setup Nginx configuration and SSL
 - `--autopush`: Enable automatic git commits and push
 - `--force-regen`: Force regenerate all passwords and secrets
 - `--verbose`: Enable detailed logging output
@@ -69,7 +94,9 @@ Automatic git operations after successful deployment:
 - Container health monitoring
 - Service connectivity tests
 - Secure password generation using OpenSSL
-- 📦 MinIO object storage
+- SSL certificate automation
+- Firewall configuration
+- Rate limiting and DDoS protection
 
 ## Prerequisites
 
