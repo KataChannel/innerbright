@@ -70,7 +70,7 @@
 ### 1. Clone & Setup
 ```bash
 # Clone the repository
-git clone https://github.com/chikiet/innerbright.git
+git clone https://github.com/KataChannel/innerbright.git
 cd innerbright
 
 # Make deployment script executable
@@ -604,7 +604,7 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
 ### Essential Commands
 ```bash
 # Setup
-git clone https://github.com/chikiet/innerbright.git
+git clone https://github.com/KataChannel/innerbright.git
 cd innerbright && bun run install:all
 
 # Development
