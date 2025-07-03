@@ -1,64 +1,118 @@
 # 🚀 KataCore StartKit v1
 
-> **Production-ready deployment system for full-stack applications**
+> **Production-ready full-stack application with automated deployment**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/katacore/startkitv1)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/chikiet/KataCore)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/bun-1.0+-yellow.svg)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
+[![Next.js](https://img.shields.io/badge/next.js-15.3.4-black.svg)](https://nextjs.org)
+[![NestJS](https://img.shields.io/badge/nestjs-11.1.3-red.svg)](https://nestjs.com)
 
-**KataCore StartKit v1** provides a streamlined deployment system with auto-generated secure environments, SSL support, and production-ready Docker configuration. Deploy full-stack applications with minimal complexity and maximum reliability.
+**KataCore StartKit v1** is a modern full-stack application built with Next.js 15, React 19, NestJS 11, and Bun.js. It provides automated remote deployment with Docker, SSL support, and production-ready infrastructure out of the box.
 
 ---
 
 ## 🌟 **Features**
 
-- 🎯 **Remote Deployment** - Deploy to any server with `./deploy-remote.sh IP DOMAIN`
+### **Full-Stack Application**
+- 🚀 **Next.js 15** - Modern React framework with Turbopack for ultra-fast development
+- ⚛️ **React 19** - Latest React with improved concurrent features
+- 🎨 **Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+- 🏗️ **NestJS 11** - Scalable TypeScript backend framework
+- ⚡ **Bun.js Runtime** - Ultra-fast JavaScript runtime for both frontend and backend
+- 🗄️ **Prisma ORM** - Type-safe database access with PostgreSQL
+- 🔐 **Authentication** - JWT-based auth with bcrypt password hashing
+
+### **Database & Infrastructure**
+- 🐘 **PostgreSQL** - Robust relational database with full SQL support
+- 🗃️ **Redis** - High-performance caching and session storage
+- 📦 **MinIO** - S3-compatible object storage for file uploads
+- 🔧 **pgAdmin** - Web-based PostgreSQL administration
+- 📊 **Health Monitoring** - Built-in health checks for all services
+
+### **Development & Deployment**
+- 🎯 **Remote Deployment** - One-command deployment to any server
 - 🔒 **Auto-SSL Configuration** - Let's Encrypt certificates with auto-renewal
-- 🛡️ **Auto-Environment Generation** - Secure 16-64 character passwords for all services
+- 🛡️ **Security-First** - Auto-generated secure passwords and secrets
 - 🚀 **Two Deployment Modes** - Simple (IP-based) and Full (Domain + SSL)
-- ⚡ **Clean Architecture** - Minimal codebase focused on essential functionality
-- 🔧 **Docker Stack** - Complete containerized deployment with all services
-- 📊 **Production Security** - Security headers, rate limiting, and hardening
-- 🧹 **Cleanup Support** - Easy cleanup of remote deployments
+- 🐳 **Docker Stack** - Complete containerized deployment
+- 🧹 **Easy Cleanup** - Simple cleanup of remote deployments
+- 📝 **TypeScript** - Full type safety across the stack
 
 ---
 
 ## 🏗️ **Technology Stack**
 
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Frontend** | Next.js + React | 15.x + 19.x | Modern web application |
-| **Backend** | NestJS + TypeScript | 11.x + 5.x | Scalable API server |
-| **Runtime** | Bun.js | 1.x | Ultra-fast JavaScript runtime |
-| **Database** | PostgreSQL | 16.x | Reliable relational database |
-| **Cache** | Redis | 7.x | High-performance caching |
-| **Storage** | MinIO | Latest | S3-compatible object storage |
-| **Proxy** | Nginx | Latest | Reverse proxy with SSL |
-| **Container** | Docker + Compose | Latest | Containerized deployment |
+| Layer | Component | Technology | Version | Purpose |
+|-------|-----------|------------|---------|---------|
+| **Frontend** | Web Framework | Next.js | 15.3.4 | React-based web framework with SSR/SSG |
+| | UI Library | React | 19.x | Modern UI library with concurrent features |
+| | Styling | Tailwind CSS | 4.x | Utility-first CSS framework |
+| | Build Tool | Turbopack | Latest | Ultra-fast bundler for development |
+| **Backend** | API Framework | NestJS | 11.1.3 | Scalable TypeScript framework |
+| | Runtime | Bun.js | 1.x | High-performance JavaScript runtime |
+| | Database ORM | Prisma | 5.20.0 | Type-safe database client |
+| | Authentication | JWT + bcrypt | Latest | Secure token-based authentication |
+| **Database** | Primary DB | PostgreSQL | 15-alpine | Reliable relational database |
+| | Cache/Session | Redis | 7-alpine | In-memory data structure store |
+| | Object Storage | MinIO | Latest | S3-compatible file storage |
+| | DB Admin | pgAdmin | Latest | Web-based PostgreSQL management |
+| **Infrastructure** | Containerization | Docker | Latest | Application containerization |
+| | Orchestration | Docker Compose | Latest | Multi-container deployment |
+| | Reverse Proxy | Nginx | Latest | Load balancing and SSL termination |
+| | SSL Certificates | Let's Encrypt | Latest | Free SSL certificate automation |
 
 ---
 
 ## 🚀 **Quick Start**
 
-### Prerequisites
-- **SSH Access** to your remote server
-- **Docker & Docker Compose** installed on remote server (auto-installed by script)
-- **Domain name** (for full deployment with SSL)
+### **Prerequisites**
+- **Bun.js** (v1.0+) - [Install Bun](https://bun.sh)
+- **Docker** & **Docker Compose** (for deployment)
+- **Node.js** (v18+) as fallback runtime
+- **Git** for version control
 
-### 1. **Clone & Setup**
+### **1. Clone & Setup**
 ```bash
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/chikiet/KataCore.git
 cd KataCore
+
+# Make deployment script executable
 chmod +x deploy-remote.sh
-```
+
+# Install all dependencies (frontend + backend)
 bun run install:all
 ```
 
-### 2. **Development Mode**
+### **2. Local Development**
 ```bash
-# Start both frontend and backend
-### 2. **Remote Deployment** ⚡
+# Start both frontend and backend in development mode
+bun run dev
+
+# Or start individually
+bun run dev:site    # Frontend (Next.js) on http://localhost:3000
+bun run dev:api     # Backend (NestJS) on http://localhost:3001
+```
+
+**Development URLs:**
+- 🌐 **Frontend**: http://localhost:3000
+- 🔌 **API**: http://localhost:3001
+- ❤️ **Health Check**: http://localhost:3001/health
+
+### **3. Build for Production**
+```bash
+# Build both applications
+bun run build
+
+# Or build individually
+bun run build:site  # Build Next.js application
+bun run build:api   # Build NestJS application
+```
+### **4. Remote Deployment** 🚀
+
+**For deployment to remote servers:**
 
 #### **Simple Deployment (IP-based)**
 ```bash
@@ -72,12 +126,12 @@ bun run install:all
 ./deploy-remote.sh 116.118.85.41 yourdomain.com
 ```
 
-#### **Custom Configuration**
+#### **Advanced Options**
 ```bash
-# With custom SSH user and key
+# Custom SSH user and key
 ./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 yourdomain.com
 
-# Force regenerate environment
+# Force regenerate environment variables
 ./deploy-remote.sh --force-regen 116.118.85.41 yourdomain.com
 
 # Custom project name
@@ -90,15 +144,33 @@ bun run install:all
 ./deploy-remote.sh --cleanup 116.118.85.41
 ```
 
+**Requirements for remote deployment:**
+- SSH access to remote server
+- Docker & Docker Compose on remote server (auto-installed)
+- Domain name (for full deployment with SSL)
+
 ---
 
-## 🎯 **Deployment Modes**
+## 🎯 **Deployment Options**
 
-### **Simple Deployment**
+### **Development Mode** (Local)
+```bash
+# Start development servers
+bun run dev  # Both frontend + backend
+```
+**Access:**
+- 🌐 Frontend: http://localhost:3000
+- 🔌 API: http://localhost:3001/health
+
+### **Simple Deployment** (IP-based)
+```bash
+./deploy-remote.sh --simple SERVER_IP DOMAIN
+```
+**Features:**
 - ✅ Docker containers only
 - ✅ IP address access
-- ✅ No Nginx configuration
-- ✅ Perfect for development/testing
+- ✅ No SSL configuration
+- ✅ Perfect for staging/testing
 
 **Access:**
 - Site: `http://SERVER_IP:3000`
@@ -106,7 +178,11 @@ bun run install:all
 - MinIO: `http://SERVER_IP:9000`
 - pgAdmin: `http://SERVER_IP:5050`
 
-### **Full Deployment**
+### **Full Deployment** (Production)
+```bash
+./deploy-remote.sh SERVER_IP DOMAIN
+```
+**Features:**
 - ✅ Docker containers + Nginx
 - ✅ Domain with SSL certificates
 - ✅ Production-ready configuration
@@ -120,54 +196,144 @@ bun run install:all
 
 ---
 
-## 🧠 **Architecture**
+## 🏛️ **Application Architecture**
 
-### **Container Services**
-- **API (NestJS)**: Port 3001 - Backend application
-- **Site (Next.js)**: Port 3000 - Frontend application  
-- **PostgreSQL**: Port 5432 - Database
-- **Redis**: Port 6379 - Cache and sessions
-- **MinIO**: Ports 9000/9001 - Object storage
-- **pgAdmin**: Port 5050 - Database management
+### **Project Structure**
+```
+KataCore/
+├── 📁 api/                     # NestJS Backend API
+│   ├── 📄 Dockerfile          # API container configuration
+│   ├── 📄 package.json        # API dependencies
+│   ├── 📄 tsconfig.json       # TypeScript configuration
+│   ├── 📁 prisma/             # Database schema & migrations
+│   │   └── 📄 schema.prisma   # Prisma database schema
+│   └── 📁 src/                # API source code
+│       ├── 📄 main.ts         # Application entry point
+│       ├── 📄 app.module.ts   # Root module
+│       ├── 📄 app.controller.ts # Main controller
+│       └── 📄 app.service.ts  # Main service
+├── 📁 site/                   # Next.js Frontend
+│   ├── 📄 Dockerfile          # Frontend container configuration
+│   ├── 📄 package.json        # Frontend dependencies
+│   ├── 📄 next.config.ts      # Next.js configuration
+│   ├── 📄 tailwind.config.ts  # Tailwind CSS configuration
+│   ├── 📁 public/             # Static assets
+│   └── 📁 src/                # Frontend source code
+│       ├── 📁 app/            # App Router pages
+│       │   ├── 📄 page.tsx    # Home page
+│       │   ├── 📄 layout.tsx  # Root layout
+│       │   └── 📄 globals.css # Global styles
+│       └── 📁 components/     # React components
+│           └── 📄 ApiTest.tsx # API integration test
+├── 📄 package.json            # Root package.json (workspace)
+├── 📄 docker-compose.startkitv1.yml # Full deployment stack
+├── 📄 deploy-remote.sh        # Deployment automation script
+├── 📄 README.md              # This file
+└── 📄 LICENSE                # MIT License
+```
+```
+KataCore/
+├── 📁 api/                          # Backend (NestJS + Bun)
+│   ├── 📁 src/
+│   │   ├── app.controller.ts        # Main API controller
+│   │   ├── app.service.ts           # Business logic service
+│   │   ├── app.module.ts            # Root module
+│   │   └── main.ts                  # Application entry point
+│   ├── 📁 prisma/
+│   │   └── schema.prisma            # Database schema
+│   ├── Dockerfile                   # Docker configuration
+│   └── package.json                 # Dependencies & scripts
+├── 📁 site/                         # Frontend (Next.js + React)
+│   ├── 📁 src/
+│   │   ├── 📁 app/
+│   │   │   ├── layout.tsx           # Root layout
+│   │   │   ├── page.tsx             # Homepage
+│   │   │   └── globals.css          # Global styles
+│   │   └── 📁 components/
+│   │       └── ApiTest.tsx          # API connection test
+│   ├── Dockerfile                   # Docker configuration
+│   └── package.json                 # Dependencies & scripts
+├── deploy-remote.sh                 # Remote deployment script
+├── docker-compose.startkitv1.yml   # Docker services
+├── package.json                     # Workspace configuration
+└── README.md                        # Documentation
+```
 
-### **Auto-Generated Security**
-- **Auto-generated passwords**: 16-32 character secure passwords
-- **JWT secrets**: 64-character base64 encoded
-- **SSL certificates**: Let's Encrypt with auto-renewal
-- **Security headers**: XSS protection, frame options, etc.
-- **Rate limiting**: Built into Nginx configuration
+### **API Endpoints**
+- `GET /` - Welcome message
+- `GET /health` - Health check endpoint
+- Authentication endpoints (JWT-based)
+- RESTful CRUD operations with Prisma ORM
+
+### **Database Schema (Prisma)**
+- **Users** - User management with roles and authentication
+- **Posts** - Content management with publishing workflow
+- **Comments** - Nested commenting system
+- **Likes** - Post engagement tracking
+- **Tags** - Content categorization
+- **Sessions** - User session management
+- **File Uploads** - Media file tracking
 
 ---
 
-## 📋 **Available Commands**
+## 📋 **Available Scripts**
 
+### **Development Scripts**
 ```bash
-# Remote deployment commands
-./deploy-remote.sh SERVER_IP DOMAIN                    # Full deployment with SSL
-./deploy-remote.sh --simple SERVER_IP DOMAIN          # Simple deployment (IP only)
-./deploy-remote.sh --cleanup SERVER_IP                # Cleanup remote deployment
+# Install dependencies for all packages
+bun run install:all
 
-# Options
-./deploy-remote.sh --user USER --key KEY_PATH SERVER_IP DOMAIN
-./deploy-remote.sh --force-regen SERVER_IP DOMAIN
-./deploy-remote.sh --project PROJECT_NAME SERVER_IP DOMAIN
-./deploy-remote.sh --compose COMPOSE_FILE SERVER_IP DOMAIN
+# Development mode (both frontend + backend)
+bun run dev
+bun run dev:site    # Frontend only (Next.js)
+bun run dev:api     # Backend only (NestJS)
 
-# Help
-./deploy-remote.sh --help
+# Build applications
+bun run build       # Build both applications
+bun run build:site  # Build Next.js frontend
+bun run build:api   # Build NestJS backend
+
+# Production mode
+bun run start       # Start both in production mode
+bun run start:site  # Start Next.js in production
+bun run start:api   # Start NestJS in production
+
+# Code quality
+bun run lint        # Lint both applications
+bun run lint:site   # Lint Next.js code
+bun run lint:api    # Lint NestJS code
+
+# Testing
+bun run test        # Run API tests
+
+# Cleanup
+bun run clean       # Remove node_modules and build artifacts
 ```
-./deploy-startkitv1-clean.sh test-deployment
-./deploy-startkitv1-clean.sh cleanup
 
-# Help
-./deploy-startkitv1-clean.sh --help
+### **Docker Scripts**
+```bash
+# Local Docker development
+bun run docker:up   # Start all services with Docker Compose
+bun run docker:down # Stop all Docker services
+bun run docker:logs # View Docker logs
+
+# Individual Docker builds
+cd api && bun run docker:build   # Build API Docker image
+cd api && bun run docker:run     # Run API in Docker
 ```
 
-### **Command Options**
-- `--force-regen`: Force regenerate passwords and secrets
-- `--auto-push`: Auto commit and push changes to git
-- `--verbose`: Enable detailed logging
-- `--dry-run`: Show what would be done without executing
+### **Database Scripts** (API directory)
+```bash
+cd api
+
+# Prisma commands
+bun run prisma:generate  # Generate Prisma client
+bun run prisma:migrate   # Run database migrations
+bun run prisma:deploy    # Deploy migrations (production)
+bun run prisma:reset     # Reset database (development)
+bun run prisma:studio    # Open Prisma Studio
+bun run prisma:seed      # Seed database with sample data
+```
 
 ---
 
@@ -329,34 +495,34 @@ cd api && bunx prisma migrate deploy
 
 ### **Health Monitoring**
 ```bash
-# Check service health
-./deploy-startkitv1-clean.sh test-deployment
-
 # View service status
-docker-compose -f docker-compose.startkitv1-clean.yml ps
+docker-compose -f docker-compose.startkitv1.yml ps
 
 # Real-time logs
-docker-compose -f docker-compose.startkitv1-clean.yml logs -f
+docker-compose -f docker-compose.startkitv1.yml logs -f
+
+# Check individual service logs
+docker-compose -f docker-compose.startkitv1.yml logs service_name
 ```
 
 ### **Updates & Maintenance**
 ```bash
 # Update application code
 git pull
-./deploy-startkitv1-clean.sh deploy-full yourdomain.com
+./deploy-remote.sh 116.118.85.41 yourdomain.com
 
 # Clean deployment (removes old data)
-./deploy-startkitv1-clean.sh cleanup
-./deploy-startkitv1-clean.sh deploy-full yourdomain.com --force-regen
+./deploy-remote.sh --cleanup 116.118.85.41
+./deploy-remote.sh --force-regen 116.118.85.41 yourdomain.com
 ```
 
 ### **Backup & Recovery**
 ```bash
 # Manual backup
-docker-compose -f docker-compose.startkitv1-clean.yml exec postgres pg_dump -U katacore_user katacore_prod > backup.sql
+docker-compose -f docker-compose.startkitv1.yml exec postgres pg_dump -U katacore_user katacore_prod > backup.sql
 
 # Restore backup
-docker-compose -f docker-compose.startkitv1-clean.yml exec -T postgres psql -U katacore_user -d katacore_prod < backup.sql
+docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacore_user -d katacore_prod < backup.sql
 ```
 
 ---
@@ -371,7 +537,7 @@ docker-compose -f docker-compose.startkitv1-clean.yml exec -T postgres psql -U k
    sudo netstat -tulpn | grep :3000
    
    # Stop conflicting services
-   ./deploy-startkitv1-clean.sh cleanup
+   ./deploy-remote.sh --cleanup 116.118.85.41
    ```
 
 2. **SSL certificate issues**
@@ -386,24 +552,24 @@ docker-compose -f docker-compose.startkitv1-clean.yml exec -T postgres psql -U k
 3. **Service not starting**
    ```bash
    # Check service logs
-   docker-compose -f docker-compose.startkitv1-clean.yml logs service_name
+   docker-compose -f docker-compose.startkitv1.yml logs service_name
    
    # Restart services
-   docker-compose -f docker-compose.startkitv1-clean.yml restart
+   docker-compose -f docker-compose.startkitv1.yml restart
    ```
 
 ### **Reset deployment**
 ```bash
 # Clean everything and start fresh
-./deploy-startkitv1-clean.sh cleanup
-./deploy-startkitv1-clean.sh deploy-full yourdomain.com --force-regen
+./deploy-remote.sh --cleanup 116.118.85.41
+./deploy-remote.sh --force-regen 116.118.85.41 yourdomain.com
 ```
 
 ---
 
 ## 🌍 **Cloud Provider Support**
 
-StartKit v1 Clean works with **any** cloud provider:
+KataCore StartKit v1 works with **any** cloud provider:
 
 ### **Tested Platforms**
 - ✅ **AWS EC2** - All instance types
@@ -425,7 +591,7 @@ StartKit v1 Clean works with **any** cloud provider:
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Test deployment: `./deploy-startkitv1-clean.sh deploy-simple test-ip --dry-run`
+3. Test locally: `bun run dev` and `bun run test`
 4. Commit changes: `git commit -m 'Add amazing feature'`
 5. Push to branch: `git push origin feature/amazing-feature`
 6. Submit pull request
@@ -440,7 +606,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 **Support**
 
-- 📖 **Documentation**: [README-startkitv1-clean.md](README-startkitv1-clean.md)
+- 📖 **Documentation**: This README.md
 - 🐛 **Issues**: GitHub Issues
 - 💬 **Discussions**: GitHub Discussions
 - 📧 **Email**: support@katacore.com
@@ -451,9 +617,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 Ready to deploy?**
 
-**Quick Start:** `./deploy-startkitv1-clean.sh deploy-guide`
+**Quick Start:** `./deploy-remote.sh --simple 116.118.85.41 yourdomain.com`
 
-**Direct Deploy:** `./deploy-startkitv1-clean.sh deploy-full yourdomain.com`
+**Full Deploy:** `./deploy-remote.sh 116.118.85.41 yourdomain.com`
 
 ---
 
