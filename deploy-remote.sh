@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 KataCore Remote Deployment Helper
+# 🚀 Innerbright Remote Deployment Helper
 # Quick deployment script for remote servers
 
 set -euo pipefail
@@ -13,7 +13,7 @@ SSH_KEY_PATH=""
 DEPLOY_TYPE="full"
 FORCE_REGEN=false
 CLEANUP_MODE=false
-PROJECT_NAME="katacore"
+PROJECT_NAME="innerbright"
 DOCKER_COMPOSE_FILE="docker-compose.startkitv1.yml"
 
 # Color codes
@@ -36,7 +36,7 @@ show_banner() {
     echo -e "${BLUE}"
     cat << 'EOF'
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                        🚀 KataCore Remote Deploy                            ║
+║                        🚀 Innerbright Remote Deploy                         ║
 ║                                                                              ║
 ║    Deploy to any server with dynamic IP and domain configuration           ║
 ║    Supports both simple (IP only) and full (domain + SSL) deployments     ║
@@ -59,7 +59,7 @@ EOF
 # Show help
 show_help() {
     cat << 'EOF'
-🚀 KataCore Remote Deployment Script
+🚀 Innerbright Remote Deployment Script
 
 USAGE:
     ./deploy-remote.sh [OPTIONS] IP DOMAIN
@@ -76,7 +76,7 @@ OPTIONS:
     --compose FILE     Docker compose file (default: docker-compose.startkitv1.yml)
                        Available files:
                        - docker-compose.startkitv1.yml (full stack)
-    --project NAME     Project name (default: katacore)
+    --project NAME     Project name (default: innerbright)
     --cleanup          Cleanup deployment on remote server
     --help             Show this help
 

@@ -22,8 +22,8 @@
     "prisma:reset": "prisma migrate reset",
     "prisma:studio": "prisma studio",
     "prisma:seed": "bun run src/prisma/seed.ts",
-    "docker:build": "docker build -t katacore-api .",
-    "docker:run": "docker run -p 3001:3001 katacore-api"
+    "docker:build": "docker build -t innerbright-api .",
+    "docker:run": "docker run -p 3001:3001 innerbright-api"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.3",
