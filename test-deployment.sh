@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🧪 KataCore Deployment Test Script
+# 🧪 Innerbright Deployment Test Script
 # Test various deployment scenarios
 
 set -euo pipefail
@@ -23,7 +23,7 @@ show_banner() {
     echo -e "${BLUE}"
     cat << 'EOF'
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    🧪 KataCore Deployment Test Suite                       ║
+║                    🧪 Innerbright Deployment Test Suite                     ║
 ║                                                                              ║
 ║               Test deployment script functionality                           ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -122,7 +122,7 @@ test_package_json() {
 run_tests() {
     show_banner
     
-    log "Starting KataCore deployment tests..."
+    log "Starting Innerbright deployment tests..."
     
     test_project_structure
     test_env_file

@@ -1,7 +1,7 @@
 {
-  "name": "katacore-startkitv1",
+  "name": "innerbright",
   "version": "1.0.0",
-  "description": "KataCore StartKit v1 - Production-ready remote deployment system",
+  "description": "Innerbright - Modern full-stack application with automated deployment",
   "private": true,
   "workspaces": [
     "site",
@@ -32,8 +32,8 @@
     "docker:logs": "docker-compose -f docker-compose.startkitv1.yml logs -f"
   },
   "keywords": [
-    "katacore",
-    "startkitv1",
+    "innerbright",
+    "fullstack",
     "remote-deployment",
     "docker",
     "nginx",
@@ -45,11 +45,11 @@
     "redis",
     "minio"
   ],
-  "author": "KataCore Team",
+  "author": "Innerbright Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chikiet/KataCore"
+    "url": "https://github.com/chikiet/innerbright"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

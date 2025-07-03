@@ -1,4 +1,4 @@
-# 🚀 KataCore StartKit v1
+# 🚀 Innerbright
 
 > **Production-ready full-stack application with automated deployment**
 
@@ -9,7 +9,7 @@
 [![Next.js](https://img.shields.io/badge/next.js-15.3.4-black.svg)](https://nextjs.org)
 [![NestJS](https://img.shields.io/badge/nestjs-11.1.3-red.svg)](https://nestjs.com)
 
-**KataCore StartKit v1** is a modern full-stack application built with Next.js 15, React 19, NestJS 11, and Bun.js. It provides automated remote deployment with Docker, SSL support, and production-ready infrastructure out of the box.
+**Innerbright** is a modern full-stack application built with Next.js 15, React 19, NestJS 11, and Bun.js. It provides automated remote deployment with Docker, SSL support, and production-ready infrastructure out of the box.
 
 ## 🌟 Features
 
@@ -70,8 +70,8 @@
 ### 1. Clone & Setup
 ```bash
 # Clone the repository
-git clone https://github.com/chikiet/KataCore.git
-cd KataCore
+git clone https://github.com/chikiet/innerbright.git
+cd innerbright
 
 # Make deployment script executable
 chmod +x deploy-remote.sh
@@ -130,7 +130,7 @@ bun run build:api   # Build NestJS application
 ./deploy-remote.sh --force-regen SERVER_IP mydomain.com
 
 # Custom project name
-./deploy-remote.sh --project myproject SERVER_IP mydomain.com
+./deploy-remote.sh --project innerbright SERVER_IP mydomain.com
 ```
 
 #### Cleanup Deployment
@@ -604,8 +604,8 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
 ### Essential Commands
 ```bash
 # Setup
-git clone https://github.com/chikiet/KataCore.git
-cd KataCore && bun run install:all
+git clone https://github.com/chikiet/innerbright.git
+cd innerbright && bun run install:all
 
 # Development
 bun run dev                    # Start development servers

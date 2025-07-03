@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🔐 KataCore Auto-Generated Security Script
+# 🔐 Innerbright Auto-Generated Security Script
 # Tạo các mật khẩu và secrets bảo mật tự động
 
 set -euo pipefail
@@ -11,7 +11,7 @@ readonly BLUE='\033[0;34m'
 readonly YELLOW='\033[1;33m'
 readonly NC='\033[0m'
 
-echo -e "${BLUE}🔐 Đang tạo auto-generated security cho KataCore...${NC}"
+echo -e "${BLUE}🔐 Đang tạo auto-generated security cho Innerbright...${NC}"
 
 # Tạo các password và secrets bảo mật
 DB_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-32)
