@@ -1,0 +1,94 @@
+# KataCore Git Configuration
+# This file contains git aliases and configurations for the project
+
+[alias]
+    # Quick shortcuts
+    s = status
+    a = add .
+    c = commit -m
+    p = push
+    pl = pull
+    co = checkout
+    br = branch
+    
+    # Advanced shortcuts
+    ac = !git add . && git commit -m
+    acp = !git add . && git commit -m "$1" && git push
+    
+    # Logging
+    lg = log --oneline --graph --decorate --all
+    last = log -1 HEAD
+    
+    # Undo shortcuts
+    undo = reset HEAD~1 --mixed
+    unstage = reset HEAD --
+    
+    # Branch management
+    new = checkout -b
+    del = branch -d
+    
+    # Stash shortcuts
+    save = stash push -m
+    pop = stash pop
+    
+    # Remote shortcuts
+    up = !git pull origin $(git branch --show-current)
+    pub = !git push origin $(git branch --show-current)
+    
+    # KataCore specific
+    push-main = push origin main
+    push-dev = push origin develop
+    quick = !git add . && git commit -m "Quick update: $(date)" && git push
+
+[core]
+    # Use VS Code as default editor
+    editor = code --wait
+    
+    # Auto-correct typos
+    autocrlf = input
+    
+    # Ignore file permissions
+    filemode = false
+
+[push]
+    # Push current branch to upstream
+    default = current
+    
+    # Automatically setup remote tracking
+    autoSetupRemote = true
+
+[pull]
+    # Use rebase by default
+    rebase = true
+
+[init]
+    # Use main as default branch
+    defaultBranch = main
+
+[color]
+    # Enable colors
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow bold
+    local = green
+    remote = red
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red
+    new = green
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+[user]
+    # These will be set by the autopush script if not configured
+    # name = Your Name
+    # email = your.email@example.com

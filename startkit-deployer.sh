@@ -206,6 +206,10 @@ generate_jwt_secret() {
 validate_environment() {
     log "🔍 Validating deployment environment..."
     
+# Validate environment
+validate_environment() {
+    log "🔍 Validating deployment environment..."
+    
     # Check required tools
     local missing_tools=()
     
@@ -235,6 +239,7 @@ validate_environment() {
     
     success "Environment validation passed"
 }
+}
 
 # Auto-generate environment file for first deployment
 auto_generate_environment() {
@@ -242,17 +247,9 @@ auto_generate_environment() {
     
     local env_file=".env.prod"
     local domain_name="${DOMAIN:-$SERVER_HOST}"
-    local use_ssl="false"
+    local use_ssl="true"  # Always use SSL (self-signed if needed)
     
-    # Determine if SSL should be used
-    if [[ -n "$DOMAIN" ]] && [[ "$AUTO_SSL" == "true" ]]; then
-        use_ssl="true"
-    fi
-    
-    local protocol="http"
-    if [[ "$use_ssl" == "true" ]]; then
-        protocol="https"
-    fi
+    local protocol="https"  # Always use HTTPS
     
     # Generate secure passwords and secrets
     local postgres_password=$(generate_password 24)
@@ -368,17 +365,7 @@ EOF
 
 # Auto-configure SSL certificates
 auto_configure_ssl() {
-    log "🔒 Auto-configuring SSL certificates..."
-    
-    if [[ -z "$DOMAIN" ]]; then
-        warning "No domain specified, skipping SSL configuration"
-        return 0
-    fi
-    
-    if [[ "$AUTO_SSL" != "true" ]]; then
-        info "SSL auto-configuration disabled, skipping"
-        return 0
-    fi
+    log "🔒 Preparing SSL configuration..."
     
     # Create SSL directory structure
     local ssl_dir="./ssl-temp"
@@ -548,19 +535,60 @@ create_nginx_config() {
     log "📝 Creating optimized Nginx configuration..."
     
     local domain_name="${DOMAIN:-$SERVER_HOST}"
-    local use_ssl="false"
+    local use_ssl="true"  # Always enable SSL (use self-signed if needed)
     
-    if [[ -n "$DOMAIN" ]] && [[ "$AUTO_SSL" == "true" ]]; then
-        use_ssl="true"
-    fi
-    
-    # Ensure nginx directory exists
-    mkdir -p nginx/conf.d
+    # Ensure nginx and ssl-temp directories exist
+    mkdir -p nginx/conf.d ssl-temp
     
     # Backup existing config
     if [[ -f "nginx/conf.d/katacore.conf" ]]; then
         cp "nginx/conf.d/katacore.conf" "nginx/conf.d/katacore.conf.backup-$(date +%Y%m%d-%H%M%S)"
     fi
+    
+    # Create self-signed SSL setup script
+    cat > "ssl-temp/create-self-signed.sh" << 'EOF'
+#!/bin/bash
+set -euo pipefail
+
+log() {
+    echo "[$(date +'%H:%M:%S')] $1"
+}
+
+# Create self-signed certificate if SSL files don't exist
+create_self_signed_ssl() {
+    local domain="$1"
+    local ssl_dir="/etc/nginx/ssl"
+    
+    if [[ ! -f "$ssl_dir/fullchain.pem" ]] || [[ ! -f "$ssl_dir/privkey.pem" ]]; then
+        log "Creating self-signed SSL certificates for $domain..."
+        
+        mkdir -p "$ssl_dir"
+        
+        # Generate self-signed certificate
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout "$ssl_dir/privkey.pem" \
+            -out "$ssl_dir/fullchain.pem" \
+            -subj "/C=US/ST=State/L=City/O=Organization/OU=OrgUnit/CN=$domain"
+        
+        # Set proper permissions
+        chmod 644 "$ssl_dir/fullchain.pem"
+        chmod 600 "$ssl_dir/privkey.pem"
+        
+        log "✅ Self-signed SSL certificates created"
+    else
+        log "SSL certificates already exist, skipping creation"
+    fi
+}
+
+main() {
+    local domain="${1:-localhost}"
+    create_self_signed_ssl "$domain"
+}
+
+main "$@"
+EOF
+    
+    chmod +x "ssl-temp/create-self-signed.sh"
     
     # Create optimized nginx configuration
     cat > "nginx/conf.d/katacore.conf" << EOF
@@ -626,8 +654,9 @@ EOF
 
 # HTTPS server block
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
     server_name $domain_name www.$domain_name;
     
     # SSL Configuration
@@ -919,13 +948,34 @@ fi
 log "✅ Server environment setup completed"
 DEPLOY_EOF
     
-    # Step 5: Setup SSL if domain is provided
+    # Step 5: Setup SSL certificates (Let's Encrypt or self-signed)
+    log "🔒 Setting up SSL certificates..."
+    
     if [[ -n "$DOMAIN" ]] && [[ "$AUTO_SSL" == "true" ]]; then
-        log "🔒 Setting up SSL certificates..."
-        ssh "$SERVER_USER@$SERVER_HOST" "cd $REMOTE_DIR && chmod +x ssl-temp/setup-ssl.sh && ./ssl-temp/setup-ssl.sh $DOMAIN"
+        # Try Let's Encrypt first
+        log "Attempting Let's Encrypt SSL setup..."
+        if ssh "$SERVER_USER@$SERVER_HOST" "cd $REMOTE_DIR && chmod +x ssl-temp/setup-ssl.sh && timeout 300 ./ssl-temp/setup-ssl.sh $DOMAIN" 2>/dev/null; then
+            success "✅ Let's Encrypt SSL certificates configured"
+            # Copy Let's Encrypt certificates to Docker volume
+            ssh "$SERVER_USER@$SERVER_HOST" << 'LE_COPY_EOF'
+docker run --rm -v katacore-nginx-ssl-prod:/docker-ssl -v /etc/letsencrypt:/host-letsencrypt alpine:latest sh -c '
+    if [ -f /host-letsencrypt/live/*/fullchain.pem ]; then
+        cp /host-letsencrypt/live/*/fullchain.pem /docker-ssl/
+        cp /host-letsencrypt/live/*/privkey.pem /docker-ssl/
+        chmod 644 /docker-ssl/fullchain.pem
+        chmod 600 /docker-ssl/privkey.pem
+        echo "✅ Let'\''s Encrypt certificates copied to Docker volume"
+    fi
+'
+LE_COPY_EOF
+        else
+            warning "⚠️ Let's Encrypt failed, will use self-signed certificates"
+        fi
+    else
+        info "Using self-signed SSL certificates"
     fi
     
-    # Step 6: Deploy application
+    # Step 6: Deploy application with SSL certificate generation
     log "🚀 Deploying application..."
     
     ssh "$SERVER_USER@$SERVER_HOST" << DEPLOY_EOF
@@ -940,21 +990,64 @@ log() {
 log "Stopping existing containers..."
 docker-compose -f docker-compose.prod.yml --env-file .env.prod down 2>/dev/null || true
 
-# Copy nginx configuration
-log "Configuring Nginx..."
-cp nginx/conf.d/katacore.conf /etc/nginx/sites-available/katacore
-rm -f /etc/nginx/sites-enabled/default
-ln -sf /etc/nginx/sites-available/katacore /etc/nginx/sites-enabled/katacore
+# Create SSL certificates volume and generate certificates
+log "Setting up SSL certificates in Docker volume..."
 
-# Test nginx configuration
-nginx -t
+# Create volume first
+docker volume create katacore-nginx-ssl-prod 2>/dev/null || true
+
+# Generate SSL certificates directly in Docker volume
+if [[ -n "$DOMAIN" ]] && [[ "$AUTO_SSL" == "true" ]]; then
+    log "Attempting Let's Encrypt for domain: $DOMAIN"
+    
+    # Try Let's Encrypt with a temporary container
+    if docker run --rm -v katacore-nginx-ssl-prod:/etc/nginx/ssl -v /var/www/certbot:/var/www/certbot -p 80:80 certbot/certbot:latest certonly --standalone --non-interactive --agree-tos --email admin@$DOMAIN -d $DOMAIN --expand 2>/dev/null; then
+        log "✅ Let's Encrypt certificates obtained"
+        
+        # Copy certificates to nginx volume
+        docker run --rm -v /etc/letsencrypt:/etc/letsencrypt -v katacore-nginx-ssl-prod:/etc/nginx/ssl alpine:latest sh -c '
+            if [ -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then
+                cp /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/nginx/ssl/
+                cp /etc/letsencrypt/live/$DOMAIN/privkey.pem /etc/nginx/ssl/
+                chmod 644 /etc/nginx/ssl/fullchain.pem
+                chmod 600 /etc/nginx/ssl/privkey.pem
+                echo "✅ Let'\''s Encrypt certificates copied to Docker volume"
+            fi
+        '
+    else
+        log "⚠️ Let's Encrypt failed, generating self-signed certificates"
+        docker run --rm -v katacore-nginx-ssl-prod:/etc/nginx/ssl alpine:latest sh -c '
+            apk add --no-cache openssl
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout /etc/nginx/ssl/privkey.pem \
+                -out /etc/nginx/ssl/fullchain.pem \
+                -subj "/C=VN/ST=HoChiMinh/L=HoChiMinh/O=KataCore/OU=DevOps/CN='$DOMAIN'"
+            chmod 644 /etc/nginx/ssl/fullchain.pem
+            chmod 600 /etc/nginx/ssl/privkey.pem
+            echo "✅ Self-signed certificates generated for '$DOMAIN'"
+        '
+    fi
+else
+    log "Generating self-signed SSL certificates for IP: $SERVER_HOST"
+    docker run --rm -v katacore-nginx-ssl-prod:/etc/nginx/ssl alpine:latest sh -c '
+        apk add --no-cache openssl
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+            -keyout /etc/nginx/ssl/privkey.pem \
+            -out /etc/nginx/ssl/fullchain.pem \
+            -subj "/C=VN/ST=HoChiMinh/L=HoChiMinh/O=KataCore/OU=DevOps/CN='$SERVER_HOST'"
+        chmod 644 /etc/nginx/ssl/fullchain.pem
+        chmod 600 /etc/nginx/ssl/privkey.pem
+        echo "✅ Self-signed certificates generated for '$SERVER_HOST'"
+    '
+fi
+
+# Verify certificates exist
+log "Verifying SSL certificates..."
+docker run --rm -v katacore-nginx-ssl-prod:/etc/nginx/ssl alpine:latest ls -la /etc/nginx/ssl/
 
 # Start application
 log "Starting application..."
 docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
-
-# Start nginx
-systemctl restart nginx
 
 log "✅ Application deployment completed"
 DEPLOY_EOF
@@ -1017,7 +1110,7 @@ docker-compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
 
 # Run Prisma migrations if needed
 log "Running database migrations..."
-docker-compose -f docker-compose.prod.yml --env-file .env.prod exec -T api npx prisma migrate deploy 2>/dev/null || true
+docker-compose -f docker-compose.prod.yml --env-file .env.prod exec -T api bun prisma migrate deploy 2>/dev/null || true
 
 log "✅ Update deployment completed"
 UPDATE_EOF
@@ -1035,10 +1128,7 @@ show_deployment_summary() {
     echo ""
     
     local domain_name="${DOMAIN:-$SERVER_HOST}"
-    local protocol="http"
-    if [[ -n "$DOMAIN" ]] && [[ "$AUTO_SSL" == "true" ]]; then
-        protocol="https"
-    fi
+    local protocol="https"  # Always use HTTPS
     
     echo -e "🌐 ${BLUE}Application URLs:${NC}"
     echo -e "   📱 Main Site: ${CYAN}$protocol://$domain_name${NC}"
@@ -1049,7 +1139,7 @@ show_deployment_summary() {
     
     echo -e "🔧 ${BLUE}Management:${NC}"
     echo -e "   📊 Server: ${CYAN}$SERVER_HOST${NC}"
-    echo -e "   🔒 SSL: ${CYAN}$([ "$AUTO_SSL" == "true" ] && echo "Enabled" || echo "Disabled")${NC}"
+    echo -e "   🔒 SSL: ${CYAN}Enabled ($([ -n "$DOMAIN" ] && echo "Let's Encrypt/Self-signed" || echo "Self-signed"))${NC}"
     echo -e "   📂 Remote Dir: ${CYAN}$REMOTE_DIR${NC}"
     echo ""
     
@@ -1063,7 +1153,7 @@ show_deployment_summary() {
         echo -e "🔐 ${YELLOW}Important Security Notes:${NC}"
         echo -e "   • Environment file created with secure passwords"
         echo -e "   • All credentials are randomly generated"
-        echo -e "   • SSL configured automatically (if domain provided)"
+        echo -e "   • SSL certificates configured (Let's Encrypt or self-signed)"
         echo -e "   • Admin panels protected with HTTP auth"
         echo ""
     fi
