@@ -4,32 +4,16 @@
 
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/chikiet/KataCore)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Bun](https://img.shields.io### **Deployment Scripts**
-```bash
-# Remote deployment using npm scripts
-bun run deploy:remote  # Full remote deployment
-bun run deploy:simple  # Simple IP-based deployment
-bun run deploy:cleanup # Cleanup remote deployment
-
-# Direct script usage
-./deploy-remote.sh 116.118.85.41 mydomain.com          # Full deployment
-./deploy-remote.sh --simple 116.118.85.41 mydomain.com # Simple deployment
-./deploy-remote.sh --cleanup 116.118.85.41               # Cleanup
-
-# Test deployment functionality
-./test-deployment.sh   # Run deployment tests
-```.0+-yellow.svg)](https://bun.sh)
+[![Bun](https://img.shields.io/badge/bun-1.0+-yellow.svg)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
 [![Next.js](https://img.shields.io/badge/next.js-15.3.4-black.svg)](https://nextjs.org)
 [![NestJS](https://img.shields.io/badge/nestjs-11.1.3-red.svg)](https://nestjs.com)
 
 **KataCore StartKit v1** is a modern full-stack application built with Next.js 15, React 19, NestJS 11, and Bun.js. It provides automated remote deployment with Docker, SSL support, and production-ready infrastructure out of the box.
 
----
+## 🌟 Features
 
-## 🌟 **Features**
-
-### **Full-Stack Application**
+### Full-Stack Application
 - 🚀 **Next.js 15** - Modern React framework with Turbopack for ultra-fast development
 - ⚛️ **React 19** - Latest React with improved concurrent features
 - 🎨 **Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
@@ -38,14 +22,14 @@ bun run deploy:cleanup # Cleanup remote deployment
 - 🗄️ **Prisma ORM** - Type-safe database access with PostgreSQL
 - 🔐 **Authentication** - JWT-based auth with bcrypt password hashing
 
-### **Database & Infrastructure**
+### Database & Infrastructure
 - 🐘 **PostgreSQL** - Robust relational database with full SQL support
 - 🗃️ **Redis** - High-performance caching and session storage
 - 📦 **MinIO** - S3-compatible object storage for file uploads
 - 🔧 **pgAdmin** - Web-based PostgreSQL administration
 - 📊 **Health Monitoring** - Built-in health checks for all services
 
-### **Development & Deployment**
+### Development & Deployment
 - 🎯 **Remote Deployment** - One-command deployment to any server
 - 🔒 **Auto-SSL Configuration** - Let's Encrypt certificates with auto-renewal
 - 🛡️ **Security-First** - Auto-generated secure passwords and secrets
@@ -54,9 +38,7 @@ bun run deploy:cleanup # Cleanup remote deployment
 - 🧹 **Easy Cleanup** - Simple cleanup of remote deployments
 - 📝 **TypeScript** - Full type safety across the stack
 
----
-
-## 🏗️ **Technology Stack**
+## 🏗️ Technology Stack
 
 | Layer | Component | Technology | Version | Purpose |
 |-------|-----------|------------|---------|---------|
@@ -77,17 +59,15 @@ bun run deploy:cleanup # Cleanup remote deployment
 | | Reverse Proxy | Nginx | Latest | Load balancing and SSL termination |
 | | SSL Certificates | Let's Encrypt | Latest | Free SSL certificate automation |
 
----
+## 🚀 Quick Start
 
-## 🚀 **Quick Start**
-
-### **Prerequisites**
+### Prerequisites
 - **Bun.js** (v1.0+) - [Install Bun](https://bun.sh)
 - **Docker** & **Docker Compose** (for deployment)
 - **Node.js** (v18+) as fallback runtime
 - **Git** for version control
 
-### **1. Clone & Setup**
+### 1. Clone & Setup
 ```bash
 # Clone the repository
 git clone https://github.com/chikiet/KataCore.git
@@ -100,7 +80,7 @@ chmod +x deploy-remote.sh
 bun run install:all
 ```
 
-### **2. Local Development**
+### 2. Local Development
 ```bash
 # Start both frontend and backend in development mode
 bun run dev
@@ -115,7 +95,7 @@ bun run dev:api     # Backend (NestJS) on http://localhost:3001
 - 🔌 **API**: http://localhost:3001
 - ❤️ **Health Check**: http://localhost:3001/health
 
-### **3. Build for Production**
+### 3. Build for Production
 ```bash
 # Build both applications
 bun run build
@@ -124,23 +104,24 @@ bun run build
 bun run build:site  # Build Next.js application
 bun run build:api   # Build NestJS application
 ```
-### **4. Remote Deployment** 🚀
+
+### 4. Remote Deployment 🚀
 
 **For deployment to remote servers:**
 
-#### **Simple Deployment (IP-based)**
+#### Simple Deployment (IP-based)
 ```bash
 # Deploy to server with IP only (no SSL)
 ./deploy-remote.sh --simple 116.118.85.41 mydomain.com
 ```
 
-#### **Full Deployment (Domain + SSL)**
+#### Full Deployment (Domain + SSL)
 ```bash
 # Deploy to server with domain and SSL
 ./deploy-remote.sh 116.118.85.41 mydomain.com
 ```
 
-#### **Advanced Options**
+#### Advanced Options
 ```bash
 # Custom SSH user and key
 ./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 mydomain.com
@@ -152,7 +133,7 @@ bun run build:api   # Build NestJS application
 ./deploy-remote.sh --project myproject 116.118.85.41 mydomain.com
 ```
 
-#### **Cleanup Deployment**
+#### Cleanup Deployment
 ```bash
 # Remove deployment from remote server
 ./deploy-remote.sh --cleanup 116.118.85.41
@@ -163,11 +144,9 @@ bun run build:api   # Build NestJS application
 - Docker & Docker Compose on remote server (auto-installed)
 - Domain name (for full deployment with SSL)
 
----
+## 🎯 Deployment Options
 
-## 🎯 **Deployment Options**
-
-### **Development Mode** (Local)
+### Development Mode (Local)
 ```bash
 # Start development servers
 bun run dev  # Both frontend + backend
@@ -176,7 +155,7 @@ bun run dev  # Both frontend + backend
 - 🌐 Frontend: http://localhost:3000
 - 🔌 API: http://localhost:3001/health
 
-### **Simple Deployment** (IP-based)
+### Simple Deployment (IP-based)
 ```bash
 ./deploy-remote.sh --simple SERVER_IP DOMAIN
 ```
@@ -192,7 +171,7 @@ bun run dev  # Both frontend + backend
 - MinIO: `http://SERVER_IP:9000`
 - pgAdmin: `http://SERVER_IP:5050`
 
-### **Full Deployment** (Production)
+### Full Deployment (Production)
 ```bash
 ./deploy-remote.sh SERVER_IP DOMAIN
 ```
@@ -208,11 +187,9 @@ bun run dev  # Both frontend + backend
 - MinIO: `https://yourdomain.com/minio`
 - pgAdmin: `https://yourdomain.com/pgadmin`
 
----
+## 🏛️ Application Architecture
 
-## 🏛️ **Application Architecture**
-
-### **Project Structure**
+### Project Structure
 ```
 KataCore/
 ├── 📁 api/                     # NestJS Backend API
@@ -268,13 +245,13 @@ KataCore/
 └── 📄 README.md              # This file
 ```
 
-### **API Endpoints**
+### API Endpoints
 - `GET /` - Welcome message from KataCore API
 - `GET /health` - Health check endpoint with service status
 - Authentication endpoints (JWT-based) - *Ready for implementation*
 - RESTful CRUD operations with Prisma ORM - *Ready for implementation*
 
-### **Database Schema (Prisma)**
+### Database Schema (Prisma)
 - **Users** - User management with roles and authentication
 - **Posts** - Content management with publishing workflow
 - **Comments** - Nested commenting system
@@ -283,11 +260,9 @@ KataCore/
 - **Sessions** - User session management
 - **File Uploads** - Media file tracking
 
----
+## 📋 Available Scripts
 
-## 📋 **Available Scripts**
-
-### **Development Scripts**
+### Development Scripts
 ```bash
 # Install dependencies for all packages
 bun run install:all
@@ -320,7 +295,7 @@ bun run test        # Run API tests
 bun run clean       # Remove node_modules and build artifacts
 ```
 
-### **Deployment Scripts**
+### Deployment Scripts
 ```bash
 # Remote deployment using npm scripts
 bun run deploy:remote  # Full remote deployment
@@ -328,12 +303,15 @@ bun run deploy:simple  # Simple IP-based deployment
 bun run deploy:cleanup # Cleanup remote deployment
 
 # Direct script usage
-./deploy-remote.sh 116.118.85.41 yourdomain.com          # Full deployment
-./deploy-remote.sh --simple 116.118.85.41 yourdomain.com # Simple deployment
+./deploy-remote.sh 116.118.85.41 mydomain.com          # Full deployment
+./deploy-remote.sh --simple 116.118.85.41 mydomain.com # Simple deployment
 ./deploy-remote.sh --cleanup 116.118.85.41               # Cleanup
+
+# Test deployment functionality
+./test-deployment.sh   # Run deployment tests
 ```
 
-### **Docker Scripts**
+### Docker Scripts
 ```bash
 # Local Docker development
 bun run docker:up   # Start all services with Docker Compose
@@ -345,7 +323,7 @@ cd api && bun run docker:build   # Build API Docker image
 cd api && bun run docker:run     # Run API in Docker
 ```
 
-### **Database Scripts** (API directory)
+### Database Scripts (API directory)
 ```bash
 cd api
 
@@ -358,7 +336,7 @@ bun run prisma:studio    # Open Prisma Studio
 bun run prisma:seed      # Seed database with sample data
 ```
 
-### **Testing Scripts**
+### Testing Scripts
 ```bash
 # Run deployment tests
 ./test-deployment.sh    # Test deployment script functionality
@@ -369,9 +347,7 @@ cd api && bun run test:watch  # Run tests in watch mode
 cd api && bun run test:cov    # Run tests with coverage
 ```
 
----
-
-## 🔧 **Environment Variables**
+## 🔧 Environment Variables
 
 Environment variables are automatically generated during deployment. You can customize them by copying `.env.example` to `.env`:
 
@@ -379,7 +355,7 @@ Environment variables are automatically generated during deployment. You can cus
 cp .env.example .env
 ```
 
-### **Core Application Variables**
+### Core Application Variables
 ```bash
 # Application Configuration
 NODE_ENV=production
@@ -423,7 +399,7 @@ PGADMIN_DEFAULT_EMAIL=admin@localhost
 PGADMIN_DEFAULT_PASSWORD=<auto-generated-secure-password>
 ```
 
-### **Deployment Configuration**
+### Deployment Configuration
 ```bash
 # API Configuration
 CORS_ORIGIN=https://yourdomain.com
@@ -441,7 +417,7 @@ SERVER_IP=116.118.85.41
 DEPLOY_TYPE=production
 ```
 
-### **Development Configuration**
+### Development Configuration
 ```bash
 # Development Configuration (automatically set)
 NODE_ENV=development
@@ -457,14 +433,12 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 INTERNAL_API_URL=http://localhost:3001
 ```
 
-### **Production Environment Variables**
+### Production Environment Variables
 All production environment variables are automatically generated during deployment with secure random values.
 
----
+## 🛠️ Development Workflow
 
-## 🛠️ **Development Workflow**
-
-### **Local Development**
+### Local Development
 ```bash
 # 1. Start development environment
 bun run dev
@@ -483,7 +457,7 @@ bun run lint          # Check code quality
 bun run build
 ```
 
-### **Database Management**
+### Database Management
 ```bash
 # Generate Prisma client
 cd api && bun run prisma:generate
@@ -498,7 +472,7 @@ cd api && bun run prisma:deploy
 cd api && bun run prisma:studio
 ```
 
-### **Testing & Quality Assurance**
+### Testing & Quality Assurance
 ```bash
 # Run deployment tests
 ./test-deployment.sh
@@ -516,11 +490,9 @@ bun run lint
 cd api && bun run format
 ```
 
----
+## 📊 Monitoring & Maintenance
 
-## 📊 **Monitoring & Maintenance**
-
-### **Health Monitoring**
+### Health Monitoring
 ```bash
 # View service status
 docker-compose -f docker-compose.startkitv1.yml ps
@@ -532,7 +504,7 @@ docker-compose -f docker-compose.startkitv1.yml logs -f
 docker-compose -f docker-compose.startkitv1.yml logs service_name
 ```
 
-### **Updates & Maintenance**
+### Updates & Maintenance
 ```bash
 # Update application code
 git pull
@@ -543,7 +515,7 @@ git pull
 ./deploy-remote.sh --force-regen 116.118.85.41 mydomain.com
 ```
 
-### **Backup & Recovery**
+### Backup & Recovery
 ```bash
 # Manual backup
 docker-compose -f docker-compose.startkitv1.yml exec postgres pg_dump -U katacore katacore > backup.sql
@@ -552,11 +524,9 @@ docker-compose -f docker-compose.startkitv1.yml exec postgres pg_dump -U katacor
 docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacore -d katacore < backup.sql
 ```
 
----
+## 🚨 Troubleshooting
 
-## 🚨 **Troubleshooting**
-
-### **Common Development Issues**
+### Common Development Issues
 
 1. **Dependencies installation fails**
    ```bash
@@ -584,7 +554,7 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
    cd api && bun run prisma:reset
    ```
 
-### **Common Deployment Issues**
+### Common Deployment Issues
 
 1. **Port conflicts on remote server**
    ```bash
@@ -622,18 +592,16 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
    docker-compose -f docker-compose.startkitv1.yml config
    ```
 
-### **Reset deployment**
+### Reset deployment
 ```bash
 # Clean everything and start fresh
 ./deploy-remote.sh --cleanup 116.118.85.41
 ./deploy-remote.sh --force-regen 116.118.85.41 mydomain.com
 ```
 
----
+## 📚 Quick Reference
 
-## 📚 **Quick Reference**
-
-### **Essential Commands**
+### Essential Commands
 ```bash
 # Setup
 git clone https://github.com/chikiet/KataCore.git
@@ -656,20 +624,18 @@ cd api && bun run prisma:migrate         # Run migrations
 docker-compose -f docker-compose.startkitv1.yml logs -f  # View logs
 ```
 
-### **Important URLs (After Deployment)**
+### Important URLs (After Deployment)
 - **Frontend**: `https://yourdomain.com` (or `http://IP:3000` for simple)
 - **API**: `https://yourdomain.com/api` (or `http://IP:3001` for simple)
 - **Health Check**: `https://yourdomain.com/api/health`
 - **pgAdmin**: `https://yourdomain.com/pgadmin` (or `http://IP:5050`)
 - **MinIO**: `https://yourdomain.com/minio` (or `http://IP:9000`)
 
----
-
-## 🌍 **Cloud Provider Support**
+## 🌍 Cloud Provider Support
 
 KataCore StartKit v1 works with **any** cloud provider:
 
-### **Tested Platforms**
+### Tested Platforms
 - ✅ **AWS EC2** - All instance types
 - ✅ **Google Cloud Compute** - All machine types  
 - ✅ **DigitalOcean Droplets** - All sizes
@@ -677,15 +643,13 @@ KataCore StartKit v1 works with **any** cloud provider:
 - ✅ **Linode** - All instances
 - ✅ **Hetzner Cloud** - All server types
 
-### **Linux Distributions**
+### Linux Distributions
 - ✅ **Ubuntu** 20.04, 22.04, 24.04
 - ✅ **Debian** 11, 12
 - ✅ **CentOS** 8, 9
 - ✅ **RHEL** 8, 9
 
----
-
-## 🤝 **Contributing**
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
@@ -695,22 +659,18 @@ KataCore StartKit v1 works with **any** cloud provider:
 6. Push to branch: `git push origin feature/amazing-feature`
 7. Submit pull request
 
-### **Development Guidelines**
+### Development Guidelines
 - Follow TypeScript best practices
 - Write tests for new API endpoints
 - Update documentation for new features
 - Test deployment changes with `./test-deployment.sh`
 - Ensure all linting passes before committing
 
----
-
-## 📄 **License**
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## 📞 **Support**
+## 📞 Support
 
 - 📖 **Documentation**: This README.md
 - 🐛 **Issues**: [GitHub Issues](https://github.com/chikiet/KataCore/issues)
@@ -719,7 +679,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 🔧 **Help**: `./deploy-remote.sh --help` for deployment help
 - 🧪 **Testing**: `./test-deployment.sh` for configuration validation
 
-### **Project Status**
+### Project Status
 - ✅ **Version**: 1.0.0
 - ✅ **Status**: Production Ready
 - ✅ **Last Updated**: July 3, 2025
