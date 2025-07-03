@@ -24,6 +24,8 @@ AUTOPUSH_GIT=false
 VERBOSE=false
 DRY_RUN=false
 FORCE_REGENERATE=false
+SETUP_NGINX=false
+FIRST_TIME=false
 
 # Logging functions
 log() {
@@ -81,6 +83,8 @@ USAGE:
 OPTIONS:
     --autopush         Enable Git autopush after successful deployment
     --force-regen      Force regenerate all passwords and secrets
+    --setup-nginx      Setup Nginx configuration and SSL
+    --first-time       Complete first-time server setup (includes Nginx)
     --verbose          Enable verbose output
     --dry-run          Show what would be done without executing
     --help             Show this help message
@@ -102,6 +106,12 @@ EXAMPLES:
 
     # Force regenerate all passwords
     $0 --force-regen
+
+    # First-time server setup with Nginx
+    $0 --first-time
+
+    # Setup Nginx only
+    $0 --setup-nginx
 
     # Dry run to see what would happen
     $0 --dry-run
@@ -128,6 +138,15 @@ parse_arguments() {
                 ;;
             --force-regen)
                 FORCE_REGENERATE=true
+                shift
+                ;;
+            --setup-nginx)
+                SETUP_NGINX=true
+                shift
+                ;;
+            --first-time)
+                FIRST_TIME=true
+                SETUP_NGINX=true
                 shift
                 ;;
             --verbose)
@@ -400,6 +419,88 @@ git_autopush() {
     fi
 }
 
+# Nginx setup functionality
+setup_nginx_server() {
+    if [[ "$SETUP_NGINX" == "false" ]]; then
+        debug "Nginx setup disabled"
+        return 0
+    fi
+    
+    log "🌐 Setting up Nginx server configuration..."
+    
+    # Check if nginx setup script exists
+    local nginx_script="$SCRIPT_DIR/scripts/setup-nginx-auto.sh"
+    if [[ ! -f "$nginx_script" ]]; then
+        error "Nginx setup script not found at $nginx_script"
+    fi
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        info "DRY RUN: Would setup Nginx with SSL for innerbright.vn"
+        return 0
+    fi
+    
+    # Check if running as root for Nginx setup
+    if [[ $EUID -ne 0 ]]; then
+        error "Nginx setup requires root privileges. Please run with sudo."
+    fi
+    
+    # Make sure the script is executable
+    chmod +x "$nginx_script"
+    
+    # Run the Nginx setup script
+    info "Running Nginx auto-setup script..."
+    if bash "$nginx_script"; then
+        success "Nginx setup completed successfully"
+    else
+        error "Nginx setup failed"
+    fi
+}
+
+# System requirements check for first-time setup
+check_system_requirements() {
+    if [[ "$FIRST_TIME" == "false" ]]; then
+        debug "Skipping system requirements check"
+        return 0
+    fi
+    
+    log "🔍 Checking system requirements for first-time setup..."
+    
+    if [[ "$DRY_RUN" == "true" ]]; then
+        info "DRY RUN: Would check system requirements"
+        return 0
+    fi
+    
+    # Check if running on the correct server IP
+    local server_ip=$(curl -s ifconfig.me 2>/dev/null || curl -s ipinfo.io/ip 2>/dev/null || echo "unknown")
+    if [[ "$server_ip" == "116.118.85.41" ]]; then
+        success "Running on correct server: $server_ip"
+    else
+        warning "Server IP mismatch. Expected: 116.118.85.41, Got: $server_ip"
+        info "Continuing anyway..."
+    fi
+    
+    # Check available disk space
+    local available_space=$(df / | awk 'NR==2 {print $4}')
+    if [[ $available_space -gt 2000000 ]]; then  # 2GB in KB
+        success "Sufficient disk space available: $(($available_space / 1024 / 1024))GB"
+    else
+        warning "Low disk space: $(($available_space / 1024 / 1024))GB available"
+    fi
+    
+    # Check memory
+    local total_memory=$(free -m | awk 'NR==2{print $2}')
+    if [[ $total_memory -gt 1000 ]]; then  # 1GB
+        success "Sufficient memory available: ${total_memory}MB"
+    else
+        warning "Low memory: ${total_memory}MB available"
+    fi
+    
+    # Update system packages
+    info "Updating system packages..."
+    apt update && apt upgrade -y
+    success "System packages updated"
+}
+
 # Container deployment
 deploy_containers() {
     log "🐳 Deploying containers..."
@@ -505,6 +606,12 @@ show_deployment_summary() {
     echo -e "  🔗 API: ${CYAN}http://116.118.85.41:3001${NC}"
     echo -e "  🌐 Site: ${CYAN}http://116.118.85.41:3000${NC}"
     echo -e "  📁 Environment: ${CYAN}$ENV_FILE${NC}"
+    
+    if [[ "$SETUP_NGINX" == "true" ]]; then
+        echo -e "  🌐 Domain: ${CYAN}https://innerbright.vn${NC}"
+        echo -e "  🔗 API via Nginx: ${CYAN}https://innerbright.vn/api${NC}"
+        echo -e "  🏥 Health Check: ${CYAN}https://innerbright.vn/health${NC}"
+    fi
     echo ""
     
     echo -e "${BLUE}🔐 Security:${NC}"
@@ -551,12 +658,16 @@ main() {
         echo -e "${BLUE}Configuration:${NC}"
         echo -e "  Autopush Git: $AUTOPUSH_GIT"
         echo -e "  Force Regenerate: $FORCE_REGENERATE"
+        echo -e "  Setup Nginx: $SETUP_NGINX"
+        echo -e "  First Time: $FIRST_TIME"
         echo -e "  Verbose: $VERBOSE"
         echo -e "  Dry Run: $DRY_RUN"
         echo ""
     fi
     
     # Execute deployment steps
+    check_system_requirements
+    setup_nginx_server
     setup_environment
     validate_environment
     deploy_containers
