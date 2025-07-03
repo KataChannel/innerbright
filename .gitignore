@@ -1,9 +1,9 @@
-# KataCore StartKit v2 - Minimal .gitignore
+# KataCore StartKit v1 Clean - .gitignore
 
 # Environment files
 .env
 .env.local
-.env.prod
+.env.production
 .env.prod.backup*
 *.env.backup*
 
