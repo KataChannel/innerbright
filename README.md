@@ -112,31 +112,31 @@ bun run build:api   # Build NestJS application
 #### Simple Deployment (IP-based)
 ```bash
 # Deploy to server with IP only (no SSL)
-./deploy-remote.sh --simple 116.118.85.41 mydomain.com
+./deploy-remote.sh --simple SERVER_IP mydomain.com
 ```
 
 #### Full Deployment (Domain + SSL)
 ```bash
 # Deploy to server with domain and SSL
-./deploy-remote.sh 116.118.85.41 mydomain.com
+./deploy-remote.sh SERVER_IP mydomain.com
 ```
 
 #### Advanced Options
 ```bash
 # Custom SSH user and key
-./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 mydomain.com
+./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem SERVER_IP mydomain.com
 
 # Force regenerate environment variables
-./deploy-remote.sh --force-regen 116.118.85.41 mydomain.com
+./deploy-remote.sh --force-regen SERVER_IP mydomain.com
 
 # Custom project name
-./deploy-remote.sh --project myproject 116.118.85.41 mydomain.com
+./deploy-remote.sh --project myproject SERVER_IP mydomain.com
 ```
 
 #### Cleanup Deployment
 ```bash
 # Remove deployment from remote server
-./deploy-remote.sh --cleanup 116.118.85.41
+./deploy-remote.sh --cleanup SERVER_IP
 ```
 
 **Requirements for remote deployment:**
@@ -303,9 +303,9 @@ bun run deploy:simple  # Simple IP-based deployment
 bun run deploy:cleanup # Cleanup remote deployment
 
 # Direct script usage
-./deploy-remote.sh 116.118.85.41 mydomain.com          # Full deployment
-./deploy-remote.sh --simple 116.118.85.41 mydomain.com # Simple deployment
-./deploy-remote.sh --cleanup 116.118.85.41               # Cleanup
+./deploy-remote.sh SERVER_IP mydomain.com          # Full deployment
+./deploy-remote.sh --simple SERVER_IP mydomain.com # Simple deployment
+./deploy-remote.sh --cleanup SERVER_IP               # Cleanup
 
 # Test deployment functionality
 ./test-deployment.sh   # Run deployment tests
@@ -411,7 +411,7 @@ NEXT_PUBLIC_API_URL=https://yourdomain.com/api
 # Domain & SSL Configuration
 DOMAIN=yourdomain.com
 LETSENCRYPT_EMAIL=admin@yourdomain.com
-SERVER_IP=116.118.85.41
+SERVER_IP=SERVER_IP
 
 # Deployment Type
 DEPLOY_TYPE=production
@@ -508,11 +508,11 @@ docker-compose -f docker-compose.startkitv1.yml logs service_name
 ```bash
 # Update application code
 git pull
-./deploy-remote.sh 116.118.85.41 mydomain.com
+./deploy-remote.sh SERVER_IP mydomain.com
 
 # Clean deployment (removes old data)
-./deploy-remote.sh --cleanup 116.118.85.41
-./deploy-remote.sh --force-regen 116.118.85.41 mydomain.com
+./deploy-remote.sh --cleanup SERVER_IP
+./deploy-remote.sh --force-regen SERVER_IP mydomain.com
 ```
 
 ### Backup & Recovery
@@ -562,7 +562,7 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
    sudo netstat -tulpn | grep :3000
    
    # Stop conflicting services
-   ./deploy-remote.sh --cleanup 116.118.85.41
+   ./deploy-remote.sh --cleanup SERVER_IP
    ```
 
 2. **SSL certificate issues**
@@ -595,8 +595,8 @@ docker-compose -f docker-compose.startkitv1.yml exec -T postgres psql -U katacor
 ### Reset deployment
 ```bash
 # Clean everything and start fresh
-./deploy-remote.sh --cleanup 116.118.85.41
-./deploy-remote.sh --force-regen 116.118.85.41 mydomain.com
+./deploy-remote.sh --cleanup SERVER_IP
+./deploy-remote.sh --force-regen SERVER_IP mydomain.com
 ```
 
 ## 📚 Quick Reference
@@ -692,9 +692,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🚀 Ready to deploy?**
 
-**Quick Start:** `./deploy-remote.sh --simple 116.118.85.41 mydomain.com`
+**Quick Start:** `./deploy-remote.sh --simple SERVER_IP mydomain.com`
 
-**Full Deploy:** `./deploy-remote.sh 116.118.85.41 mydomain.com`
+**Full Deploy:** `./deploy-remote.sh SERVER_IP mydomain.com`
 
 ---
 
