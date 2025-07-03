@@ -1,7 +1,7 @@
 {
-  "name": "katacore-startkitv1-clean",
+  "name": "katacore-startkitv1",
   "version": "1.0.0",
-  "description": "KataCore StartKit v1 Clean - Production-ready deployment system",
+  "description": "KataCore StartKit v1 - Production-ready remote deployment system",
   "private": true,
   "workspaces": [
     "site",
@@ -23,24 +23,23 @@
     "lint": "bun run lint:site && bun run lint:api",
     "lint:site": "cd site && bun run lint",
     "lint:api": "cd api && bun run lint",
-    "deploy:simple": "./deploy-startkitv1-clean.sh deploy-simple",
-    "deploy:full": "./deploy-startkitv1-clean.sh deploy-full",
-    "deploy:guide": "./deploy-startkitv1-clean.sh deploy-guide",
-    "deploy:test": "./test-startkitv1-clean.sh",
-    "deploy:cleanup": "./deploy-startkitv1-clean.sh cleanup",
-    "docker:up": "docker-compose -f docker-compose.startkitv1-clean.yml up -d",
-    "docker:down": "docker-compose -f docker-compose.startkitv1-clean.yml down",
-    "docker:logs": "docker-compose -f docker-compose.startkitv1-clean.yml logs -f"
+    "deploy:remote": "./deploy-remote.sh",
+    "deploy:simple": "./deploy-remote.sh --simple",
+    "deploy:cleanup": "./deploy-remote.sh --cleanup",
+    "docker:up": "docker-compose -f docker-compose.startkitv1.yml up -d",
+    "docker:down": "docker-compose -f docker-compose.startkitv1.yml down",
+    "docker:logs": "docker-compose -f docker-compose.startkitv1.yml logs -f"
   },
   "keywords": [
     "katacore",
     "startkitv1",
-    "deployment",
+    "remote-deployment",
     "docker",
     "nginx",
+    "ssl",
     "production",
-    "nextjs",
     "nestjs",
+    "nextjs",
     "postgresql",
     "redis",
     "minio"
@@ -49,7 +48,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/katacore/startkitv1-clean"
+    "url": "https://github.com/katacore/startkitv1"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

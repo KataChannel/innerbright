@@ -1,8 +1,5 @@
 # KataCore StartKit v1 - Clean & Minimal Docker Compose
 # Production-ready deployment with auto-generated environment
-
-version: '3.8'
-
 services:
   # ===== API SERVICE =====
   api:

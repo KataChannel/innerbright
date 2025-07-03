@@ -1,25 +1,26 @@
-# 🚀 KataCore StartKit v1 Clean
+# 🚀 KataCore StartKit v1
 
-> **Clean, minimal, and production-ready deployment system**
+> **Production-ready deployment system for full-stack applications**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/katacore/startkitv1-clean)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/katacore/startkitv1)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/bun-1.0+-yellow.svg)](https://bun.sh)
 [![Docker](https://img.shields.io/badge/docker-supported-blue.svg)](https://docker.com)
 
-**KataCore StartKit v1 Clean** provides a streamlined deployment system with auto-generated secure environments, SSL support, and production-ready Docker configuration. Deploy full-stack applications with minimal complexity and maximum reliability.
+**KataCore StartKit v1** provides a streamlined deployment system with auto-generated secure environments, SSL support, and production-ready Docker configuration. Deploy full-stack applications with minimal complexity and maximum reliability.
 
 ---
 
 ## 🌟 **Features**
 
-- 🎯 **Simple Deployment** - Deploy with just `./deploy-startkitv1-clean.sh deploy-simple IP` or `./deploy-startkitv1-clean.sh deploy-full DOMAIN`
-- 🔒 **Auto-SSL Configuration** - Let's Encrypt certificates with auto-renewal (full deployment)
+- 🎯 **Remote Deployment** - Deploy to any server with `./deploy-remote.sh IP DOMAIN`
+- 🔒 **Auto-SSL Configuration** - Let's Encrypt certificates with auto-renewal
 - 🛡️ **Auto-Environment Generation** - Secure 16-64 character passwords for all services
 - 🚀 **Two Deployment Modes** - Simple (IP-based) and Full (Domain + SSL)
 - ⚡ **Clean Architecture** - Minimal codebase focused on essential functionality
 - 🔧 **Docker Stack** - Complete containerized deployment with all services
 - 📊 **Production Security** - Security headers, rate limiting, and hardening
+- 🧹 **Cleanup Support** - Easy cleanup of remote deployments
 
 ---
 
@@ -41,49 +42,52 @@
 ## 🚀 **Quick Start**
 
 ### Prerequisites
-- **Bun.js** (v1.0.0+) - [Install here](https://bun.sh)
-- **Docker & Docker Compose** - For containerized deployment
-- **Linux server** with SSH access for production deployment
+- **SSH Access** to your remote server
+- **Docker & Docker Compose** installed on remote server (auto-installed by script)
+- **Domain name** (for full deployment with SSL)
 
-### 1. **Clone & Install**
+### 1. **Clone & Setup**
 ```bash
 git clone <your-repo-url>
 cd KataCore
+chmod +x deploy-remote.sh
+```
 bun run install:all
 ```
 
 ### 2. **Development Mode**
 ```bash
 # Start both frontend and backend
-bun run dev
-
-# Access your application:
-# Frontend: http://localhost:3000
-# Backend: http://localhost:3001
-# API Docs: http://localhost:3001/api/docs
-```
-
-### 3. **Production Deployment** ⚡
+### 2. **Remote Deployment** ⚡
 
 #### **Simple Deployment (IP-based)**
 ```bash
-# Make deployment script executable
-chmod +x deploy-startkitv1-clean.sh
-
-# Deploy with IP address
-./deploy-startkitv1-clean.sh deploy-simple YOUR_SERVER_IP
+# Deploy to server with IP only (no SSL)
+./deploy-remote.sh --simple 116.118.85.41 yourdomain.com
 ```
 
 #### **Full Deployment (Domain + SSL)**
 ```bash
-# Deploy with domain and SSL
-./deploy-startkitv1-clean.sh deploy-full yourdomain.com
+# Deploy to server with domain and SSL
+./deploy-remote.sh 116.118.85.41 yourdomain.com
 ```
 
-#### **Interactive Setup**
+#### **Custom Configuration**
 ```bash
-# Guided deployment wizard
-./deploy-startkitv1-clean.sh deploy-guide
+# With custom SSH user and key
+./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 yourdomain.com
+
+# Force regenerate environment
+./deploy-remote.sh --force-regen 116.118.85.41 yourdomain.com
+
+# Custom project name
+./deploy-remote.sh --project myproject 116.118.85.41 yourdomain.com
+```
+
+#### **Cleanup Deployment**
+```bash
+# Remove deployment from remote server
+./deploy-remote.sh --cleanup 116.118.85.41
 ```
 
 ---
@@ -138,13 +142,20 @@ chmod +x deploy-startkitv1-clean.sh
 ## 📋 **Available Commands**
 
 ```bash
-# Deployment commands
-./deploy-startkitv1-clean.sh deploy-simple IP_ADDRESS
-./deploy-startkitv1-clean.sh deploy-full DOMAIN_NAME
-./deploy-startkitv1-clean.sh deploy-guide
+# Remote deployment commands
+./deploy-remote.sh SERVER_IP DOMAIN                    # Full deployment with SSL
+./deploy-remote.sh --simple SERVER_IP DOMAIN          # Simple deployment (IP only)
+./deploy-remote.sh --cleanup SERVER_IP                # Cleanup remote deployment
 
-# Utility commands
-./deploy-startkitv1-clean.sh generate-env
+# Options
+./deploy-remote.sh --user USER --key KEY_PATH SERVER_IP DOMAIN
+./deploy-remote.sh --force-regen SERVER_IP DOMAIN
+./deploy-remote.sh --project PROJECT_NAME SERVER_IP DOMAIN
+./deploy-remote.sh --compose COMPOSE_FILE SERVER_IP DOMAIN
+
+# Help
+./deploy-remote.sh --help
+```
 ./deploy-startkitv1-clean.sh test-deployment
 ./deploy-startkitv1-clean.sh cleanup
 

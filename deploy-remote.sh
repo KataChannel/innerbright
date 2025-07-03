@@ -12,6 +12,7 @@ SSH_USER="root"
 SSH_KEY_PATH=""
 DEPLOY_TYPE="full"
 FORCE_REGEN=false
+CLEANUP_MODE=false
 PROJECT_NAME="katacore"
 DOCKER_COMPOSE_FILE="docker-compose.startkitv1.yml"
 
@@ -75,8 +76,8 @@ OPTIONS:
     --compose FILE     Docker compose file (default: docker-compose.startkitv1.yml)
                        Available files:
                        - docker-compose.startkitv1.yml (full stack)
-                       - docker-compose.startkitv1-clean copy.yml (clean version)
     --project NAME     Project name (default: katacore)
+    --cleanup          Cleanup deployment on remote server
     --help             Show this help
 
 EXAMPLES:
@@ -90,10 +91,13 @@ EXAMPLES:
     ./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 innerbright.vn
 
     # Custom docker-compose file
-    ./deploy-remote.sh --compose docker-compose.startkitv1-clean\ copy.yml 116.118.85.41 innerbright.vn
+    ./deploy-remote.sh --compose docker-compose.startkitv1.yml 116.118.85.41 innerbright.vn
 
     # With force regeneration
     ./deploy-remote.sh --force-regen 116.118.85.41 innerbright.vn
+
+    # Cleanup remote deployment
+    ./deploy-remote.sh --cleanup 116.118.85.41
 
 EOF
 }
@@ -116,6 +120,10 @@ parse_arguments() {
                 ;;
             --force-regen)
                 FORCE_REGEN=true
+                shift
+                ;;
+            --cleanup)
+                CLEANUP_MODE=true
                 shift
                 ;;
             --compose)
@@ -193,7 +201,6 @@ select_docker_compose_file() {
     # Available compose files
     local compose_files=(
         "docker-compose.startkitv1.yml"
-        "docker-compose.startkitv1-clean copy.yml"
     )
     
     # If compose file not specified, use default
@@ -488,7 +495,7 @@ CORS_ORIGIN=https://$DOMAIN,http://$SERVER_IP:3000
 NEXT_PUBLIC_API_URL=https://$DOMAIN/api
 NEXT_PUBLIC_APP_URL=https://$DOMAIN
 NEXT_PUBLIC_MINIO_ENDPOINT=https://$DOMAIN:9000
-PGLADMIN_DEFAULT_EMAIL=admin@$DOMAIN
+PGADMIN_DEFAULT_EMAIL=admin@$DOMAIN
 ENVEOF
             fi
             
@@ -833,6 +840,90 @@ deploy() {
     success "🎉 Remote deployment completed successfully!"
 }
 
+# Cleanup deployment function
+cleanup_deployment() {
+    show_banner
+    
+    if [[ -z "$SERVER_IP" ]]; then
+        error "Server IP is required for cleanup. Usage: ./deploy-remote.sh --cleanup SERVER_IP"
+    fi
+    
+    log "🧹 Starting cleanup of remote deployment..."
+    
+    # Set default SSH key if not provided
+    if [[ -z "$SSH_KEY_PATH" ]]; then
+        SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+    fi
+    
+    # Check SSH connection
+    check_ssh_connection
+    
+    # Cleanup deployment
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
+        set -e
+        
+        echo "🧹 Cleaning up KataCore deployment..."
+        
+        # Stop and remove Docker containers
+        if [[ -d "/opt/$PROJECT_NAME" ]]; then
+            cd /opt/$PROJECT_NAME
+            
+            if [[ -f "$DOCKER_COMPOSE_FILE" ]]; then
+                echo "🛑 Stopping Docker containers..."
+                docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --remove-orphans -v || true
+                
+                echo "🗑️  Removing Docker images..."
+                docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --rmi all || true
+            fi
+            
+            echo "🧹 Removing project directory..."
+            cd /
+            rm -rf /opt/$PROJECT_NAME
+        fi
+        
+        # Remove Nginx configuration (if exists)
+        if [[ -f "/etc/nginx/sites-available/$PROJECT_NAME" ]]; then
+            echo "🌐 Removing Nginx configuration..."
+            rm -f /etc/nginx/sites-available/$PROJECT_NAME
+            rm -f /etc/nginx/sites-enabled/$PROJECT_NAME
+            nginx -t && systemctl reload nginx || true
+        fi
+        
+        # Clean up SSL certificates (if exists)
+        if command -v certbot &> /dev/null; then
+            echo "🔒 Removing SSL certificates..."
+            certbot delete --cert-name $DOMAIN --non-interactive || true
+        fi
+        
+        # Clean up Docker system
+        echo "🧹 Cleaning Docker system..."
+        docker system prune -af || true
+        docker volume prune -f || true
+        
+        # Remove firewall rules (optional)
+        echo "🔥 Removing specific firewall rules..."
+        ufw delete allow 3000/tcp || true
+        ufw delete allow 3001/tcp || true
+        ufw delete allow 9000/tcp || true
+        ufw delete allow 9001/tcp || true
+        ufw delete allow 5050/tcp || true
+        
+        echo "✅ Cleanup completed successfully!"
+EOF
+    
+    success "🎉 Remote deployment cleanup completed!"
+    
+    echo ""
+    echo -e "${CYAN}📋 Cleanup Summary:${NC}"
+    echo -e "   🛑 Docker containers stopped and removed"
+    echo -e "   🗑️  Project files deleted from /opt/$PROJECT_NAME"
+    echo -e "   🌐 Nginx configuration removed"
+    echo -e "   🔒 SSL certificates removed"
+    echo -e "   🧹 Docker system cleaned"
+    echo -e "   🔥 Firewall rules cleaned"
+    echo ""
+}
+
 # Test SSH connection function
 test_connection() {
     show_banner
@@ -858,8 +949,12 @@ main() {
         exit 0
     fi
     
-    # Execute deployment
-    deploy
+    # Execute based on mode
+    if [[ "$CLEANUP_MODE" == "true" ]]; then
+        cleanup_deployment
+    else
+        deploy
+    fi
 }
 
 # Run main function
