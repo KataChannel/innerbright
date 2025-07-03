@@ -12,6 +12,8 @@ SSH_USER="root"
 SSH_KEY_PATH=""
 DEPLOY_TYPE="full"
 FORCE_REGEN=false
+PROJECT_NAME="katacore"
+DOCKER_COMPOSE_FILE="docker-compose.startkitv1.yml"
 
 # Color codes
 readonly RED='\033[0;31m'
@@ -48,6 +50,7 @@ EOF
         echo -e "   👤 SSH User: $SSH_USER"
         echo -e "   🔐 SSH Key: ${SSH_KEY_PATH:-'default'}"
         echo -e "   🚀 Deploy Type: $DEPLOY_TYPE"
+        echo -e "   🐳 Docker Compose: $DOCKER_COMPOSE_FILE"
         echo ""
     fi
 }
@@ -69,6 +72,11 @@ OPTIONS:
     --key PATH         SSH private key path (default: ~/.ssh/id_rsa)
     --simple           Simple deployment (no SSL/domain config)
     --force-regen      Force regenerate environment files
+    --compose FILE     Docker compose file (default: docker-compose.startkitv1.yml)
+                       Available files:
+                       - docker-compose.startkitv1.yml (full stack)
+                       - docker-compose.startkitv1-clean copy.yml (clean version)
+    --project NAME     Project name (default: katacore)
     --help             Show this help
 
 EXAMPLES:
@@ -80,6 +88,9 @@ EXAMPLES:
 
     # Custom SSH user and key
     ./deploy-remote.sh --user ubuntu --key ~/.ssh/my-key.pem 116.118.85.41 innerbright.vn
+
+    # Custom docker-compose file
+    ./deploy-remote.sh --compose docker-compose.startkitv1-clean\ copy.yml 116.118.85.41 innerbright.vn
 
     # With force regeneration
     ./deploy-remote.sh --force-regen 116.118.85.41 innerbright.vn
@@ -106,6 +117,14 @@ parse_arguments() {
             --force-regen)
                 FORCE_REGEN=true
                 shift
+                ;;
+            --compose)
+                DOCKER_COMPOSE_FILE="$2"
+                shift 2
+                ;;
+            --project)
+                PROJECT_NAME="$2"
+                shift 2
                 ;;
             --help)
                 show_help
@@ -160,6 +179,76 @@ validate_inputs() {
             error "Invalid domain: $DOMAIN"
         fi
     fi
+    
+    # Check if docker-compose file exists
+    if [[ ! -f "$DOCKER_COMPOSE_FILE" ]]; then
+        error "Docker Compose file not found: $DOCKER_COMPOSE_FILE"
+    fi
+}
+
+# Select Docker Compose file
+select_docker_compose_file() {
+    log "🐳 Selecting Docker Compose file..."
+    
+    # Available compose files
+    local compose_files=(
+        "docker-compose.startkitv1.yml"
+        "docker-compose.startkitv1-clean copy.yml"
+    )
+    
+    # If compose file not specified, use default
+    if [[ -z "$DOCKER_COMPOSE_FILE" ]]; then
+        DOCKER_COMPOSE_FILE="${compose_files[0]}"
+    fi
+    
+    # Validate selected file exists
+    if [[ ! -f "$DOCKER_COMPOSE_FILE" ]]; then
+        error "Docker Compose file not found: $DOCKER_COMPOSE_FILE"
+        info "Available files:"
+        for file in "${compose_files[@]}"; do
+            if [[ -f "$file" ]]; then
+                info "  ✅ $file"
+            else
+                info "  ❌ $file (not found)"
+            fi
+        done
+        exit 1
+    fi
+    
+    success "Using Docker Compose file: $DOCKER_COMPOSE_FILE"
+}
+
+# Enhanced Docker Compose validation
+validate_docker_compose() {
+    log "🔍 Validating Docker Compose configuration..."
+    
+    # Check Docker Compose version
+    if ! command -v docker-compose &> /dev/null; then
+        error "Docker Compose not found. Please install Docker Compose."
+    fi
+    
+    # Validate compose file syntax
+    if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --quiet 2>/dev/null; then
+        error "Invalid Docker Compose file: $DOCKER_COMPOSE_FILE"
+    fi
+    
+    # Check required services
+    local required_services=("api" "site" "postgres" "redis" "minio")
+    for service in "${required_services[@]}"; do
+        if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --services | grep -q "^$service$"; then
+            warning "Service '$service' not found in Docker Compose file"
+        fi
+    done
+    
+    # Check for build contexts
+    local build_contexts=$(docker-compose -f "$DOCKER_COMPOSE_FILE" config | grep -E "context:" | awk '{print $2}')
+    for context in $build_contexts; do
+        if [[ ! -d "$context" ]]; then
+            error "Build context directory not found: $context"
+        fi
+    done
+    
+    success "Docker Compose configuration is valid"
 }
 
 # Check prerequisites
@@ -177,7 +266,44 @@ check_prerequisites() {
     fi
     
     success "SSH key found at $SSH_KEY_PATH"
+    
+    # Check if docker-compose file exists
+    if [[ ! -f "$DOCKER_COMPOSE_FILE" ]]; then
+        error "Docker Compose file not found: $DOCKER_COMPOSE_FILE"
+    fi
+    
+    # Validate Docker Compose file syntax
+    if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --quiet; then
+        error "Invalid Docker Compose file: $DOCKER_COMPOSE_FILE"
+    fi
+    
+    success "Docker Compose file found and validated: $DOCKER_COMPOSE_FILE"
+    
+    # Check if required build contexts exist
+    if [[ -f "$DOCKER_COMPOSE_FILE" ]]; then
+        # Check if api directory exists
+        if [[ ! -d "api" ]]; then
+            error "API directory not found. Make sure you're in the KataCore root directory."
+        fi
+        
+        # Check if site directory exists
+        if [[ ! -d "site" ]]; then
+            error "Site directory not found. Make sure you're in the KataCore root directory."
+        fi
+        
+        # Check if Dockerfiles exist
+        if [[ ! -f "api/Dockerfile" ]]; then
+            error "API Dockerfile not found at api/Dockerfile"
+        fi
+        
+        if [[ ! -f "site/Dockerfile" ]]; then
+            error "Site Dockerfile not found at site/Dockerfile"
+        fi
+        
+        success "Build contexts validated"
+    fi
 }
+
 # Check SSH connection
 check_ssh_connection() {
     log "🔗 Testing SSH connection to $SSH_USER@$SERVER_IP..."
@@ -230,9 +356,8 @@ prepare_remote_server() {
         ufw allow 9000/tcp
         ufw allow 9001/tcp
         ufw allow 5050/tcp
-        
-        echo "📁 Creating deployment directory..."
-        mkdir -p /opt/katacore
+        ufw allow 5432/tcp
+        ufw allow 6379/tcp
         
         echo "✅ Remote server preparation completed"
 EOF
@@ -240,65 +365,381 @@ EOF
     success "Remote server prepared successfully"
 }
 
-# Transfer files to remote server
-transfer_files() {
-    log "📤 Transferring files to remote server..."
+# Transfer project files to remote server
+transfer_project() {
+    log "📤 Transferring project files to remote server..."
+    
+    # Create deployment directory on remote server
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" "mkdir -p /opt/$PROJECT_NAME"
     
     # Create a temporary directory for deployment files
     local temp_dir=$(mktemp -d)
     
-    # Copy all necessary files to temp directory
-    cp -r . "$temp_dir/"
+    # Copy all project files to temp directory (excluding .git, node_modules, etc.)
+    rsync -av --exclude='.git' --exclude='node_modules' --exclude='*.log' --exclude='.env' . "$temp_dir/"
     
-    # Remove any existing .env to force regeneration
+    # Remove any existing .env to force regeneration if requested
     if [[ "$FORCE_REGEN" == "true" ]]; then
         rm -f "$temp_dir/.env"
     fi
     
-    # Transfer files to remote server
-    scp -i "$SSH_KEY_PATH" -r "$temp_dir"/* "$SSH_USER@$SERVER_IP:/opt/katacore/"
+    # Transfer files to remote server using rsync for better performance
+    rsync -avz -e "ssh -i $SSH_KEY_PATH" "$temp_dir/" "$SSH_USER@$SERVER_IP:/opt/$PROJECT_NAME/"
     
     # Cleanup
     rm -rf "$temp_dir"
     
-    success "Files transferred successfully"
+    success "Project files transferred successfully"
 }
 
-# Execute deployment on remote server
-execute_deployment() {
-    log "🚀 Executing deployment on remote server..."
-    
-    local deploy_command
-    if [[ "$DEPLOY_TYPE" == "simple" ]]; then
-        deploy_command="./deploy-startkitv1-clean.sh deploy-simple $SERVER_IP"
-    else
-        deploy_command="./deploy-startkitv1-clean.sh deploy-full $DOMAIN"
-    fi
-    
-    if [[ "$FORCE_REGEN" == "true" ]]; then
-        deploy_command="$deploy_command --force-regen"
-    fi
+# Generate environment configuration
+generate_environment() {
+    log "🔧 Generating environment configuration..."
     
     ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
         set -e
-        cd /opt/katacore
+        cd /opt/$PROJECT_NAME
         
-        # Make scripts executable
-        chmod +x *.sh
-        
-        # Clean up any existing containers
-        echo "🧹 Cleaning up existing containers..."
-        docker-compose -f docker-compose.startkitv1.yml down --remove-orphans 2>/dev/null || true
-        docker system prune -f 2>/dev/null || true
-        
-        # Execute deployment
-        echo "🚀 Starting deployment..."
-        $deploy_command
-        
-        echo "✅ Deployment completed!"
+        # Create .env file if it doesn't exist
+        if [[ ! -f .env ]] || [[ "$FORCE_REGEN" == "true" ]]; then
+            echo "🔐 Generating environment variables..."
+            
+            # Generate random passwords and keys
+            DB_PASSWORD=\$(openssl rand -base64 32)
+            REDIS_PASSWORD=\$(openssl rand -base64 32)
+            JWT_SECRET=\$(openssl rand -base64 64)
+            ENCRYPTION_KEY=\$(openssl rand -base64 32)
+            MINIO_ROOT_PASSWORD=\$(openssl rand -base64 32)
+            PGADMIN_PASSWORD=\$(openssl rand -base64 16)
+            
+            # Create .env file
+            cat > .env << 'ENVEOF'
+# Generated on \$(date)
+# KataCore Production Environment Configuration
+
+# ===== Application Configuration =====
+NODE_ENV=production
+API_VERSION=latest
+SITE_VERSION=latest
+RESTART_POLICY=unless-stopped
+
+# ===== Port Configuration =====
+PORT=3000
+SITE_PORT=3000
+API_PORT=3001
+
+# ===== Database Configuration =====
+POSTGRES_DB=$PROJECT_NAME
+POSTGRES_USER=$PROJECT_NAME
+POSTGRES_PASSWORD=\$DB_PASSWORD
+DATABASE_URL=postgresql://\$PROJECT_NAME:\$DB_PASSWORD@postgres:5432/$PROJECT_NAME
+
+# ===== Redis Configuration =====
+REDIS_PASSWORD=\$REDIS_PASSWORD
+REDIS_URL=redis://:\$REDIS_PASSWORD@redis:6379
+
+# ===== Authentication & Security =====
+JWT_SECRET=\$JWT_SECRET
+ENCRYPTION_KEY=\$ENCRYPTION_KEY
+LOG_LEVEL=info
+
+# ===== MinIO Configuration =====
+MINIO_ROOT_USER=admin
+MINIO_ROOT_PASSWORD=\$MINIO_ROOT_PASSWORD
+MINIO_PORT=9000
+MINIO_CONSOLE_PORT=9001
+MINIO_ENDPOINT=minio
+MINIO_ACCESS_KEY=admin
+MINIO_SECRET_KEY=\$MINIO_ROOT_PASSWORD
+MINIO_USE_SSL=false
+
+# ===== PgAdmin Configuration =====
+PGADMIN_PORT=5050
+PGADMIN_DEFAULT_PASSWORD=\$PGADMIN_PASSWORD
+
+# ===== Internal Services =====
+INTERNAL_API_URL=http://api:3001
+
+# ===== Server Configuration =====
+SERVER_IP=$SERVER_IP
+DOMAIN=$DOMAIN
+DEPLOY_TYPE=$DEPLOY_TYPE
+
+# ===== SSL Configuration (for full deployment) =====
+SSL_EMAIL=admin@$DOMAIN
+ENVEOF
+
+            # Append deployment-specific configuration
+            if [[ "$DEPLOY_TYPE" == "simple" ]]; then
+                cat >> .env << 'ENVEOF'
+
+# ===== CORS Configuration =====
+CORS_ORIGIN=http://$SERVER_IP:3000
+NEXT_PUBLIC_API_URL=http://$SERVER_IP:3001
+NEXT_PUBLIC_APP_URL=http://$SERVER_IP:3000
+NEXT_PUBLIC_MINIO_ENDPOINT=http://$SERVER_IP:9000
+PGADMIN_DEFAULT_EMAIL=admin@$SERVER_IP
+ENVEOF
+            else
+                cat >> .env << 'ENVEOF'
+
+# ===== CORS Configuration =====
+CORS_ORIGIN=https://$DOMAIN,http://$SERVER_IP:3000
+NEXT_PUBLIC_API_URL=https://$DOMAIN/api
+NEXT_PUBLIC_APP_URL=https://$DOMAIN
+NEXT_PUBLIC_MINIO_ENDPOINT=https://$DOMAIN:9000
+PGLADMIN_DEFAULT_EMAIL=admin@$DOMAIN
+ENVEOF
+            fi
+            
+            echo "✅ Environment file generated"
+        else
+            echo "📋 Using existing .env file"
+        fi
 EOF
     
-    success "Deployment executed successfully"
+    success "Environment configuration completed"
+}
+
+# Build and run Docker Compose
+run_docker_compose() {
+    log "🚀 Building and running Docker Compose..."
+    
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
+        set -e
+        cd /opt/$PROJECT_NAME
+        
+        echo "🧹 Cleaning up existing containers..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --remove-orphans 2>/dev/null || true
+        
+        echo "🗑️  Cleaning up Docker system..."
+        docker system prune -f
+        
+        echo "🔍 Checking Docker Compose file..."
+        if [[ ! -f "$DOCKER_COMPOSE_FILE" ]]; then
+            echo "❌ Docker Compose file not found: $DOCKER_COMPOSE_FILE"
+            exit 1
+        fi
+        
+        echo "📋 Validating Docker Compose configuration..."
+        docker-compose -f $DOCKER_COMPOSE_FILE config --quiet
+        
+        echo "🔨 Building Docker images..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME build --no-cache --parallel
+        
+        echo "🚀 Starting services..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME up -d
+        
+        echo "⏳ Waiting for services to start..."
+        sleep 30
+        
+        echo "🔍 Checking service health..."
+        # Check if services are running
+        for i in {1..10}; do
+            if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps | grep -q "Up"; then
+                echo "✅ Services are starting up..."
+                break
+            fi
+            echo "⏳ Waiting for services... (\$i/10)"
+            sleep 3
+        done
+        
+        echo "📊 Checking service status..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps
+        
+        echo "📋 Checking service logs for errors..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME logs --tail=50
+        
+        echo "✅ Docker Compose deployment completed!"
+EOF
+    
+    success "Docker Compose services are running"
+}
+
+# Configure SSL (for full deployment)
+configure_ssl() {
+    if [[ "$DEPLOY_TYPE" == "full" ]]; then
+        log "🔒 Configuring SSL certificates..."
+        
+        ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
+            set -e
+            
+            echo "🌐 Configuring Nginx..."
+            cat > /etc/nginx/sites-available/$DOMAIN << 'NGINXEOF'
+server {
+    listen 80;
+    server_name $DOMAIN;
+    
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    
+    # Client max body size
+    client_max_body_size 50M;
+    
+    # Main site
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Port \$server_port;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+    
+    # API endpoints
+    location /api {
+        proxy_pass http://localhost:3001;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Port \$server_port;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+    
+    # MinIO Console
+    location /minio {
+        proxy_pass http://localhost:9001;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Port \$server_port;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+    
+    # pgAdmin
+    location /pgadmin {
+        proxy_pass http://localhost:5050;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        proxy_set_header X-Forwarded-Port \$server_port;
+        proxy_cache_bypass \$http_upgrade;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_http_version 1.1;
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+    
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+}
+NGINXEOF
+            
+            ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
+            rm -f /etc/nginx/sites-enabled/default
+            nginx -t && systemctl reload nginx
+            
+            echo "🔒 Obtaining SSL certificate..."
+            certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN
+            
+            echo "✅ SSL configuration completed"
+EOF
+        
+        success "SSL certificates configured"
+    fi
+}
+
+# Check service health
+check_service_health() {
+    log "🔍 Checking service health..."
+    
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
+        set -e
+        cd /opt/$PROJECT_NAME
+        
+        echo "🔍 Checking Docker container status..."
+        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps
+        
+        echo ""
+        echo "🔍 Checking service health..."
+        
+        # Check main app
+        if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+            echo "✅ Main App (port 3000): Healthy"
+        else
+            echo "❌ Main App (port 3000): Not responding"
+        fi
+        
+        # Check API
+        if curl -sf http://localhost:3001/health > /dev/null 2>&1; then
+            echo "✅ API (port 3001): Healthy"
+        else
+            echo "❌ API (port 3001): Not responding"
+        fi
+        
+        # Check MinIO
+        if curl -sf http://localhost:9000/minio/health/live > /dev/null 2>&1; then
+            echo "✅ MinIO (port 9000): Healthy"
+        else
+            echo "❌ MinIO (port 9000): Not responding"
+        fi
+        
+        # Check pgAdmin
+        if curl -sf http://localhost:5050/misc/ping > /dev/null 2>&1; then
+            echo "✅ pgAdmin (port 5050): Healthy"
+        else
+            echo "❌ pgAdmin (port 5050): Not responding"
+        fi
+        
+        # Check database connection
+        if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME exec -T postgres pg_isready -U $PROJECT_NAME > /dev/null 2>&1; then
+            echo "✅ PostgreSQL: Connection healthy"
+        else
+            echo "❌ PostgreSQL: Connection failed"
+        fi
+        
+        # Check Redis connection
+        if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME exec -T redis redis-cli ping > /dev/null 2>&1; then
+            echo "✅ Redis: Connection healthy"
+        else
+            echo "❌ Redis: Connection failed"
+        fi
+        
+        echo ""
+        echo "📊 Docker container resource usage:"
+        docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}"
+EOF
+    
+    success "Health check completed"
 }
 
 # Show deployment summary
@@ -319,36 +760,48 @@ show_deployment_summary() {
     echo -e "   🌍 Domain:        $DOMAIN"
     echo -e "   👤 User:          $SSH_USER"
     echo -e "   🔐 SSH Key:       $SSH_KEY_PATH"
+    echo -e "   🐳 Docker File:   $DOCKER_COMPOSE_FILE"
+    echo -e "   📦 Project:       $PROJECT_NAME"
     echo ""
     
-    echo -e "${CYAN}📊 Services:${NC}"
+    echo -e "${CYAN}📊 Services Status:${NC}"
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" "cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps"
+    echo ""
+    
+    echo -e "${CYAN}🔗 Service URLs:${NC}"
     if [[ "$DEPLOY_TYPE" == "simple" ]]; then
-        echo -e "   🌐 Main Site:     http://$SERVER_IP:3000"
+        echo -e "   🌐 Main App:      http://$SERVER_IP:3000"
         echo -e "   🚀 API:          http://$SERVER_IP:3001"
         echo -e "   📦 MinIO:        http://$SERVER_IP:9000"
-        echo -e "   🗄️  pgAdmin:      http://$SERVER_IP:5050"
+        echo -e "   🗄️  Database:     $SERVER_IP:5432"
     else
-        echo -e "   🌐 Main Site:     https://$DOMAIN"
+        echo -e "   🌐 Main App:      https://$DOMAIN"
         echo -e "   🚀 API:          https://$DOMAIN/api"
         echo -e "   📦 MinIO:        https://$DOMAIN:9000"
-        echo -e "   🗄️  pgAdmin:      https://$DOMAIN:5050"
+        echo -e "   🗄️  Database:     $DOMAIN:5432"
     fi
     echo ""
     
-    echo -e "${CYAN}📋 Next Steps:${NC}"
-    echo -e "   1. Check services: ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'docker ps'"
-    echo -e "   2. View logs: ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/katacore && docker-compose logs'"
-    echo -e "   3. Access your application and configure as needed"
+    echo -e "${CYAN}📋 Management Commands:${NC}"
+    echo -e "   🔍 Check logs:    ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME logs'"
+    echo -e "   🔄 Restart:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME restart'"
+    echo -e "   ⏹️  Stop:         ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME stop'"
+    echo -e "   🗑️  Remove:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down'"
     echo ""
     
     echo -e "${YELLOW}🔐 Important: Check .env file on server for generated passwords${NC}"
-    echo -e "   ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cat /opt/katacore/.env'"
+    echo -e "   ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cat /opt/$PROJECT_NAME/.env'"
 }
 
 # Main deployment function
 deploy() {
     show_banner
     validate_inputs
+    
+    # Select and validate Docker Compose file
+    select_docker_compose_file
+    validate_docker_compose
+    
     check_prerequisites
     
     log "🚀 Starting remote deployment..."
@@ -359,11 +812,20 @@ deploy() {
     # Prepare remote server
     prepare_remote_server
     
-    # Transfer files
-    transfer_files
+    # Transfer project files
+    transfer_project
     
-    # Execute deployment
-    execute_deployment
+    # Generate environment configuration
+    generate_environment
+    
+    # Run Docker Compose
+    run_docker_compose
+    
+    # Configure SSL if full deployment
+    configure_ssl
+    
+    # Check service health
+    check_service_health
     
     # Show summary
     show_deployment_summary
