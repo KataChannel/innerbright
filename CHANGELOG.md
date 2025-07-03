@@ -1,22 +1,24 @@
-# Changelog - KataCore StartKit v2
+# Changelog - KataCore StartKit v1
 
-## [2.0.0] - 2025-01-02
+## [1.0.0] - 2025-07-03
 
-### 🚀 Major Changes - StartKit v2
-- **Auto-Environment Generation**: Tự động tạo `.env.prod` với credentials an toàn
-- **Auto-SSL Configuration**: Tự động cấu hình SSL certificate với Let's Encrypt  
-- **Smart Deployment Detection**: Tự động phát hiện deployment lần đầu vs update
-- **Minimal Configuration**: Chỉ cần IP server và domain
-- **Update Management**: Cập nhật NextJS/NestJS/Prisma tự động
-- **Enhanced Security**: Auto-generate password 16-64 ký tự
+### 🚀 Major Changes - StartKit v1
+- **Remote Deployment**: Deploy to any remote server with SSH access
+- **Auto-Environment Generation**: Automatically generate secure environment variables
+- **Dual Deployment Modes**: Simple (IP-based) and Full (Domain + SSL)
+- **Complete Docker Stack**: API, Site, PostgreSQL, Redis, MinIO, pgAdmin
+- **SSL Support**: Automatic Let's Encrypt certificate generation
+- **Cleanup Support**: Easy cleanup of remote deployments
 
 ### ✨ New Features
-- Single command deployment: `./startkit-deployer.sh --host IP --domain DOMAIN`
-- Auto-detect first deployment vs updates
-- Auto-generate secure environment variables
-- Auto-configure SSL certificates and renewal
-- Smart update management (only update what changed)
-- Simplified codebase (removed 80% of helper scripts)
+- Remote deployment: `./deploy-remote.sh SERVER_IP DOMAIN`
+- Simple deployment: `./deploy-remote.sh --simple SERVER_IP DOMAIN`
+- Cleanup deployment: `./deploy-remote.sh --cleanup SERVER_IP`
+- Auto-generate secure passwords (16-64 characters)
+- Auto-configure Nginx reverse proxy
+- Auto-configure SSL certificates with Let's Encrypt
+- Health check monitoring for all services
+- Docker system optimization and cleanup
 
 ### 🔧 Improvements
 - Consolidated deployment logic into single script

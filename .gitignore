@@ -1,10 +1,11 @@
-# KataCore StartKit v1 Clean - .gitignore
+# KataCore StartKit v1 - .gitignore
 
 # Environment files
 .env
 .env.local
 .env.production
-.env.prod.backup*
+.env.prod
+.env.backup*
 *.env.backup*
 
 # Dependencies
