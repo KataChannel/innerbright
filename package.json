@@ -23,7 +23,7 @@
     "lint": "bun run lint:site && bun run lint:api",
     "lint:site": "cd site && bun run lint",
     "lint:api": "cd api && bun run lint",
-    "git:push": "./scripts/auto-push.sh",
+    "git:push": "./scripts/autopush-git.sh",
     "git:save": "./scripts/quick-save.sh",
     "git:build-push": "./scripts/build-and-push.sh",
     "docker:install": "./scripts/install-docker.sh install",

@@ -1,5 +1,5 @@
 # KataCore StartKit v2 - Optimized Nginx Configuration
-# Auto-generated on 2025-07-02T19:15:14+07:00
+# Auto-generated on 2025-07-02T18:04:43+07:00
 
 # Rate limiting zones
 limit_req_zone $binary_remote_addr zone=general:10m rate=10r/s;
@@ -56,9 +56,8 @@ server {
 
 # HTTPS server block
 server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    http2 on;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
     server_name innerbright.vn www.innerbright.vn;
     
     # SSL Configuration
