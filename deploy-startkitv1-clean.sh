@@ -22,6 +22,9 @@ readonly NC='\033[0m'
 SERVER_IP=""
 DOMAIN=""
 DEPLOY_TYPE="simple"
+REMOTE_DEPLOY=false
+REMOTE_USER="root"
+SSH_KEY=""
 FORCE_REGEN=false
 AUTO_PUSH=false
 VERBOSE=false
@@ -32,6 +35,7 @@ readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly ENV_FILE="$PROJECT_ROOT/.env"
 readonly COMPOSE_FILE="$PROJECT_ROOT/docker-compose.startkitv1.yml"
 readonly NGINX_CONFIG="$PROJECT_ROOT/nginx-startkitv1.conf"
+readonly REMOTE_DEPLOY_DIR="/opt/katacore"
 
 # ===== LOGGING FUNCTIONS =====
 log() { echo -e "${GREEN}[$(date +'%H:%M:%S')]${NC} $1"; }
@@ -65,32 +69,43 @@ USAGE:
     ./deploy-startkitv1-clean.sh [COMMAND] [OPTIONS]
 
 COMMANDS:
-    deploy-simple IP           Simple deployment with IP (Docker only)
-    deploy-full DOMAIN         Full deployment with domain + Nginx + SSL
-    deploy-guide              Step-by-step guided deployment
-    generate-env              Generate environment variables only
-    test-deployment           Test current deployment
-    cleanup                   Clean up old deployment files
+    deploy-simple IP                    Simple deployment with IP (Docker only)
+    deploy-full DOMAIN                  Full deployment with domain + Nginx + SSL
+    deploy-remote-simple IP             Remote simple deployment to server IP
+    deploy-remote-full IP DOMAIN        Remote full deployment to server IP with domain
+    deploy-guide                        Step-by-step guided deployment
+    generate-env                        Generate environment variables only
+    test-deployment                     Test current deployment
+    cleanup                             Clean up old deployment files
 
 OPTIONS:
-    --force-regen             Force regenerate passwords/secrets
-    --auto-push               Auto commit and push to git
-    --verbose                 Enable verbose output
-    --dry-run                 Show what would be done
-    --help                    Show this help
+    --remote-user USER                  SSH user for remote deployment (default: root)
+    --ssh-key PATH                      SSH private key path for remote deployment
+    --force-regen                       Force regenerate passwords/secrets
+    --auto-push                         Auto commit and push to git
+    --verbose                           Enable verbose output
+    --dry-run                           Show what would be done
+    --help                              Show this help
 
-EXAMPLES:
-    # Simple deployment with IP
-    ./deploy-startkitv1-clean.sh deploy-simple 116.118.85.41
+LOCAL DEPLOYMENT EXAMPLES:
+    # Simple deployment with IP (local)
+    ./deploy-startkitv1-clean.sh deploy-simple 192.168.1.100
 
-    # Full deployment with domain and SSL
+    # Full deployment with domain and SSL (local)
     ./deploy-startkitv1-clean.sh deploy-full innerbright.vn
+
+REMOTE DEPLOYMENT EXAMPLES:
+    # Simple remote deployment with default SSH key
+    ./deploy-startkitv1-clean.sh deploy-remote-simple 116.118.85.41
+
+    # Full remote deployment with custom SSH key
+    ./deploy-startkitv1-clean.sh deploy-remote-full 116.118.85.41 innerbright.vn --ssh-key ~/.ssh/my-key.pem
+
+    # Remote deployment with custom user
+    ./deploy-startkitv1-clean.sh deploy-remote-full 116.118.85.41 innerbright.vn --remote-user ubuntu --ssh-key ~/.ssh/aws-key.pem
 
     # Guided deployment
     ./deploy-startkitv1-clean.sh deploy-guide
-
-    # Full deployment with options
-    ./deploy-startkitv1-clean.sh deploy-full innerbright.vn --force-regen --auto-push --verbose
 
 SERVICES DEPLOYED:
     ✅ API (NestJS)           http://SERVER:3001
@@ -125,6 +140,120 @@ validate_domain() {
     else
         return 1
     fi
+}
+
+# ===== REMOTE DEPLOYMENT FUNCTIONS =====
+check_ssh_connection() {
+    local server_ip=$1
+    local user=${2:-$REMOTE_USER}
+    
+    log "🔗 Testing SSH connection to $user@$server_ip..."
+    
+    local ssh_cmd="ssh"
+    if [[ -n "$SSH_KEY" ]]; then
+        ssh_cmd="ssh -i $SSH_KEY"
+    fi
+    
+    if $ssh_cmd -o ConnectTimeout=10 -o BatchMode=yes "$user@$server_ip" "echo 'SSH connection successful'" > /dev/null 2>&1; then
+        success "SSH connection to $user@$server_ip successful"
+        return 0
+    else
+        error "Cannot connect to $user@$server_ip via SSH. Please check your SSH key and server access."
+    fi
+}
+
+prepare_remote_server() {
+    local server_ip=$1
+    local user=${2:-$REMOTE_USER}
+    
+    log "🛠️  Preparing remote server $server_ip..."
+    
+    local ssh_cmd="ssh"
+    if [[ -n "$SSH_KEY" ]]; then
+        ssh_cmd="ssh -i $SSH_KEY"
+    fi
+    
+    # Install required packages on remote server
+    $ssh_cmd "$user@$server_ip" << 'EOF'
+        # Update system
+        apt update && apt upgrade -y
+        
+        # Install Docker if not installed
+        if ! command -v docker &> /dev/null; then
+            echo "Installing Docker..."
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sh get-docker.sh
+            systemctl enable docker
+            systemctl start docker
+        fi
+        
+        # Install Docker Compose if not installed
+        if ! command -v docker-compose &> /dev/null; then
+            echo "Installing Docker Compose..."
+            curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+        fi
+        
+        # Install other required packages
+        apt install -y curl wget git nginx certbot python3-certbot-nginx openssl
+        
+        # Create deployment directory
+        mkdir -p /opt/katacore
+        
+        echo "Remote server preparation completed"
+EOF
+    
+    success "Remote server prepared successfully"
+}
+
+transfer_files_to_remote() {
+    local server_ip=$1
+    local user=${2:-$REMOTE_USER}
+    
+    log "📤 Transferring files to remote server..."
+    
+    local scp_cmd="scp"
+    if [[ -n "$SSH_KEY" ]]; then
+        scp_cmd="scp -i $SSH_KEY"
+    fi
+    
+    # Transfer main deployment files
+    $scp_cmd -r "$PROJECT_ROOT"/* "$user@$server_ip:$REMOTE_DEPLOY_DIR/"
+    
+    success "Files transferred successfully"
+}
+
+execute_remote_deployment() {
+    local server_ip=$1
+    local domain=$2
+    local deploy_type=$3
+    local user=${4:-$REMOTE_USER}
+    
+    log "🚀 Executing deployment on remote server..."
+    
+    local ssh_cmd="ssh"
+    if [[ -n "$SSH_KEY" ]]; then
+        ssh_cmd="ssh -i $SSH_KEY"
+    fi
+    
+    # Execute deployment on remote server
+    $ssh_cmd "$user@$server_ip" << EOF
+        cd $REMOTE_DEPLOY_DIR
+        chmod +x deploy-startkitv1-clean.sh
+        
+        # Set environment variables for remote deployment
+        export REMOTE_DEPLOY=false
+        export SERVER_IP=$server_ip
+        export DOMAIN=$domain
+        
+        if [[ "$deploy_type" == "full" ]]; then
+            ./deploy-startkitv1-clean.sh deploy-full $domain --force-regen
+        else
+            ./deploy-startkitv1-clean.sh deploy-simple $server_ip --force-regen
+        fi
+EOF
+    
+    success "Remote deployment executed successfully"
 }
 
 # ===== ENVIRONMENT GENERATION =====
@@ -430,6 +559,27 @@ deploy_simple() {
         error "Invalid IP address: $server_ip"
     fi
     
+    # Check if this is a remote deployment
+    if [[ "$REMOTE_DEPLOY" == "true" ]]; then
+        log "🌐 Remote deployment mode enabled"
+        
+        # Check SSH connection
+        check_ssh_connection "$server_ip"
+        
+        # Prepare remote server
+        prepare_remote_server "$server_ip"
+        
+        # Transfer files
+        transfer_files_to_remote "$server_ip"
+        
+        # Execute remote deployment
+        execute_remote_deployment "$server_ip" "" "simple"
+        
+        success "Remote simple deployment completed successfully!"
+        return 0
+    fi
+    
+    # Local deployment
     # Generate environment
     generate_environment "$server_ip" "simple"
     
@@ -471,6 +621,33 @@ deploy_full() {
         error "Invalid domain: $domain"
     fi
     
+    # Determine server IP for remote deployment
+    local server_ip="$SERVER_IP"
+    if [[ -z "$server_ip" && "$REMOTE_DEPLOY" == "true" ]]; then
+        error "SERVER_IP must be set for remote deployment"
+    fi
+    
+    # Check if this is a remote deployment
+    if [[ "$REMOTE_DEPLOY" == "true" ]]; then
+        log "🌐 Remote deployment mode enabled to $server_ip"
+        
+        # Check SSH connection
+        check_ssh_connection "$server_ip"
+        
+        # Prepare remote server
+        prepare_remote_server "$server_ip"
+        
+        # Transfer files
+        transfer_files_to_remote "$server_ip"
+        
+        # Execute remote deployment
+        execute_remote_deployment "$server_ip" "$domain" "full"
+        
+        success "Remote full deployment completed successfully!"
+        return 0
+    fi
+    
+    # Local deployment
     # Generate environment
     generate_environment "$domain" "full"
     
@@ -749,6 +926,26 @@ main() {
                 DEPLOY_TYPE="full"
                 shift 2
                 ;;
+            deploy-remote-simple)
+                if [[ -z "${2:-}" ]]; then
+                    error "IP address required for remote simple deployment"
+                fi
+                SERVER_IP="$2"
+                DEPLOY_TYPE="simple"
+                REMOTE_DEPLOY=true
+                shift 2
+                ;;
+            deploy-remote-full)
+                if [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]]; then
+                    error "Both IP and domain required for remote full deployment"
+                    error "Usage: deploy-remote-full <SERVER_IP> <DOMAIN>"
+                fi
+                SERVER_IP="$2"
+                DOMAIN="$3"
+                DEPLOY_TYPE="full"
+                REMOTE_DEPLOY=true
+                shift 3
+                ;;
             deploy-guide)
                 deploy_guide
                 exit 0
@@ -794,6 +991,20 @@ main() {
             cleanup)
                 cleanup_deployment
                 exit 0
+                ;;
+            --remote-user)
+                if [[ -z "${2:-}" ]]; then
+                    error "User required for --remote-user option"
+                fi
+                REMOTE_USER="$2"
+                shift 2
+                ;;
+            --ssh-key)
+                if [[ -z "${2:-}" ]]; then
+                    error "SSH key path required for --ssh-key option"
+                fi
+                SSH_KEY="$2"
+                shift 2
                 ;;
             --force-regen)
                 FORCE_REGEN=true
