@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 Innerbright Remote Deployment Helper
+# 🚀 KataCore Remote Deployment Helper
 # Quick deployment script for remote servers
 
 set -euo pipefail
@@ -13,8 +13,11 @@ SSH_KEY_PATH=""
 DEPLOY_TYPE="full"
 FORCE_REGEN=false
 CLEANUP_MODE=false
-PROJECT_NAME="innerbright"
-DOCKER_COMPOSE_FILE="docker-compose.startkitv1.yml"
+PROJECT_NAME="katacore"
+DOCKER_COMPOSE_FILE="docker-compose.yml"
+NGINX_API=false
+NGINX_PGADMIN=false
+NGINX_MINIO=false
 
 # Color codes
 readonly RED='\033[0;31m'
@@ -36,7 +39,7 @@ show_banner() {
     echo -e "${BLUE}"
     cat << 'EOF'
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                        🚀 Innerbright Remote Deploy                         ║
+║                        🚀 KataCore Remote Deploy                            ║
 ║                                                                              ║
 ║    Deploy to any server with dynamic IP and domain configuration           ║
 ║    Supports both simple (IP only) and full (domain + SSL) deployments     ║
@@ -59,7 +62,7 @@ EOF
 # Show help
 show_help() {
     cat << 'EOF'
-🚀 Innerbright Remote Deployment Script
+🚀 KataCore Remote Deployment Script
 
 USAGE:
     ./deploy-remote.sh [OPTIONS] IP DOMAIN
@@ -70,13 +73,13 @@ ARGUMENTS:
 
 OPTIONS:
     --user USER        SSH user (default: root)
-    --key PATH         SSH private key path (default: ~/.ssh/id_rsa)
+    --key PATH         SSH private key path (default: ~/.ssh/default)
     --simple           Simple deployment (no SSL/domain config)
     --force-regen      Force regenerate environment files
     --compose FILE     Docker compose file (default: docker-compose.startkitv1.yml)
                        Available files:
                        - docker-compose.startkitv1.yml (full stack)
-    --project NAME     Project name (default: innerbright)
+    --project NAME     Project name (default: katacore)
     --cleanup          Cleanup deployment on remote server
     --help             Show this help
 
@@ -134,6 +137,18 @@ parse_arguments() {
                 PROJECT_NAME="$2"
                 shift 2
                 ;;
+            --nginxapi)
+                NGINX_API=true
+                shift
+                ;;
+            --nginxpgadmin)
+                NGINX_PGADMIN=true
+                shift
+                ;;
+            --nginxminio)
+                NGINX_MINIO=true
+                shift
+                ;;
             --help)
                 show_help
                 exit 0
@@ -165,7 +180,7 @@ parse_arguments() {
     
     # Set default SSH key if not provided
     if [[ -z "$SSH_KEY_PATH" ]]; then
-        SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+        SSH_KEY_PATH="$HOME/.ssh/default"
     fi
     
     # For simple deployment, use IP as domain
@@ -227,28 +242,36 @@ select_docker_compose_file() {
 
 # Enhanced Docker Compose validation
 validate_docker_compose() {
-    log "🔍 Validating Docker Compose configuration..."
+    log "[CHECK] Validating Docker Compose configuration..."
     
-    # Check Docker Compose version
-    if ! command -v docker-compose &> /dev/null; then
+    # Check Docker Compose version - try both docker-compose and docker compose
+    local compose_cmd=""
+    if command -v docker &> /dev/null && docker compose version &> /dev/null 2>&1; then
+        compose_cmd="docker compose"
+    elif command -v docker-compose &> /dev/null; then
+        compose_cmd="docker-compose"
+    else
         error "Docker Compose not found. Please install Docker Compose."
     fi
     
     # Validate compose file syntax
-    if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --quiet 2>/dev/null; then
+    log "Testing Docker Compose configuration with command: $compose_cmd"
+    if eval "$compose_cmd -f \"$DOCKER_COMPOSE_FILE\" --env-file .env.prod config --quiet" > /dev/null 2>&1; then
+        log "Docker Compose configuration is valid"
+    else
         error "Invalid Docker Compose file: $DOCKER_COMPOSE_FILE"
     fi
     
     # Check required services
     local required_services=("api" "site" "postgres" "redis" "minio")
     for service in "${required_services[@]}"; do
-        if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --services | grep -q "^$service$"; then
+        if ! eval "$compose_cmd -f \"$DOCKER_COMPOSE_FILE\" --env-file .env.prod config --services" | grep -q "^$service$"; then
             warning "Service '$service' not found in Docker Compose file"
         fi
     done
     
     # Check for build contexts
-    local build_contexts=$(docker-compose -f "$DOCKER_COMPOSE_FILE" config | grep -E "context:" | awk '{print $2}')
+    local build_contexts=$(eval "$compose_cmd -f \"$DOCKER_COMPOSE_FILE\" --env-file .env.prod config" | grep -E "context:" | awk '{print $2}')
     for context in $build_contexts; do
         if [[ ! -d "$context" ]]; then
             error "Build context directory not found: $context"
@@ -279,9 +302,34 @@ check_prerequisites() {
         error "Docker Compose file not found: $DOCKER_COMPOSE_FILE"
     fi
     
-    # Validate Docker Compose file syntax
-    if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --quiet; then
-        error "Invalid Docker Compose file: $DOCKER_COMPOSE_FILE"
+    # Validate Docker Compose file syntax - skip if .env.prod doesn't exist yet
+    if [[ -f ".env.prod" ]]; then
+        # Try docker compose first (newer version)
+        if command -v docker &> /dev/null && docker compose version &> /dev/null 2>&1; then
+            if ! docker compose -f "$DOCKER_COMPOSE_FILE" --env-file .env.prod config --quiet 2>/dev/null; then
+                warning "Docker Compose file validation skipped - .env.prod will be generated later"
+            fi
+        # Fall back to docker-compose (older version)
+        elif command -v docker-compose &> /dev/null; then
+            if ! docker-compose -f "$DOCKER_COMPOSE_FILE" --env-file .env.prod config --quiet 2>/dev/null; then
+                warning "Docker Compose file validation skipped - .env.prod will be generated later"
+            fi
+        else
+            error "Docker Compose not found. Please install Docker Compose."
+        fi
+    else
+        # Basic syntax check without env file
+        if command -v docker &> /dev/null && docker compose version &> /dev/null 2>&1; then
+            if ! docker compose -f "$DOCKER_COMPOSE_FILE" config --quiet 2>/dev/null; then
+                warning "Docker Compose file has syntax issues, but continuing..."
+            fi
+        elif command -v docker-compose &> /dev/null; then
+            if ! docker-compose -f "$DOCKER_COMPOSE_FILE" config --quiet 2>/dev/null; then
+                warning "Docker Compose file has syntax issues, but continuing..."
+            fi
+        else
+            error "Docker Compose not found. Please install Docker Compose."
+        fi
     fi
     
     success "Docker Compose file found and validated: $DOCKER_COMPOSE_FILE"
@@ -381,16 +429,21 @@ transfer_project() {
     
     # Create a temporary directory for deployment files
     local temp_dir=$(mktemp -d)
-    
     # Copy all project files to temp directory (excluding .git, node_modules, etc.)
-    rsync -av --exclude='.git' --exclude='node_modules' --exclude='*.log' --exclude='.env' . "$temp_dir/"
+    rsync -av --exclude='.git' --exclude='node_modules' --exclude='*.log' --exclude='.env' --exclude='*.md' --exclude='*.sh' . "$temp_dir/"
     
-    # Remove any existing .env to force regeneration if requested
+    # Remove any existing .env.prod to force regeneration if requested
     if [[ "$FORCE_REGEN" == "true" ]]; then
-        rm -f "$temp_dir/.env"
+        rm -f "$temp_dir/.env.prod"
     fi
     
     # Transfer files to remote server using rsync for better performance
+    # Sử dụng rsync để truyền file từ thư mục tạm đến server từ xa
+    # -a: chế độ archive (bảo toàn quyền, thời gian, liên kết tượng trưng)
+    # -v: hiển thị chi tiết quá trình truyền file
+    # -z: nén dữ liệu trong quá trình truyền để tăng tốc độ
+    # -e: chỉ định lệnh SSH với key riêng tư
+    # Truyền từ thư mục tạm đến thư mục project trên server
     rsync -avz -e "ssh -i $SSH_KEY_PATH" "$temp_dir/" "$SSH_USER@$SERVER_IP:/opt/$PROJECT_NAME/"
     
     # Cleanup
@@ -403,24 +456,37 @@ transfer_project() {
 generate_environment() {
     log "🔧 Generating environment configuration..."
     
-    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
+    # Validate required environment variables
+    if [[ -z "$PROJECT_NAME" || -z "$SERVER_IP" || -z "$DOMAIN" || -z "$DEPLOY_TYPE" ]]; then
+        log "❌ Error: Required environment variables (PROJECT_NAME, SERVER_IP, DOMAIN, DEPLOY_TYPE) are not set."
+        exit 1
+    fi
+
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOSSH
         set -e
-        cd /opt/$PROJECT_NAME
+        export PROJECT_NAME="$PROJECT_NAME"
+        export SERVER_IP="$SERVER_IP"
+        export DOMAIN="$DOMAIN"
+        export DEPLOY_TYPE="$DEPLOY_TYPE"
+        export FORCE_REGEN="$FORCE_REGEN"
         
-        # Create .env file if it doesn't exist
-        if [[ ! -f .env ]] || [[ "$FORCE_REGEN" == "true" ]]; then
+        cd /opt/\$PROJECT_NAME
+        
+        # Create .env.prod file if it doesn't exist
+        if [[ ! -f .env.prod ]] || [[ "\$FORCE_REGEN" == "true" ]]; then
             echo "🔐 Generating environment variables..."
             
             # Generate random passwords and keys
-            DB_PASSWORD=\$(openssl rand -base64 32)
-            REDIS_PASSWORD=\$(openssl rand -base64 32)
-            JWT_SECRET=\$(openssl rand -base64 64)
-            ENCRYPTION_KEY=\$(openssl rand -base64 32)
-            MINIO_ROOT_PASSWORD=\$(openssl rand -base64 32)
-            PGADMIN_PASSWORD=\$(openssl rand -base64 16)
-            
-            # Create .env file
-            cat > .env << 'ENVEOF'
+            DB_PASSWORD=\$(openssl rand -hex 16)
+            REDIS_PASSWORD=\$(openssl rand -hex 16)
+            JWT_SECRET=\$(openssl rand -hex 32)
+            ENCRYPTION_KEY=\$(openssl rand -hex 16)
+            MINIO_ROOT_PASSWORD=\$(openssl rand -hex 16)
+            PGADMIN_PASSWORD=\$(openssl rand -hex 12)
+            GRAFANA_ADMIN_PASSWORD=\$(openssl rand -hex 12)
+           
+            # Create .env.prod file
+            cat > .env.prod << EOF
 # Generated on \$(date)
 # KataCore Production Environment Configuration
 
@@ -436,10 +502,10 @@ SITE_PORT=3000
 API_PORT=3001
 
 # ===== Database Configuration =====
-POSTGRES_DB=$PROJECT_NAME
-POSTGRES_USER=$PROJECT_NAME
+POSTGRES_DB=\$PROJECT_NAME
+POSTGRES_USER=\$PROJECT_NAME
 POSTGRES_PASSWORD=\$DB_PASSWORD
-DATABASE_URL=postgresql://\$PROJECT_NAME:\$DB_PASSWORD@postgres:5432/$PROJECT_NAME
+DATABASE_URL=postgresql://\$PROJECT_NAME:\$DB_PASSWORD@postgres:5432/\$PROJECT_NAME
 
 # ===== Redis Configuration =====
 REDIS_PASSWORD=\$REDIS_PASSWORD
@@ -468,42 +534,58 @@ PGADMIN_DEFAULT_PASSWORD=\$PGADMIN_PASSWORD
 INTERNAL_API_URL=http://api:3001
 
 # ===== Server Configuration =====
-SERVER_IP=$SERVER_IP
-DOMAIN=$DOMAIN
-DEPLOY_TYPE=$DEPLOY_TYPE
+SERVER_IP=\$SERVER_IP
+DOMAIN=\$DOMAIN
+DEPLOY_TYPE=\$DEPLOY_TYPE
 
 # ===== SSL Configuration (for full deployment) =====
-SSL_EMAIL=admin@$DOMAIN
-ENVEOF
+SSL_EMAIL=admin@\$DOMAIN
+EOF
 
             # Append deployment-specific configuration
-            if [[ "$DEPLOY_TYPE" == "simple" ]]; then
-                cat >> .env << 'ENVEOF'
+            if [[ "\$DEPLOY_TYPE" == "simple" ]]; then
+                cat >> .env.prod << EOF
 
 # ===== CORS Configuration =====
-CORS_ORIGIN=http://$SERVER_IP:3000
-NEXT_PUBLIC_API_URL=http://$SERVER_IP:3001
-NEXT_PUBLIC_APP_URL=http://$SERVER_IP:3000
-NEXT_PUBLIC_MINIO_ENDPOINT=http://$SERVER_IP:9000
-PGADMIN_DEFAULT_EMAIL=admin@$SERVER_IP
-ENVEOF
+CORS_ORIGIN=http://\$SERVER_IP:3000
+NEXT_PUBLIC_API_URL=http://\$SERVER_IP:3001
+NEXT_PUBLIC_APP_URL=http://\$SERVER_IP:3000
+NEXT_PUBLIC_MINIO_ENDPOINT=http://\$SERVER_IP:9000
+PGADMIN_DEFAULT_EMAIL=admin@\$SERVER_IP
+EOF
             else
-                cat >> .env << 'ENVEOF'
+                cat >> .env.prod << EOF
 
 # ===== CORS Configuration =====
-CORS_ORIGIN=https://$DOMAIN,http://$SERVER_IP:3000
-NEXT_PUBLIC_API_URL=https://$DOMAIN/api
-NEXT_PUBLIC_APP_URL=https://$DOMAIN
-NEXT_PUBLIC_MINIO_ENDPOINT=https://$DOMAIN:9000
-PGADMIN_DEFAULT_EMAIL=admin@$DOMAIN
-ENVEOF
+CORS_ORIGIN=https://\$DOMAIN,http://\$SERVER_IP:3000
+NEXT_PUBLIC_API_URL=https://api.\$DOMAIN
+NEXT_PUBLIC_APP_URL=https://\$DOMAIN
+NEXT_PUBLIC_MINIO_ENDPOINT=https://minio.\$DOMAIN
+PGADMIN_DEFAULT_EMAIL=admin@\$DOMAIN
+EOF
             fi
             
-            echo "✅ Environment file generated"
+            echo "✅ .env.prod file created successfully!"
+
+            # Print credentials instead of saving to a file
+            echo "✅ Environment file generated with the following credentials (SAVE SECURELY):"
+            echo "   🔐 Database Password: \$DB_PASSWORD"
+            echo "   🔐 Redis Password: \$REDIS_PASSWORD"
+            echo "   🔐 JWT Secret: \$JWT_SECRET"
+            echo "   🔐 Encryption Key: \$ENCRYPTION_KEY"
+            echo "   🔐 MinIO Root Password: \$MINIO_ROOT_PASSWORD"
+            echo "   🔐 pgAdmin Password: \$PGADMIN_PASSWORD"
+            echo "   🔐 Grafana Admin Password: \$GRAFANA_ADMIN_PASSWORD"
+
         else
-            echo "📋 Using existing .env file"
+            echo "📋 Using existing .env.prod file"
         fi
-EOF
+
+        # Check if a system restart is required
+        if [ -f /var/run/reboot-required ]; then
+            echo "⚠️ System restart required. Please run 'sudo reboot' manually when ready."
+        fi
+EOSSH
     
     success "Environment configuration completed"
 }
@@ -517,7 +599,7 @@ run_docker_compose() {
         cd /opt/$PROJECT_NAME
         
         echo "🧹 Cleaning up existing containers..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --remove-orphans 2>/dev/null || true
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod down --remove-orphans 2>/dev/null || true
         
         echo "🗑️  Cleaning up Docker system..."
         docker system prune -f
@@ -529,13 +611,13 @@ run_docker_compose() {
         fi
         
         echo "📋 Validating Docker Compose configuration..."
-        docker-compose -f $DOCKER_COMPOSE_FILE config --quiet
+        docker compose -f $DOCKER_COMPOSE_FILE --env-file .env.prod config --quiet
         
         echo "🔨 Building Docker images..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME build --no-cache --parallel
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod build --no-cache --parallel
         
         echo "🚀 Starting services..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME up -d
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod up -d
         
         echo "⏳ Waiting for services to start..."
         sleep 30
@@ -543,7 +625,7 @@ run_docker_compose() {
         echo "🔍 Checking service health..."
         # Check if services are running
         for i in {1..10}; do
-            if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps | grep -q "Up"; then
+            if docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod ps | grep -q "Up"; then
                 echo "✅ Services are starting up..."
                 break
             fi
@@ -552,10 +634,10 @@ run_docker_compose() {
         done
         
         echo "📊 Checking service status..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod ps
         
         echo "📋 Checking service logs for errors..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME logs --tail=50
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod logs --tail=50
         
         echo "✅ Docker Compose deployment completed!"
 EOF
@@ -567,120 +649,130 @@ EOF
 configure_ssl() {
     if [[ "$DEPLOY_TYPE" == "full" ]]; then
         log "🔒 Configuring SSL certificates..."
-        
-        ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" << EOF
-            set -e
-            
-            echo "🌐 Configuring Nginx..."
-            cat > /etc/nginx/sites-available/$DOMAIN << 'NGINXEOF'
-server {
-    listen 80;
-    server_name $DOMAIN;
-    
-    # Security headers
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-    
-    # Client max body size
-    client_max_body_size 50M;
-    
-    # Main site
-    location / {
+
+        # Build Nginx config blocks based on flags
+        local nginx_conf=""
+        nginx_conf+="server {
+        listen 80;
+        server_name $DOMAIN www.$DOMAIN;
+        add_header X-Frame-Options \"SAMEORIGIN\" always;
+        add_header X-Content-Type-Options \"nosniff\" always;
+        add_header X-XSS-Protection \"1; mode=block\" always;
+        add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;
+        client_max_body_size 50M;
+
+        location / {
         proxy_pass http://localhost:3000;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$server_port;
-        proxy_cache_bypass \$http_upgrade;
         proxy_buffering off;
-        proxy_request_buffering off;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        }
     }
-    
-    # API endpoints
-    location /api {
+    "
+        if [[ "$NGINX_API" == "true" ]]; then
+            nginx_conf+="
+    server {
+        listen 80;
+        server_name api.$DOMAIN;
+        add_header X-Frame-Options \"SAMEORIGIN\" always;
+        add_header X-Content-Type-Options \"nosniff\" always;
+        add_header X-XSS-Protection \"1; mode=block\" always;
+        add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;
+        client_max_body_size 50M;
+
+        location / {
         proxy_pass http://localhost:3001;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$server_port;
-        proxy_cache_bypass \$http_upgrade;
         proxy_buffering off;
-        proxy_request_buffering off;
         proxy_http_version 1.1;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        }
     }
-    
-    # MinIO Console
-    location /minio {
-        proxy_pass http://localhost:9001;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$server_port;
-        proxy_cache_bypass \$http_upgrade;
-        proxy_buffering off;
-        proxy_request_buffering off;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-    
-    # pgAdmin
-    location /pgadmin {
+    "
+        fi
+        if [[ "$NGINX_PGADMIN" == "true" ]]; then
+            nginx_conf+="
+    server {
+        listen 80;
+        server_name pgadmin.$DOMAIN;
+        add_header X-Frame-Options \"SAMEORIGIN\" always;
+        add_header X-Content-Type-Options \"nosniff\" always;
+        add_header X-XSS-Protection \"1; mode=block\" always;
+        add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;
+        client_max_body_size 50M;
+
+        location / {
         proxy_pass http://localhost:5050;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Host \$host;
-        proxy_set_header X-Forwarded-Port \$server_port;
-        proxy_cache_bypass \$http_upgrade;
         proxy_buffering off;
-        proxy_request_buffering off;
         proxy_http_version 1.1;
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
+        }
     }
-    
-    # Health check endpoint
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
+    "
+        fi
+        if [[ "$NGINX_MINIO" == "true" ]]; then
+            nginx_conf+="
+    server {
+        listen 80;
+        server_name minio.$DOMAIN;
+        add_header X-Frame-Options \"SAMEORIGIN\" always;
+        add_header X-Content-Type-Options \"nosniff\" always;
+        add_header X-XSS-Protection \"1; mode=block\" always;
+        add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;
+        client_max_body_size 50M;
+
+        location / {
+        proxy_pass http://localhost:9000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+        proxy_http_version 1.1;
+        }
     }
-}
+    "
+        fi
+        # Prepare certbot domains
+        local certbot_domains="-d $DOMAIN -d www.$DOMAIN"
+        [[ "$NGINX_API" == "true" ]] && certbot_domains+=" -d api.$DOMAIN"
+        [[ "$NGINX_PGADMIN" == "true" ]] && certbot_domains+=" -d pgadmin.$DOMAIN"
+        [[ "$NGINX_MINIO" == "true" ]] && certbot_domains+=" -d minio.$DOMAIN"
+        ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" bash -s <<EOF
+set -e
+DOMAIN="$DOMAIN"
+echo "🌐 Configuring Nginx..."
+cat > /etc/nginx/sites-available/\$DOMAIN <<'NGINXEOF'
+$nginx_conf
 NGINXEOF
-            
-            ln -sf /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
-            rm -f /etc/nginx/sites-enabled/default
-            nginx -t && systemctl reload nginx
-            
-            echo "🔒 Obtaining SSL certificate..."
-            certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN
-            
-            echo "✅ SSL configuration completed"
+
+ln -sf /etc/nginx/sites-available/\$DOMAIN /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
+nginx -t && systemctl reload nginx
+
+echo "🔒 Obtaining SSL certificate..."
+certbot --nginx $certbot_domains --non-interactive --agree-tos --expand --email admin@\$DOMAIN || {
+    echo "⚠️  Certbot could not install the certificate automatically. Attempting manual installation..."
+    # Find the actual certbot certificate name
+    CERT_NAME=\$(certbot certificates | grep "Certificate Name:" | grep "\$DOMAIN" | head -n1 | awk '{print \$3}')
+    if [[ -n "\$CERT_NAME" ]]; then
+        certbot install --cert-name "\$CERT_NAME" --nginx --non-interactive --agree-tos --email admin@\$DOMAIN || true
+    else
+        echo "❌ Could not determine certificate name for manual installation."
+    fi
+}
+
+echo "✅ SSL configuration completed"
 EOF
-        
+
         success "SSL certificates configured"
     fi
 }
@@ -694,7 +786,7 @@ check_service_health() {
         cd /opt/$PROJECT_NAME
         
         echo "🔍 Checking Docker container status..."
-        docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps
+        docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod ps
         
         echo ""
         echo "🔍 Checking service health..."
@@ -728,14 +820,14 @@ check_service_health() {
         fi
         
         # Check database connection
-        if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME exec -T postgres pg_isready -U $PROJECT_NAME > /dev/null 2>&1; then
+        if docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod exec -T postgres pg_isready -U $PROJECT_NAME > /dev/null 2>&1; then
             echo "✅ PostgreSQL: Connection healthy"
         else
             echo "❌ PostgreSQL: Connection failed"
         fi
         
         # Check Redis connection
-        if docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME exec -T redis redis-cli ping > /dev/null 2>&1; then
+        if docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod exec -T redis redis-cli ping > /dev/null 2>&1; then
             echo "✅ Redis: Connection healthy"
         else
             echo "❌ Redis: Connection failed"
@@ -772,32 +864,38 @@ show_deployment_summary() {
     echo ""
     
     echo -e "${CYAN}📊 Services Status:${NC}"
-    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" "cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME ps"
+    ssh -i "$SSH_KEY_PATH" "$SSH_USER@$SERVER_IP" "cd /opt/$PROJECT_NAME && docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod ps"
     echo ""
     
     echo -e "${CYAN}🔗 Service URLs:${NC}"
     if [[ "$DEPLOY_TYPE" == "simple" ]]; then
         echo -e "   🌐 Main App:      http://$SERVER_IP:3000"
-        echo -e "   🚀 API:          http://$SERVER_IP:3001"
-        echo -e "   📦 MinIO:        http://$SERVER_IP:9000"
+        echo -e "   🚀 API:           http://$SERVER_IP:3001"
+        echo -e "   📦 MinIO:         http://$SERVER_IP:9000"
+        echo -e "   🗄️  MinIO Console: http://$SERVER_IP:9001"
+        echo -e "   🗄️  pgAdmin:      http://$SERVER_IP:5050"
         echo -e "   🗄️  Database:     $SERVER_IP:5432"
+        echo -e "   🗄️  Redis:        $SERVER_IP:6379"
     else
-        echo -e "   🌐 Main App:      https://$DOMAIN"
-        echo -e "   🚀 API:          https://$DOMAIN/api"
-        echo -e "   📦 MinIO:        https://$DOMAIN:9000"
-        echo -e "   🗄️  Database:     $DOMAIN:5432"
+        echo -e "   🌐 Main App:      https://$DOMAIN (IP: http://$SERVER_IP:3000)"
+        echo -e "   🚀 API:           https://api.$DOMAIN (IP: http://$SERVER_IP:3001)"
+        echo -e "   📦 MinIO:         https://minio.$DOMAIN (IP: http://$SERVER_IP:9000)"
+        echo -e "   🗄️  MinIO Console: https://minio.$DOMAIN (IP: http://$SERVER_IP:9001)"
+        echo -e "   🗄️  pgAdmin:      https://pgadmin.$DOMAIN (IP: http://$SERVER_IP:5050)"
+        echo -e "   🗄️  Database:     $DOMAIN:5432 (IP: $SERVER_IP:5432)"
+        echo -e "   🗄️  Redis:        $DOMAIN:6379 (IP: $SERVER_IP:6379)"
     fi
     echo ""
     
     echo -e "${CYAN}📋 Management Commands:${NC}"
-    echo -e "   🔍 Check logs:    ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME logs'"
-    echo -e "   🔄 Restart:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME restart'"
-    echo -e "   ⏹️  Stop:         ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME stop'"
-    echo -e "   🗑️  Remove:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down'"
+    echo -e "   🔍 Check logs:    ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod logs'"
+    echo -e "   🔄 Restart:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod restart'"
+    echo -e "   ⏹️  Stop:         ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod stop'"
+    echo -e "   🗑️  Remove:       ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cd /opt/$PROJECT_NAME && docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod down'"
     echo ""
     
-    echo -e "${YELLOW}🔐 Important: Check .env file on server for generated passwords${NC}"
-    echo -e "   ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cat /opt/$PROJECT_NAME/.env'"
+    echo -e "${YELLOW}🔐 Important: Check .env.prod file on server for generated passwords${NC}"
+    echo -e "   ssh -i $SSH_KEY_PATH $SSH_USER@$SERVER_IP 'cat /opt/$PROJECT_NAME/.env.prod'"
 }
 
 # Main deployment function
@@ -852,7 +950,7 @@ cleanup_deployment() {
     
     # Set default SSH key if not provided
     if [[ -z "$SSH_KEY_PATH" ]]; then
-        SSH_KEY_PATH="$HOME/.ssh/id_rsa"
+        SSH_KEY_PATH="$HOME/.ssh/default"
     fi
     
     # Check SSH connection
@@ -870,10 +968,10 @@ cleanup_deployment() {
             
             if [[ -f "$DOCKER_COMPOSE_FILE" ]]; then
                 echo "🛑 Stopping Docker containers..."
-                docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --remove-orphans -v || true
+                docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod down --remove-orphans -v || true
                 
                 echo "🗑️  Removing Docker images..."
-                docker-compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME down --rmi all || true
+                docker compose -f $DOCKER_COMPOSE_FILE -p $PROJECT_NAME --env-file .env.prod down --rmi all || true
             fi
             
             echo "🧹 Removing project directory..."

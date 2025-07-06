@@ -1,0 +1,1 @@
+ALTER ROLE katacore WITH PASSWORD 'testpass123';

@@ -26,7 +26,7 @@
     "deploy:remote": "./deploy-remote.sh",
     "deploy:simple": "./deploy-remote.sh --simple",
     "deploy:cleanup": "./deploy-remote.sh --cleanup",
-    "security:generate": "./generate-security.sh",
+    "keygen": "./generate-security.sh",
     "docker:up": "docker-compose -f docker-compose.startkitv1.yml up -d",
     "docker:down": "docker-compose -f docker-compose.startkitv1.yml down",
     "docker:logs": "docker-compose -f docker-compose.startkitv1.yml logs -f"
@@ -52,9 +52,21 @@
     "url": "https://github.com/KataChannel/innerbright.git"
   },
   "devDependencies": {
+    "@types/minimatch": "^6.0.0",
     "concurrently": "^8.2.2"
   },
   "engines": {
     "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@heroicons/react": "^2.2.0",
+    "@mui/material": "^7.2.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.525.0",
+    "next-auth": "^4.24.11",
+    "postgres": "^3.4.7",
+    "zod": "^3.25.71"
   }
 }
