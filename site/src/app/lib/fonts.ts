@@ -1,15 +1,7 @@
-import { Inter, Lusitana } from 'next/font/google';
+// lib/fonts.ts
 import localFont from 'next/font/local';
 
-export const inter = Inter({ subsets: ['latin'] });
-
-export const lusitana = Lusitana({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-});
-
-// SVN-Opinion local font
-export const svnOpinion = localFont({
+const myCustomFont = localFont({
   src: [
     // Extra Light
     {
@@ -100,6 +92,8 @@ export const svnOpinion = localFont({
       style: 'italic',
     },
   ],
-  display: 'swap',
-  variable: '--font-svn-opinion',
+  display: 'swap', // Đảm bảo font được tải mượt mà, tránh CLS
+  variable: '--font-svn-opinion', // CSS variable for easier usage
 });
+
+export default myCustomFont;

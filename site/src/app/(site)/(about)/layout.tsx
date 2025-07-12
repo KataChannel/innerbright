@@ -53,7 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         <div className="relative h-80 lg:h-96">
           <img
-            src="https://placehold.co/800x300/b0e0e6/000000"
+            src="https://placehold.co/800x500/b0e0e6/000000"
             alt="InnerBright Team"
             className="w-full h-full object-cover object-center"
           />
@@ -61,9 +61,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           <div className="absolute inset-0 flex items-center">
             <div className="container mx-auto px-8 lg:px-12">
-              <div className="max-w-2xl">
+              <div className="w-1/2">
                 <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-                  CÂU CHUYỆN VỀ InnerBright
+                 <span>CÂU CHUYỆN</span> <span className="text-3xl">Về InnerBright</span>
                 </h1>
                 <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
                   InnerBright Training & Coaching được thành lập từ năm 2020 bởi
@@ -77,7 +77,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
         <h2 className="text-center text-3xl font-bold text-blue-700 mb-8">
-          MANG TRONG MÌNH KHÁT VỌNG
+          <span>Mang trong mình</span> <span className="text-5xl">KHÁT VỌNG</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
