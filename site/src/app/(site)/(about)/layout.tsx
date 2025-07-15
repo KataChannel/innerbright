@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
+import { Section, Hero, Card } from "@/components";
 
 const AccordionItem = ({
   title,
@@ -47,35 +48,20 @@ const AccordionItem = ({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-100 font-inter">
-      <section
+      <Section
         id="section1"
-        className="relative bg-white rounded-xl shadow-lg overflow-hidden mb-8"
+        padding="none"
+        className="relative"
       >
-        <div className="relative h-80 lg:h-96">
-          <img
-            src="https://placehold.co/800x500/b0e0e6/000000"
-            alt="InnerBright Team"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+        <Hero
+          title={<><span>CÂU CHUYỆN</span> <span className="text-3xl">Về InnerBright</span></>}
+          description="InnerBright Training & Coaching được thành lập từ năm 2020 bởi nhà đào tạo Chloe Quý Châu"
+          imageSrc="https://placehold.co/800x500/b0e0e6/000000"
+          imageAlt="InnerBright Team"
+        />
+      </Section>
 
-          <div className="absolute inset-0 flex items-center">
-            <div className="container mx-auto px-8 lg:px-12">
-              <div className="w-1/2">
-                <h1 className="text-3xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-                 <span>CÂU CHUYỆN</span> <span className="text-3xl">Về InnerBright</span>
-                </h1>
-                <p className="text-lg lg:text-xl text-white/90 leading-relaxed">
-                  InnerBright Training & Coaching được thành lập từ năm 2020 bởi
-                  nhà đào tạo Chloe Quý Châu
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
+      <Section>
         <h2 className="text-center text-3xl font-bold text-blue-700 mb-8">
           <span>Mang trong mình</span> <span className="text-5xl">KHÁT VỌNG</span>
         </h2>
@@ -160,9 +146,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-white rounded-xl shadow-lg p-8 mb-8 text-center">
+      <Section className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">
           PHÁT TRIỂN BẢN THÂN
         </h2>
@@ -182,9 +168,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           đồng hành cùng bạn trên hành trình này để khai phóng tiềm năng và giúp
           phát huy tối đa nội lực của riêng Bạn
         </p>
-      </section>
+      </Section>
 
-      <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
+      <Section>
         <h2 className="text-center text-3xl font-bold text-blue-700 mb-8">
           HỆ THỐNG CHỨNG NHẬN
         </h2>
@@ -206,9 +192,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               alt="ABNLP Logo"
               className="w-full h-auto rounded-md"
             />
-            <p className="text-sm text-gray-500 mt-2">
-              Institute of Neuro Linguistic Programming
-            </p>
           </div>
 
           <div className="p-6 bg-gray-50 rounded-lg shadow-md">
@@ -230,9 +213,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             />
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
+      <Section>
         <h1 className="text-center text-3xl md:text-4xl font-bold text-gray-800 mb-12">
           Vì sao InnerBright là lựa chọn khác biệt?
         </h1>
@@ -261,9 +244,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="mx-auto container bg-white rounded-xl shadow-lg p-8 mb-8 gap-8 max-w-4xl">
+      <Section className="mx-auto container gap-8 max-w-4xl">
         <div className="flex gap-8 justify-center">
           <div className="relative w-full max-w-xs md:max-w-none aspect-square">
             <img
@@ -301,8 +284,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             diện và sống một cuộc đời trọn vẹn.
           </p>
         </div>
-      </section>
-      <section className="bg-white rounded-xl shadow-lg p-8 mb-8">
+      </Section>
+      <Section>
         <div className="min-h-screen bg-gray-50 font-sans">
           <div className="container mx-auto px-4 py-12 max-w-5xl">
             <div className="text-center mb-12">
@@ -448,9 +431,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </section>
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="bg-[#1A2A44] rounded-xl shadow-lg p-8 mb-8">
+      <Section backgroundColor="dark">
         {/* Header Section */}
         <div className="text-white text-center text-2xl font-bold">
           CHIA SẺ CỦA HỌC VIÊN VỀ INNERBRIGHT
@@ -485,7 +468,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </div>
         </main>
-      </section>
+      </Section>
 
     </div>
   );

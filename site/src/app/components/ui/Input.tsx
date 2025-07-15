@@ -1,16 +1,18 @@
+// This is deprecated - use @/components/Input instead
 import React from 'react';
+import Input from '@/components/Input';
 
-interface InputProps {
-    // Define your component props here
+interface DeprecatedInputProps {
     message?: string;
 }
 
-const Input: React.FC<InputProps> = ({ message = 'Hello from Input!' }) => {
+const DeprecatedInput: React.FC<DeprecatedInputProps> = ({ message = 'Hello from Input!' }) => {
     return (
-        <div className="p-4 border rounded shadow">
-            <p>{message}</p>
-        </div>
+        <Input 
+            placeholder={message}
+            className="p-4 border rounded shadow"
+        />
     );
 };
 
-export default Input;
+export default DeprecatedInput;

@@ -69,30 +69,7 @@ export default function HomePage() {
     return (
         <div className="mx-auto">
             <div className="mb-8">
-                <Swipe
-                    slides={advancedSlides}
-                    darkMode={false}
-                    autoplay={true}
-                    autoplayDelay={4000}
-                    infinite={true}
-                    showArrows={true}
-                    showDots={true}
-                    swipeThreshold={50}
-                    transitionDuration={500}
-                    containerStyle={{ 
-                        padding: '0',
-                        backgroundColor: 'transparent',
-                        borderRadius: '12px',
-                        margin: '0 auto',
-                        maxWidth: '1200px'
-                    }}
-                />
             </div>
-            {/* <FeaturedCategories />
-            <Promo />
-            <PopularProducts />
-            <PopularProducts />
-            <PopularProducts /> */}
         </div>
     );
 }

@@ -181,9 +181,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               alt="ABNLP Logo"
               className="w-full h-auto rounded-md"
             />
-            <p className="text-sm text-gray-500 mt-2">
-              Institute of Neuro Linguistic Programming
-            </p>
           </div>
 
           {/* Certification 2 */}
