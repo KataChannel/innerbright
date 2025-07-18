@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Hero
           title={<><span>CÂU CHUYỆN</span> <span className="text-3xl">Về InnerBright</span></>}
           description="InnerBright Training & Coaching được thành lập từ năm 2020 bởi nhà đào tạo Chloe Quý Châu"
-          imageSrc="https://placehold.co/800x500/b0e0e6/000000"
+          imageSrc="images/about/cau-chuyen.jpg"
           imageAlt="InnerBright Team"
         />
       </Section>
@@ -69,7 +69,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="relative h-48 lg:h-56">
               <img
-                src="https://placehold.co/400x200/a0c4ff/ffffff"
+                src="images/about/su-menh.jpg"
                 alt="Mission"
                 className="w-full h-full object-cover object-center"
               />
@@ -96,7 +96,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="relative h-48 lg:h-56">
               <img
-                src="https://placehold.co/400x200/a0c4ff/ffffff"
+                src="images/about/tam-nhin.jpg"
                 alt="Vision"
                 className="w-full h-full object-cover object-center"
               />
@@ -122,7 +122,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="relative h-48 lg:h-56">
               <img
-                src="https://placehold.co/400x200/a0c4ff/ffffff"
+                src="images/about/gia-tri-cot-loi.jpg"
                 alt="Values"
                 className="w-full h-full object-cover object-center"
               />
@@ -188,7 +188,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               HỌC VIỆN ĐÀO TẠO NLP
             </h3>
             <img
-              src="https://placehold.co/200x100/e0e0e0/333333"
+              src="images/about/hoc-vien-dao-tao-nlp.jpg"
               alt="ABNLP Logo"
               className="w-full h-auto rounded-md"
             />
@@ -207,7 +207,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               HỌC VIỆN ĐÀO TẠO NLP COACHING
             </h3>
             <img
-              src="https://placehold.co/200x100/e0e0e0/333333"
+              src="images/about/hoc-vien-dao-tao-coaching.jpg"
               alt="NLP Coaching Logo"
               className="w-full h-auto rounded-md"
             />
@@ -221,7 +221,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </h1>
         <div className="relative h-80 lg:h-96">
           <img
-            src="https://placehold.co/800x300/b0e0e6/000000"
+            src="images/about/NLP-banner.jpg"
             alt="Laptop showing NLP concepts"
             className="w-full h-full object-cover object-center"
           />
@@ -250,7 +250,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="flex gap-8 justify-center">
           <div className="relative w-full max-w-xs md:max-w-none aspect-square">
             <img
-              src="https://placehold.co/300x300/cccccc/333333"
+              src="images/about/tai-innerbright.jpg"
               alt="Woman speaking at InnerBright"
               style={{ objectFit: "cover" }}
               className="rounded-full shadow-lg"
@@ -323,7 +323,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               <div className="lg:w-1/2 w-full flex justify-center items-center">
                 <img
-                  src="https://placehold.co/500x350/cccccc/333333"
+                  src="images/about/5-nen-tang.jpg"
                   alt="InnerBright team and students"
                   width={500}
                   height={350}
@@ -340,7 +340,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <div className="md:w-1/3 flex justify-center">
                   <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden shadow-lg">
                     <img
-                      src="https://placehold.co/200x200/cccccc/333333"
+                      src="images/about/tai-innerbright.jpg"
                       alt="Chloe Quý Châu"
                       style={{ objectFit: "cover" }}
                     />

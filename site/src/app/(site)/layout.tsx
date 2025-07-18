@@ -21,14 +21,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-center space-x-10">
           {/* Logo */}
-          <div className="w-2/4 flex items-center">
+            <div className="w-2/4 flex items-center">
             {/* Placeholder for InnerBright logo */}
             <img
-              src="https://placehold.co/120x40/f0f0f0/333333"
+              src="/images/logo.png"
               alt="InnerBright Logo"
               className="h-20 w-auto rounded-md"
             />
-          </div>
+            </div>
 
           {/* Search and User Icon */}
           <div className="w-1/4 flex items-center space-x-4">
@@ -113,7 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Logo and Contact Info */}
           <div className="col-span-1 md:col-span-1 flex flex-col items-center md:items-start text-center md:text-left">
             <img
-              src="https://placehold.co/150x50/E0E0E0/333333" // Placeholder logo, replace with your actual logo path
+              src="/images/logo.png" // Placeholder logo, replace with your actual logo path
               alt="InnerBright Logo"
               className="h-16 mb-4 rounded-md"
             />

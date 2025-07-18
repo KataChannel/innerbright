@@ -38,6 +38,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             <span>Danh mục</span>
                         </Link>
                     </div>
+                    <div className="px-6 py-2">
+                        <Link 
+                            href="/admin/web-builder" 
+                            className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                        >
+                            <span>Website Builder</span>
+                        </Link>
+                    </div>
                 </nav>
             </div>
 
