@@ -22,7 +22,7 @@ INSTALL_REDIS=false
 INSTALL_POSTGRES=false
 NGINX_API=false
 NGINX_PGADMIN=false
-NGINX_MINIO=false
+NGINX_MINIO=false_MINIO=false
 INTERACTIVE_MODE=false
 
 # Color codes

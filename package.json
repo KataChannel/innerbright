@@ -26,6 +26,8 @@
     "deploy:remote": "./deploy-remote.sh",
     "deploy:simple": "./deploy-remote.sh --simple",
     "deploy:cleanup": "./deploy-remote.sh --cleanup",
+    "nginx:setup": "./setup-nginx.sh",
+    "nginx:test": "./scripts/test-nginx.sh",
     "keygen": "./generate-security.sh",
     "docker:up": "docker-compose -f docker-compose.startkitv1.yml up -d",
     "docker:down": "docker-compose -f docker-compose.startkitv1.yml down",

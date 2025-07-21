@@ -17,7 +17,7 @@ PROJECT_NAME="katacore"
 DOCKER_COMPOSE_FILE="docker-compose.yml"
 NGINX_API=false
 NGINX_PGADMIN=false
-NGINX_MINIO=false
+NGINX_MINIO=false_MINIO=false
 
 # Color codes
 readonly RED='\033[0;31m'
