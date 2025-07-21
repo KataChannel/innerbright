@@ -6,7 +6,7 @@
 SSH_KEY="/home/kata/.ssh/default"
 SSH_USER="root"
 SERVER_IP="116.118.85.41"
-
+DOMAIN = "innerbright.vn"
 # Check if key exists
 if [[ ! -f "$SSH_KEY" ]]; then
     echo "❌ SSH key not found: $SSH_KEY"
@@ -14,4 +14,4 @@ if [[ ! -f "$SSH_KEY" ]]; then
 fi
 
 # Run deployment with generated key
-exec ./deploy-remote.sh --key "$SSH_KEY" --user "$SSH_USER" "$SERVER_IP" "$@"
+exec ./deploy-remote.sh --key "$SSH_KEY" --user "$SSH_USER" "$SERVER_IP" "$DOMAIN" "$@"
