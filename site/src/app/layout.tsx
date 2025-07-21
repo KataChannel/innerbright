@@ -4,7 +4,6 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/app/lib/config/site';
 import Head from 'next/head'; // Sử dụng next/head cho các thẻ meta
 import { MaintenanceGuard } from '@/app/components/auth';
-import myCustomFont from '@/app/lib/fonts';
 export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
@@ -16,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={myCustomFont.className}>
+    <html lang="en">
       <Head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
