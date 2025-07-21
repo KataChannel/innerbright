@@ -1,46 +1,32 @@
-// ============================================================================
-// TAZA CORE MAIN LAYOUT
-// ============================================================================
-// Root layout following innerbright unified standards
-
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import '@/styles/globals.css';
-import { UnifiedThemeProvider } from '@/hooks/useUnifiedTheme';
-import { UnifiedAuthProvider } from '@/components/auth/UnifiedAuthProvider';
-import { ThemeInitScript } from '@/components/ThemeManager';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import '@/styles/unified-theme.css';
-
-const inter = Inter({ subsets: ['latin'] });
-
+import '@/app/globals.css';
+import { inter } from '@/app/ui/fonts';
+import { Metadata } from 'next';
+import { siteConfig } from '@/app/lib/config/site';
+import Head from 'next/head'; // Sử dụng next/head cho các thẻ meta
+import { MaintenanceGuard } from '@/app/components/auth';
+import myCustomFont from '@/app/lib/fonts';
 export const metadata: Metadata = {
-  title: 'innerbright - Unified Business Management',
-  description: 'Complete business management solution with unified modules',
+  title: siteConfig.title,
+  description: siteConfig.description,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <head>
-        <ThemeInitScript />
-      </head>
-      <body className={inter.className} suppressHydrationWarning>
-        <ErrorBoundary>
-          <UnifiedThemeProvider
-            defaultConfig={{
-              mode: 'light',
-              language: 'vi',
-              colorScheme: 'monochrome',
-            }}
-            enablePersistence={true}
-            enableSystemListener={true}
-          >
-            <UnifiedAuthProvider>
-              {children}
-            </UnifiedAuthProvider>
-          </UnifiedThemeProvider>
-        </ErrorBoundary>
+    <html lang="en" className={myCustomFont.className}>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="A Progressive Web App built with Next.js" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+      </Head>
+      <body className={`${inter.className} antialiased`}>
+        <MaintenanceGuard>
+          {children}
+        </MaintenanceGuard>
       </body>
     </html>
   );
