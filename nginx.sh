@@ -5,9 +5,9 @@
 
 set -e  # Exit on any error
 
-SERVER_IP="116.118.49.243"
+SERVER_IP="116.118.85.41"
 SERVER_USER="root"
-CONFIG_FILE="app.tazagroup.vn"
+CONFIG_FILE="innerbright.vn"
 LOG_FILE="nginx-deploy.log"
 
 # Function để log
@@ -76,13 +76,13 @@ fi
 mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
 
 # Check if config file already exists
-if [ -f "/etc/nginx/sites-available/app.tazagroup.vn" ]; then
-    echo "⚠️  File cấu hình đã tồn tại tại /etc/nginx/sites-available/app.tazagroup.vn"
+if [ -f "/etc/nginx/sites-available/innerbright.vn" ]; then
+    echo "⚠️  File cấu hình đã tồn tại tại /etc/nginx/sites-available/innerbright.vn"
     echo "✅ Bỏ qua việc ghi đè file và tiếp tục..."
 else
     # Move config file if not exists
-    if [ -f "/tmp/app.tazagroup.vn" ]; then
-        mv /tmp/app.tazagroup.vn /etc/nginx/sites-available/
+    if [ -f "/tmp/innerbright.vn" ]; then
+        mv /tmp/innerbright.vn /etc/nginx/sites-available/
         echo "Config file moved successfully"
     else
         echo "Error: Config file not found in /tmp/"
@@ -91,10 +91,7 @@ else
 fi
 
 # Create symbolic link
-ln -sf /etc/nginx/sites-available/app.tazagroup.vn /etc/nginx/sites-enabled/
-
-# Remove default site
-rm -f /etc/nginx/sites-enabled/default
+ln -sf /etc/nginx/sites-available/innerbright.vn /etc/nginx/sites-enabled/
 
 # Test nginx config
 if nginx -t; then
@@ -134,8 +131,8 @@ else
 fi
 
 # Install SSL certificate
-echo "Installing SSL certificate for app.tazagroup.vn..."
-certbot --nginx -d app.tazagroup.vn --non-interactive --agree-tos --email it@tazagroup.vn
+echo "Installing SSL certificate for innerbright.vn..."
+certbot --nginx -d innerbright.vn --non-interactive --agree-tos --email it@tazagroup.vn
 
 # Test auto-renewal
 certbot renew --dry-run
@@ -184,7 +181,7 @@ main() {
     fi
     
     log "🎉 Deploy hoàn tất thành công!"
-    log "🌐 Website: https://app.tazagroup.vn"
+    log "🌐 Website: https://innerbright.vn"
     log "📋 Log file: $LOG_FILE"
 }
 
