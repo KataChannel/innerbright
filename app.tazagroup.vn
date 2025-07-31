@@ -37,7 +37,7 @@ server {
         
     # Next.js static files with long-term caching
     location /_next/static/ {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1y;
         proxy_cache_use_stale error timeout invalid_header updating http_500 http_502 http_503 http_504;
@@ -47,7 +47,7 @@ server {
 
     # Public static files
     location /static/ {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1d;
         add_header Cache-Control "public, max-age=86400";
@@ -55,7 +55,7 @@ server {
 
     # Images and media files
     location ~* \.(jpg|jpeg|png|gif|ico|svg|webp|avif)$ {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 7d;
         add_header Cache-Control "public, max-age=604800";
@@ -64,7 +64,7 @@ server {
 
     # Fonts
     location ~* \.(woff|woff2|ttf|eot)$ {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1y;
         add_header Cache-Control "public, max-age=31536000, immutable";
@@ -73,7 +73,7 @@ server {
 
     # CSS and JS files
     location ~* \.(css|js)$ {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1d;
         add_header Cache-Control "public, max-age=86400";
@@ -81,20 +81,20 @@ server {
 
     # Health check endpoint
     location /health {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         access_log off;
     }
 
     # Robots.txt and sitemap
     location = /robots.txt {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1d;
         add_header Cache-Control "public, max-age=86400";
     }
 
     location = /sitemap.xml {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_cache STATIC;
         proxy_cache_valid 200 1h;
         add_header Cache-Control "public, max-age=3600";
@@ -115,7 +115,7 @@ server {
 
     # Main application (port 3900)
     location / {
-        proxy_pass http://116.118.49.243:3900;
+        proxy_pass http://116.118.85.41:3900;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

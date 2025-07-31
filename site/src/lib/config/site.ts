@@ -17,7 +17,7 @@ export const siteConfig = {
   // Enhanced theme configuration
   theme: {
     default: 'light', // Chế độ giao diện mặc định: 'light', 'dark', 'auto'
-    mode: 'monochrome', // Chế độ màu sắc: 'monochrome', 'colorful'
+    mode: 'colorful', // Chế độ màu sắc: 'monochrome', 'colorful'
     allowUserToggle: true, // Cho phép người dùng chuyển đổi theme
     respectSystemPreference: true, // Tự động theo system preference
     transitions: true, // Bật hiệu ứng chuyển đổi

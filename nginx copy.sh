@@ -5,7 +5,7 @@
 
 set -e  # Exit on any error
 
-SERVER_IP="116.118.49.243"
+SERVER_IP="116.118.85.41"
 SERVER_USER="root"
 CONFIG_FILE="app.innerbright.vn"
 LOG_FILE="nginx-deploy.log"
