@@ -42,7 +42,7 @@ ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
 ARG DATABASE_URL
 ARG NEXTAUTH_SECRET
 
-# Build environment
+# Build environment with PWA optimizations
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV DOCKER_BUILD=true
@@ -50,13 +50,20 @@ ENV SKIP_ENV_VALIDATION=true
 ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
 ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
 
-# Build with Bun (faster compilation)
+# PWA optimization - disable during Docker build to prevent CPU spike
+ENV DISABLE_PWA_BUILD=true
+
+# Build with optimized settings for Docker
 RUN --mount=type=cache,target=/app/.next/cache \
-    NODE_OPTIONS="--max-old-space-size=4096" \
+    --mount=type=cache,target=/root/.bun/install/cache \
+    NODE_OPTIONS="--max-old-space-size=2048 --max-semi-space-size=1024" \
+    UV_THREADPOOL_SIZE=4 \
     SKIP_ENV_VALIDATION=true \
-    bun run build && \
+    DISABLE_PWA_BUILD=true \
+    timeout 600s bun run build && \
     rm -rf node_modules/.cache && \
-    rm -rf .next/cache/webpack
+    rm -rf .next/cache/webpack && \
+    rm -rf .next/cache/images
 
 # Production stage using Bun runtime
 FROM oven/bun:1-alpine AS runner

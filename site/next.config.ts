@@ -1,11 +1,29 @@
 import type { NextConfig } from 'next';
 
-// PWA Configuration with proper error handling
+// PWA Configuration with Docker build optimization
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  disable: process.env.NODE_ENV === 'development' || process.env.DISABLE_PWA_BUILD === 'true',
+  // Optimize service worker generation for Docker builds
+  sw: '/sw.js',
+  fallbacks: {
+    document: '/offline.html',
+  },
+  // Reduce CPU usage during build
+  workboxOptions: {
+    disableDevLogs: true,
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+    exclude: [
+      /\.map$/,
+      /manifest$/,
+      /\.DS_Store$/,
+      /^\/admin/,
+      /^\/api/,
+      /chunks\/.*\.js$/,
+    ],
+  },
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -75,7 +93,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Webpack configuration to handle module resolution issues
+  // Webpack configuration to handle module resolution issues and Docker optimization
   webpack: (config, { dev, isServer }) => {
     // Handle SVG files
     config.module.rules.push({
@@ -91,11 +109,31 @@ const nextConfig: NextConfig = {
       tls: false,
     };
 
+    // Optimize for Docker builds - reduce memory usage
+    if (process.env.DOCKER_BUILD === 'true') {
+      config.optimization = {
+        ...config.optimization,
+        usedExports: true,
+        sideEffects: false,
+        minimize: true,
+      };
+
+      // Limit worker threads for Docker environment
+      config.parallelism = 1;
+      
+      // Reduce memory usage during build
+      config.performance = {
+        hints: false,
+        maxEntrypointSize: 512000,
+        maxAssetSize: 512000,
+      };
+    }
+
     return config;
   },
 };
 
-// Export with or without PWA depending on environment
-export default process.env.NODE_ENV === 'development' 
+// Export with or without PWA depending on environment and Docker build
+export default (process.env.NODE_ENV === 'development' || process.env.DISABLE_PWA_BUILD === 'true')
   ? nextConfig 
   : withPWA(nextConfig);
