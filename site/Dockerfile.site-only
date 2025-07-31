@@ -1,0 +1,113 @@
+# 🚀 Memory-Optimized Site-Only Dockerfile
+# Designed to prevent RAM exhaustion during builds on low-memory servers
+
+# Use smaller base image to reduce memory footprint
+FROM node:20-alpine AS base
+
+# Install only essential system dependencies
+RUN apk add --no-cache \
+    libc6-compat \
+    ca-certificates \
+    dumb-init \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+WORKDIR /app
+
+# Dependencies stage - minimal memory usage
+FROM base AS deps
+
+# Copy package files only
+COPY package.json package-lock.json* bun.lockb* ./
+
+# Install dependencies with memory optimization
+ENV NODE_OPTIONS="--max-old-space-size=512"
+RUN npm ci --only=production --prefer-offline --no-audit --progress=false \
+    && npm cache clean --force \
+    && rm -rf /tmp/* \
+    && rm -rf ~/.npm
+
+# Build stage with strict memory limits
+FROM base AS builder
+
+# Copy dependencies from previous stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy source code
+COPY . .
+
+# Set ultra-conservative memory limits for build
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV BUILD_SITE_ONLY=true
+ENV DISABLE_PWA_BUILD=true
+ENV SKIP_ENV_VALIDATION=true
+
+# Critical memory optimization settings
+ENV NODE_OPTIONS="--max-old-space-size=768 --max-semi-space-size=128 --optimize-for-size"
+ENV UV_THREADPOOL_SIZE=1
+ENV NEXT_BUILD_WORKERS=1
+
+# Build with timeout and memory monitoring
+RUN set -e; \
+    echo "🔧 Starting memory-optimized build..."; \
+    free -h; \
+    timeout 600s npm run build || { \
+        echo "❌ Build failed or timed out"; \
+        echo "💾 Final memory status:"; \
+        free -h; \
+        exit 1; \
+    }; \
+    echo "✅ Build completed successfully"; \
+    free -h
+
+# Aggressive cleanup after build
+RUN rm -rf node_modules/.cache \
+    && rm -rf .next/cache/webpack \
+    && rm -rf .next/cache/images \
+    && rm -rf .next/cache/swc \
+    && rm -rf /tmp/* \
+    && rm -rf ~/.npm \
+    && find /app -name "*.map" -delete \
+    && echo "🧹 Cleanup completed"
+
+# Production runtime stage - minimal footprint
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Install minimal runtime dependencies
+RUN apk add --no-cache \
+    ca-certificates \
+    dumb-init \
+    && rm -rf /var/cache/apk/* \
+    && addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
+
+# Set production environment with memory limits
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=256"
+
+# Copy only essential build artifacts
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Switch to non-root user for security
+USER nextjs
+
+# Expose port
+EXPOSE 3000
+
+# Set runtime configuration
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Add health check with minimal resource usage
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s --retries=2 \
+    CMD wget --no-verbose --tries=1 --spider --timeout=5 http://localhost:3000/ || exit 1
+
+# Use dumb-init to handle signals properly and start the application
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]
