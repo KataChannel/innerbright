@@ -5,6 +5,21 @@
 
 set -e
 
+# Ensure we're in the correct directory at script start
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+EXPECTED_SITE_DIR="/chikiet/Innerbright/innerbright/site"
+
+# Check if we're in the site directory
+if [ "$(pwd)" != "$EXPECTED_SITE_DIR" ] && [ -f "$EXPECTED_SITE_DIR/package.json" ]; then
+    echo "Changing to site directory: $EXPECTED_SITE_DIR"
+    cd "$EXPECTED_SITE_DIR"
+elif [ ! -f "package.json" ] || ! grep -q "next" package.json 2>/dev/null; then
+    echo "❌ Error: Must be run from the site directory"
+    echo "Expected: $EXPECTED_SITE_DIR"
+    echo "Current:  $(pwd)"
+    exit 1
+fi
+
 # Color codes for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'  
@@ -37,11 +52,79 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Function to generate Prisma client safely
+generate_prisma_client() {
+    print_status "🔧 Generating Prisma client..."
+    
+    # Ensure we're in the correct directory
+    if [ ! -f "package.json" ]; then
+        print_error "Not in a valid Node.js project directory"
+        return 1
+    fi
+    
+    # Check if Prisma schema exists
+    if [ ! -f "prisma/schema.prisma" ]; then
+        print_warning "No Prisma schema found, skipping Prisma client generation"
+        return 0
+    fi
+    
+    # Get current directory for logging
+    CURRENT_DIR=$(pwd)
+    print_status "Working directory: $CURRENT_DIR"
+    
+    # Ensure we have proper permissions
+    if [ ! -w "$CURRENT_DIR" ]; then
+        print_error "No write permission in current directory: $CURRENT_DIR"
+        return 1
+    fi
+    
+    # Create node_modules/.prisma directory if it doesn't exist
+    mkdir -p node_modules/.prisma 2>/dev/null || true
+    
+    # Try to generate Prisma client with error handling
+    if command -v bun > /dev/null 2>&1; then
+        print_status "Using Bun to generate Prisma client..."
+        if timeout 120s bash -c "cd '$CURRENT_DIR' && bun prisma generate --schema=./prisma/schema.prisma" 2>/dev/null; then
+            print_success "Prisma client generated with Bun"
+            return 0
+        else
+            print_warning "Bun Prisma generation failed, trying with npx..."
+        fi
+    fi
+    
+    # Fallback to npx
+    print_status "Using npx to generate Prisma client..."
+    if timeout 120s bash -c "cd '$CURRENT_DIR' && npx prisma generate --schema=./prisma/schema.prisma" 2>/dev/null; then
+        print_success "Prisma client generated with npx"
+        return 0
+    else
+        print_warning "Prisma client generation failed, continuing without it..."
+        print_status "You may need to run 'npx prisma generate' manually later"
+        return 0
+    fi
+}
+
 # Function to build locally with PWA optimization
 build_local() {
     print_status "Building Next.js application locally with PWA optimization..."
     
-    # Ensure dependencies are installed
+    # Verify we're in the correct directory
+    if [ ! -f "package.json" ]; then
+        print_error "package.json not found. Please run this script from the site directory."
+        return 1
+    fi
+    
+    # Display current working directory for debugging
+    print_status "Working in directory: $(pwd)"
+    
+    # Ensure we have proper permissions
+    CURRENT_DIR=$(pwd)
+    if [ ! -w "$CURRENT_DIR" ]; then
+        print_error "No write permission in directory: $CURRENT_DIR"
+        return 1
+    fi
+    
+    # Check and install dependencies
     if [ ! -d "node_modules" ]; then
         print_status "Installing dependencies..."
         if command -v bun > /dev/null 2>&1; then
@@ -49,9 +132,18 @@ build_local() {
         else
             npm install
         fi
+        
+        if [ $? -ne 0 ]; then
+            print_error "Failed to install dependencies"
+            return 1
+        fi
     fi
     
+    # Generate Prisma client if needed
+    generate_prisma_client
+    
     # Clean previous builds
+    print_status "Cleaning previous builds..."
     rm -rf .next
     
     # Set build environment variables for optimization
