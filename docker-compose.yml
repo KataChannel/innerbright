@@ -1,28 +1,26 @@
 services:
   site:
     build:
-      context: .
-      dockerfile: ./site/Dockerfile
+      context: ./site
+      dockerfile: Dockerfile
       args:
+        BUILD_SITE_ONLY: "true"
         NODE_ENV: production
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-        NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
-    image: innerbright/site:${SITE_VERSION}
+        NEXT_TELEMETRY_DISABLED: "1"
+    image: innerbright/site:${SITE_VERSION:-latest}
     container_name: innerbright-site
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${SITE_PORT}:3000"
+      - "${SITE_PORT:-3000}:3000"
     environment:
+      BUILD_SITE_ONLY: "true"
       NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
       PORT: 3000
-      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+      HOSTNAME: "0.0.0.0"
+      # Public environment variables
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
-      # Database connection for API routes
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      JWT_SECRET: ${JWT_SECRET}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      CORS_ORIGIN: ${CORS_ORIGIN}
       LOG_LEVEL: ${LOG_LEVEL}
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_PORT: ${MINIO_PORT}
