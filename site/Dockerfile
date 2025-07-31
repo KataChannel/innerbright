@@ -5,25 +5,21 @@ FROM oven/bun:1-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# Copy only the site package files (not root workspace package.json)
+# Copy package files
 COPY package.json bun.lockb* ./
-COPY prisma ./prisma/
 
-# Install dependencies without workspace configuration
+# Install dependencies
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
-
-# Generate Prisma client if needed
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    [ -f "./prisma/schema.prisma" ] && bun prisma generate || echo "No Prisma schema found"
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies and source
+# Copy dependencies
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/prisma ./prisma
+
+# Copy source code
 COPY . .
 
 # Set environment for site-only build
@@ -34,7 +30,7 @@ ENV NODE_ENV=production
 # Build with Bun optimization
 RUN bun run build:bun
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 
@@ -50,12 +46,13 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
-# Set permissions
+# Set correct permissions
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
 EXPOSE 3000
 ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Start the application
 CMD ["bun", "server.js"]
