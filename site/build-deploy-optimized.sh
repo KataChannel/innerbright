@@ -81,6 +81,16 @@ clean_build() {
 build_local() {
     log "🔨 Building application locally with optimizations..."
     
+    # Install dependencies if node_modules doesn't exist
+    if [[ ! -d "node_modules" ]]; then
+        log "📦 Installing dependencies..."
+        if command -v bun &> /dev/null; then
+            bun install
+        else
+            npm install
+        fi
+    fi
+    
     # Set environment variables for optimal build
     export BUILD_SITE_ONLY=true
     export NEXT_TELEMETRY_DISABLED=1
@@ -90,16 +100,26 @@ build_local() {
     # Build with the fastest available method
     if command -v bun &> /dev/null; then
         info "Using Bun for fastest build..."
-        bun run build:bun || bun run build:site-only
+        bun run build:site-only || error "Bun build failed"
     else
         info "Using npm for build..."
-        npm run build:site-only || npm run build
+        npm run build:site-only || npm run build || error "NPM build failed"
     fi
     
     # Verify standalone build exists
     if [[ ! -d ".next/standalone" ]]; then
-        error "Standalone build not found. Check your next.config.ts"
+        error "Standalone build not found. Make sure output: 'standalone' is set in next.config.ts"
     fi
+    
+    # Verify static build exists
+    if [[ ! -d ".next/static" ]]; then
+        warn "Static build directory not found, creating empty directory"
+        mkdir -p .next/static
+    fi
+    
+    # Check build size
+    local build_size=$(du -sh .next 2>/dev/null | cut -f1 || echo "unknown")
+    info "Build size: $build_size"
     
     success "Local build completed"
 }

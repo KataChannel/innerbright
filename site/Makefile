@@ -25,7 +25,33 @@ dev: ## Start development server with Bun
 
 build-local: ## Build application locally
 	@echo -e "$(BLUE)🔨 Building application locally...$(NC)"
-	BUILD_SITE_ONLY=true NEXT_TELEMETRY_DISABLED=1 bun run build:bun
+	@if [ ! -d "node_modules" ]; then \
+		echo -e "$(YELLOW)📦 Installing dependencies...$(NC)"; \
+		if command -v bun >/dev/null 2>&1; then \
+			bun install; \
+		else \
+			npm install; \
+		fi; \
+	fi
+	@export BUILD_SITE_ONLY=true && \
+	export NEXT_TELEMETRY_DISABLED=1 && \
+	export NODE_ENV=production && \
+	if command -v bun >/dev/null 2>&1; then \
+		echo -e "$(BLUE)Using Bun for build...$(NC)" && \
+		bun run build:site-only; \
+	else \
+		echo -e "$(BLUE)Using npm for build...$(NC)" && \
+		npm run build:site-only; \
+	fi
+	@if [ ! -d ".next/standalone" ]; then \
+		echo -e "$(YELLOW)❌ Standalone build failed - check next.config.ts$(NC)"; \
+		exit 1; \
+	fi
+	@if [ ! -d ".next/static" ]; then \
+		echo -e "$(YELLOW)⚠️  Creating static directory...$(NC)"; \
+		mkdir -p .next/static; \
+	fi
+	@echo -e "$(GREEN)✅ Local build completed$(NC)"
 
 build-docker: build-local ## Build Docker image locally
 	@echo -e "$(BLUE)🐳 Building Docker image...$(NC)"
