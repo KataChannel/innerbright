@@ -30,7 +30,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 font-inter">
+    <div className="min-h-screen bg-gray-50">
       <section id="logo-search" className="bg-gray-100 z-20 p-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}

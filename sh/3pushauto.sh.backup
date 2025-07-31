@@ -2,7 +2,7 @@
 
 # Set default variables
 SSH_USER="root"
-DEFAULT_SERVER_IP="116.118.49.243"
+DEFAULT_SERVER_IP="116.118.85.41"
 DEFAULT_PROJECT_NAME="innerbright"
 TEMP_DIR="/tmp/deploy_$(date +%s)"
 

@@ -1,3 +1,2 @@
 // Form Components barrel exports
-export * from './LoginForm';
-export * from './UserForm';
+// Currently no form components in this directory
