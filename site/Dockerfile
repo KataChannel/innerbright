@@ -5,10 +5,17 @@ FROM oven/bun:1-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# Copy package files
+# Copy only the site package files (not root workspace package.json)
 COPY package.json bun.lockb* ./
+COPY prisma ./prisma/
+
+# Install dependencies without workspace configuration
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
+
+# Generate Prisma client if needed
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    [ -f "./prisma/schema.prisma" ] && bun prisma generate || echo "No Prisma schema found"
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -16,6 +23,7 @@ WORKDIR /app
 
 # Copy dependencies and source
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
 COPY . .
 
 # Set environment for site-only build
