@@ -1,52 +1,98 @@
-# 🚀 Site-Only Dockerfile with Bun Optimization
 FROM oven/bun:1-alpine AS base
 
-# Install dependencies only when needed
+# Install essential packages for Alpine + musl compatibility
+RUN apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    ca-certificates \
+    tzdata
+
+# Dependencies stage with better caching
 FROM base AS deps
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile
+# Copy package files for dependency installation from site/
+COPY site/package.json site/bun.lockb* ./
 
-# Rebuild the source code only when needed
+# Copy Prisma from site/ directory (not root)
+COPY site/prisma ./prisma
+
+# Install dependencies with Bun (fixed syntax)
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
+# Generate Prisma client for Alpine/musl
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bunx prisma generate --schema=./prisma/schema.prisma
+
+# Build stage
 FROM base AS builder
 WORKDIR /app
 
-# Copy dependencies and source
+# Copy dependencies and generated Prisma client
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY --from=deps /app/prisma ./prisma
 
-# Set environment for site-only build
-ENV BUILD_SITE_ONLY=true
+# Copy site source code
+COPY site/ .
+
+# Build arguments
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
+ARG DATABASE_URL
+ARG NEXTAUTH_SECRET
+
+# Build environment
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV DOCKER_BUILD=true
+ENV SKIP_ENV_VALIDATION=true
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
 
-# Build with Bun optimization
-RUN bun run build:bun
+# Build with Bun (faster compilation)
+RUN --mount=type=cache,target=/app/.next/cache \
+    NODE_OPTIONS="--max-old-space-size=4096" \
+    SKIP_ENV_VALIDATION=true \
+    bun run build && \
+    rm -rf node_modules/.cache && \
+    rm -rf .next/cache/webpack
 
-# Production image, copy all the files and run next
-FROM base AS runner
+# Production stage using Bun runtime
+FROM oven/bun:1-alpine AS runner
 WORKDIR /app
 
+# Install runtime dependencies
+RUN apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    ca-certificates
+
+# Create app user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Copy Prisma client
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Environment variables
 ENV NODE_ENV=production
+ENV PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOSTNAME="0.0.0.0"
 
-# Create nextjs user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+# Expose port
+EXPOSE 3000
 
-# Copy standalone build
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
-# Set permissions
-RUN chown -R nextjs:nodejs /app
+# Switch to non-root user
 USER nextjs
 
-EXPOSE 3000
-ENV PORT=3000
-
-# Start the application
-CMD ["bun", "server.js"]
+# Use dumb-init for proper signal handling and Bun for execution
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["bun", "run", "server.js"]
