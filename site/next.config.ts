@@ -1,11 +1,13 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
-// PWA Configuration with proper error handling
+// PWA Configuration với site-only optimization
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -33,8 +35,36 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig: NextConfig = {
-  // Use standalone output for Docker builds
-  ...(process.env.DOCKER_BUILD === 'true' ? { output: 'standalone' } : {}),
+  // 🚀 Site-only build optimization
+  ...(process.env.BUILD_SITE_ONLY === 'true' && { output: 'standalone' }),
+  
+  // � Server external packages (moved from experimental)
+  serverExternalPackages: ['prisma', '@prisma/client'],
+  
+  // 📁 File tracing configuration (moved from experimental)
+  ...(process.env.BUILD_SITE_ONLY === 'true' && {
+    outputFileTracingRoot: path.join(__dirname, '../'),
+    outputFileTracingIncludes: {
+      '/': ['./src/app/(site)/**/*', './src/components/**/*', './src/lib/**/*'],
+    },
+    outputFileTracingExcludes: {
+      '/': [
+        './src/app/api/**/*',
+        './src/app/admin/**/*',
+        './src/components/admin/**/*',
+        './src/lib/admin/**/*',
+        './**/*.test.*',
+        './**/*.spec.*',
+        './node_modules/**/*',
+      ]
+    },
+  }),
+  
+  // 🎯 Experimental optimizations for site-only
+  experimental: {
+    // Tối ưu cho Bun runtime
+    optimizePackageImports: ['lucide-react', '@heroicons/react'],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
