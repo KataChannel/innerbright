@@ -13,7 +13,7 @@ COPY package.json bun.lockb* ./
 
 # Install dependencies
 RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile --production=false
+    bun install --frozen-lockfile
 
 # Build stage
 FROM base AS builder
