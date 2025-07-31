@@ -1,71 +1,98 @@
-# Multi-stage build for Next.js Frontend - Optimized for production
 FROM oven/bun:1-alpine AS base
 
-# Install security updates and necessary packages for health checks
-RUN apk update && apk upgrade && \
-    apk add --no-cache libc6-compat curl wget && \
-    rm -rf /var/cache/apk/*
+# Install essential packages for Alpine + musl compatibility
+RUN apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    ca-certificates \
+    tzdata
+
+# Dependencies stage with better caching
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files for dependency installation from site/
+COPY site/package.json site/bun.lockb* ./
+
+# Copy Prisma from site/ directory (not root)
+COPY site/prisma ./prisma
+
+# Install dependencies with Bun (fixed syntax)
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
+# Generate Prisma client for Alpine/musl
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bunx prisma generate --schema=./prisma/schema.prisma
 
 # Build stage
 FROM base AS builder
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package.json ./
-RUN bun install
+# Copy dependencies and generated Prisma client
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
 
-# Copy source code
-COPY . .
+# Copy site source code
+COPY site/ .
 
-# Set build environment
+# Build arguments
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
+ARG DATABASE_URL
+ARG NEXTAUTH_SECRET
+
+# Build environment
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV DOCKER_BUILD=true
+ENV SKIP_ENV_VALIDATION=true
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
 
-# Generate Prisma client before building
-RUN if [ -f "src/prisma/schema.prisma" ]; then \
-    echo "Generating Prisma client..."; \
-    bun run prisma generate --schema=src/prisma/schema.prisma || \
-    bunx prisma generate --schema=src/prisma/schema.prisma; \
-    fi
+# Build with Bun (faster compilation)
+RUN --mount=type=cache,target=/app/.next/cache \
+    NODE_OPTIONS="--max-old-space-size=4096" \
+    SKIP_ENV_VALIDATION=true \
+    bun run build && \
+    rm -rf node_modules/.cache && \
+    rm -rf .next/cache/webpack
 
-# Build the application
-RUN bun run build
-
-# Production stage - Minimal image
-FROM base AS production
+# Production stage using Bun runtime
+FROM oven/bun:1-alpine AS runner
 WORKDIR /app
 
-# Create non-root user
+# Install runtime dependencies
+RUN apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    ca-certificates
+
+# Create app user for security
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs --ingroup nodejs
+    adduser --system --uid 1001 nextjs
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
-
-# Set environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
-
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
-USER nextjs
+# Copy Prisma client
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
-EXPOSE 3000
-
+# Environment variables
+ENV NODE_ENV=production
 ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME="0.0.0.0"
 
-# Use dumb-init for proper signal handling
+# Expose port
+EXPOSE 3000
+
+# Switch to non-root user
+USER nextjs
+
+# Use dumb-init for proper signal handling and Bun for execution
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "server.js"]
+CMD ["bun", "run", "server.js"]
