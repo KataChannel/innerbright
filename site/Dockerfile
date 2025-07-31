@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json bun.lockb* ./
 
 # Copy prisma directory only if it exists
-COPY prisma* ./prisma/ 2>/dev/null || true
+COPY prisma* ./prisma/
 
 # Install dependencies without workspace configuration
 RUN --mount=type=cache,target=/root/.bun/install/cache \
