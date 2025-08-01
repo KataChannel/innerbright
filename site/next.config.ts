@@ -36,7 +36,7 @@ const withPWA = require('next-pwa')({
 
 const nextConfig: NextConfig = {
   // 🚀 Site-only build optimization
-  ...(process.env.BUILD_SITE_ONLY === 'true' && { output: 'standalone' }),
+  ...({ output: 'standalone' }),
   
   // � Server external packages (moved from experimental)
   serverExternalPackages: ['prisma', '@prisma/client'],
