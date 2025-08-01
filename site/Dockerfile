@@ -25,7 +25,7 @@ COPY --chown=nextjs:nodejs .next/static ./.next/static
 COPY --chown=nextjs:nodejs public ./public
 
 # Verify critical files exist
-#RUN test -f server.js || (echo "❌ server.js not found in standalone build" && exit 1)
+RUN test -f .next/standalone/server.js || (echo "❌ server.js not found in standalone build" && exit 1)
 
 USER nextjs
 
@@ -37,4 +37,4 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:3000/ || exit 1
 
-CMD ["bun", "run", "server.js"]
+CMD ["bun", "run", ".next/standalone/server.js"]
