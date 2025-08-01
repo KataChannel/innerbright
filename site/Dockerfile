@@ -25,8 +25,8 @@ COPY --chown=nextjs:nodejs public ./public
 COPY --chown=nextjs:nodejs package.json ./
 
 # Copy Prisma client đã generate (nếu có)
-COPY --chown=nextjs:nodejs node_modules/.prisma ./node_modules/.prisma
-COPY --chown=nextjs:nodejs node_modules/@prisma ./node_modules/@prisma
+# COPY --chown=nextjs:nodejs node_modules/.prisma ./node_modules/.prisma
+# COPY --chown=nextjs:nodejs node_modules/@prisma ./node_modules/@prisma
 
 # Environment variables
 ENV NODE_ENV=production
