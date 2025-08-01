@@ -159,13 +159,9 @@ networks:
 volumes:
   postgres_data:
     name: innerbright-postgres-data
-    external: true
   redis_data:
     name: innerbright-redis-data
-    external: true
   minio_data:
     name: innerbright-minio-data
-    external: true
   pgadmin_data:
     name: innerbright-pgadmin-data
-    external: true
