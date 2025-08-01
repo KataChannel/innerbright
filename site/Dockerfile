@@ -7,86 +7,26 @@ RUN apk add --no-cache \
     ca-certificates \
     tzdata
 
-# Dependencies stage with better caching
-FROM base AS deps
+# Production stage - chỉ copy file đã build
+FROM base AS runner
 WORKDIR /app
-
-# Copy package files for dependency installation from site/
-COPY site/package.json site/bun.lockb* ./
-
-# Copy Prisma from site/ directory (not root)
-COPY site/prisma ./prisma
-
-# Install dependencies with Bun (fixed syntax)
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile
-
-# Generate Prisma client for Alpine/musl
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bunx prisma generate --schema=./prisma/schema.prisma
-
-# Build stage
-FROM base AS builder
-WORKDIR /app
-
-# Copy dependencies and generated Prisma client
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/prisma ./prisma
-
-# Copy site source code
-COPY site/ .
-
-# Build arguments
-ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
-ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
-ARG DATABASE_URL
-ARG NEXTAUTH_SECRET
-
-# Build environment with PWA optimizations
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-ENV DOCKER_BUILD=true
-ENV SKIP_ENV_VALIDATION=true
-ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
-ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
-
-# PWA optimization - disable during Docker build to prevent CPU spike
-ENV DISABLE_PWA_BUILD=true
-
-# Build with optimized settings for Docker
-RUN --mount=type=cache,target=/app/.next/cache \
-    --mount=type=cache,target=/root/.bun/install/cache \
-    NODE_OPTIONS="--max-old-space-size=2048 --max-semi-space-size=1024" \
-    UV_THREADPOOL_SIZE=4 \
-    SKIP_ENV_VALIDATION=true \
-    DISABLE_PWA_BUILD=true \
-    timeout 600s bun run build && \
-    rm -rf node_modules/.cache && \
-    rm -rf .next/cache/webpack && \
-    rm -rf .next/cache/images
-
-# Production stage using Bun runtime
-FROM oven/bun:1-alpine AS runner
-WORKDIR /app
-
-# Install runtime dependencies
-RUN apk add --no-cache \
-    libc6-compat \
-    dumb-init \
-    ca-certificates
 
 # Create app user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# Copy pre-built application from local build
+# Giả định rằng bạn đã chạy `bun run build` ở local trước khi build Docker
+COPY --chown=nextjs:nodejs .next/standalone ./
+COPY --chown=nextjs:nodejs .next/static ./.next/static
+COPY --chown=nextjs:nodejs public ./public
 
-# Copy Prisma client
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Copy essential runtime files
+COPY --chown=nextjs:nodejs package.json ./
+
+# Copy Prisma client đã generate (nếu có)
+COPY --chown=nextjs:nodejs node_modules/.prisma ./node_modules/.prisma
+COPY --chown=nextjs:nodejs node_modules/@prisma ./node_modules/@prisma
 
 # Environment variables
 ENV NODE_ENV=production

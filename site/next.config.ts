@@ -12,18 +12,16 @@ const withPWA = require('next-pwa')({
     document: '/offline.html',
   },
   // Reduce CPU usage during build
-  workboxOptions: {
-    disableDevLogs: true,
-    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
-    exclude: [
-      /\.map$/,
-      /manifest$/,
-      /\.DS_Store$/,
-      /^\/admin/,
-      /^\/api/,
-      /chunks\/.*\.js$/,
-    ],
-  },
+  disableDevLogs: true,
+  maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB limit
+  exclude: [
+    /\.map$/,
+    /manifest$/,
+    /\.DS_Store$/,
+    /^\/admin/,
+    /^\/api/,
+    /chunks\/.*\.js$/,
+  ],
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -51,8 +49,8 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig: NextConfig = {
-  // Use standalone output for Docker builds
-  ...(process.env.DOCKER_BUILD === 'true' ? { output: 'standalone' } : {}),
+  // Use standalone output for Docker builds and memory-optimized builds
+  ...(process.env.DOCKER_BUILD === 'true' || process.env.BUILD_SITE_ONLY === 'true' || process.env.STANDALONE_BUILD === 'true' ? { output: 'standalone' } : {}),
   eslint: {
     ignoreDuringBuilds: true,
   },

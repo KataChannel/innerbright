@@ -13,7 +13,7 @@ node_modules/
 .bun
 
 # Build outputs
-.next/
+#.next/
 dist/
 build/
 

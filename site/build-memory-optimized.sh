@@ -89,6 +89,7 @@ build_memory_optimized() {
     export BUILD_SITE_ONLY=true
     export DISABLE_PWA_BUILD=true
     export SKIP_ENV_VALIDATION=true
+    export STANDALONE_BUILD=true
     
     # Very conservative memory settings
     export NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=64 --optimize-for-size"
@@ -198,14 +199,30 @@ deploy_memory_optimized() {
 create_transfer_image() {
     print_status "📦 Creating minimal transfer image..."
     
-    # Ensure build exists
-    if [ ! -d ".next/standalone" ]; then
-        print_error "Build output not found. Run build first."
+    # Check if .next directory exists at all
+    if [ ! -d ".next" ]; then
+        print_error "Build output directory (.next) not found. Run build first."
         return 1
     fi
     
-    # Create minimal Dockerfile
-    cat > Dockerfile.minimal << 'EOF'
+    # For standalone builds, check standalone directory
+    if [ -d ".next/standalone" ]; then
+        print_status "Using standalone build output"
+        BUILD_TYPE="standalone"
+    # For regular builds, check if static and server files exist
+    elif [ -d ".next/static" ] && [ -f ".next/BUILD_ID" ]; then
+        print_status "Using regular build output"
+        BUILD_TYPE="regular"
+    else
+        print_error "No valid build output found. Available files:"
+        ls -la .next/ 2>/dev/null || echo "No .next directory"
+        print_error "Please run 'npm run build' first"
+        return 1
+    fi
+    
+    # Create minimal Dockerfile based on build type
+    if [ "$BUILD_TYPE" = "standalone" ]; then
+        cat > Dockerfile.minimal << 'EOF'
 FROM node:20-alpine
 WORKDIR /app
 RUN apk add --no-cache ca-certificates dumb-init && \
@@ -223,14 +240,45 @@ ENV HOSTNAME="0.0.0.0"
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "server.js"]
 EOF
+    else
+        # Regular Next.js build
+        cat > Dockerfile.minimal << 'EOF'
+FROM node:20-alpine
+WORKDIR /app
+RUN apk add --no-cache ca-certificates dumb-init && \
+    addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    npm install -g next@latest
+COPY package.json ./
+COPY .next ./.next
+COPY public ./public
+RUN chown -R nextjs:nodejs /app
+USER nextjs
+EXPOSE 3000
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=256"
+ENV HOSTNAME="0.0.0.0"
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["npx", "next", "start"]
+EOF
+    fi
     
-    # Build minimal image
-    docker build -f Dockerfile.minimal -t innerbright-site:minimal .
-    
-    # Clean up temporary Dockerfile
-    rm -f Dockerfile.minimal
-    
-    print_success "✅ Minimal transfer image created"
+    print_status "Building minimal Docker image..."
+    if docker build -f Dockerfile.minimal -t innerbright-site:minimal .; then
+        print_success "✅ Minimal transfer image created"
+        
+        # Show image info
+        IMAGE_SIZE=$(docker images --format "table {{.Size}}" innerbright-site:minimal | tail -n1)
+        print_status "📦 Image size: $IMAGE_SIZE"
+        
+        # Clean up temporary Dockerfile
+        rm -f Dockerfile.minimal
+        return 0
+    else
+        print_error "❌ Failed to build minimal Docker image"
+        rm -f Dockerfile.minimal
+        return 1
+    fi
 }
 
 # Show usage
