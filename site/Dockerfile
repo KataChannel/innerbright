@@ -20,7 +20,7 @@ RUN mkdir -p .next/static
 
 # Copy ONLY the built application from local build
 # These files must exist from local build process
-COPY --chown=nextjs:nodejs .next/standalone ./.next/standalone
+COPY --chown=nextjs:nodejs .next/standalone ./
 COPY --chown=nextjs:nodejs .next/static ./.next/static
 COPY --chown=nextjs:nodejs public ./public
 
