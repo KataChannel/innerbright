@@ -15,15 +15,15 @@ WORKDIR /app
 COPY site/package.json site/bun.lockb* ./
 
 # Copy Prisma from site/ directory (not root)
-COPY site/prisma ./prisma
+#COPY site/prisma ./prisma
 
 # Install dependencies with Bun (fixed syntax)
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
 # Generate Prisma client for Alpine/musl
-RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bunx prisma generate --schema=./prisma/schema.prisma
+#RUN --mount=type=cache,target=/root/.bun/install/cache \
+#   bunx prisma generate --schema=./prisma/schema.prisma
 
 # Build stage
 FROM base AS builder
@@ -31,7 +31,7 @@ WORKDIR /app
 
 # Copy dependencies and generated Prisma client
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/prisma ./prisma
+#COPY --from=deps /app/prisma ./prisma
 
 # Copy site source code
 COPY site/ .
@@ -78,8 +78,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Copy Prisma client
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+#COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+#COPY --from=deps --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
 # Environment variables
 ENV NODE_ENV=production
