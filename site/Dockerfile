@@ -1,5 +1,5 @@
-# 🚀 Site-Only Dockerfile - Optimized for Pre-built Applications
-FROM node:18-alpine AS base
+# 🚀 Site-Only Dockerfile - Optimized for Pre-built Applications with Bun
+FROM oven/bun:1-alpine AS base
 
 # Install system dependencies
 RUN apk add --no-cache libc6-compat ca-certificates curl tzdata
@@ -37,4 +37,4 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:3000/ || exit 1
 
-CMD ["node", "server.js"]
+CMD ["bun", "run", "server.js"]
