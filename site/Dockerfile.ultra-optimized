@@ -20,7 +20,7 @@ COPY package.json bun.lockb* ./
 
 # Install dependencies with cache optimization
 RUN --mount=type=cache,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile --production=false
+    bun install --frozen-lockfile
 
 # Copy and generate Prisma client
 COPY prisma ./prisma

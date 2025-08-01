@@ -1,87 +1,120 @@
+# Multi-stage ultra-optimized Next.js Dockerfile for production
 FROM oven/bun:1-alpine AS base
 
-# Install only essential packages with optimizations
-RUN apk add --no-cache libc6-compat dumb-init openssl ca-certificates \
-    && rm -rf /var/cache/apk/*
+# Install system dependencies with minimal footprint
+RUN apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    openssl \
+    ca-certificates \
+    && rm -rf /var/cache/apk/* \
+    && addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs
 
-# Dependencies stage with better caching
+# Dependencies stage with aggressive caching
 FROM base AS deps
 WORKDIR /app
 
-# Copy only package files first for better layer caching
+# Copy package files for dependency installation
 COPY package.json bun.lockb* ./
 
-# Install dependencies including devDependencies for build stage
-RUN --mount=type=cache,target=/root/.bun \
+# Install dependencies with cache optimization
+RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 
-# Copy prisma schema after dependencies
+# Copy and generate Prisma client
 COPY prisma ./prisma
-
-# Generate Prisma client with explicit binary path and cache
-RUN --mount=type=cache,target=/root/.bun \
-    --mount=type=cache,target=/app/node_modules/.cache \
+RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun add prisma @prisma/client && \
     bunx prisma generate
 
-# Build stage
+# Source preparation stage
+FROM base AS source
+WORKDIR /app
+
+# Copy source files in optimal order for layer caching
+COPY public ./public
+COPY prisma ./prisma
+COPY src ./src
+COPY *.config.* ./
+COPY *.json ./
+COPY *.md ./
+COPY .env* ./
+
+# Build stage with maximum optimization
 FROM base AS builder
 WORKDIR /app
 
-# Copy node_modules from deps
+# Copy dependencies and source
 COPY --from=deps /app/node_modules ./node_modules
-# Copy prisma generated files from deps stage
 COPY --from=deps /app/prisma ./prisma
-# Copy all source files (context is already ./site)
-COPY . .
+COPY --from=source /app .
 
-# Build arguments
+# Build arguments for production
 ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
 ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
+ARG DATABASE_URL
+ARG NEXTAUTH_SECRET
 
-# Build with optimizations
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-ENV DOCKER_BUILD=true
-ENV SKIP_ENV_VALIDATION=true
-ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
-ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
+# Production environment variables
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    DOCKER_BUILD=true \
+    SKIP_ENV_VALIDATION=true \
+    NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
+    NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
 
-# Build with standalone output and optimize - Skip Prisma generation since it's already done
+# Ultra-optimized build with aggressive cleanup
 RUN --mount=type=cache,target=/app/.next/cache \
     --mount=type=cache,target=/root/.bun \
-    NODE_OPTIONS="--max-old-space-size=4096" \
-    SKIP_ENV_VALIDATION=true \
+    NODE_OPTIONS="--max-old-space-size=6144" \
     bun run build:optimized && \
-    # Clean up unnecessary files to reduce size
+    # Aggressive cleanup for minimal image size
     rm -rf node_modules/@next/swc-* && \
     rm -rf node_modules/.cache && \
-    rm -rf .next/cache/webpack && \
+    rm -rf .next/cache && \
+    rm -rf node_modules/*/test* && \
+    rm -rf node_modules/*/example* && \
+    rm -rf node_modules/*/bench* && \
     find node_modules -name "*.md" -delete && \
     find node_modules -name "*.map" -delete && \
-    find node_modules -name "*.ts" -not -path "*/types/*" -delete
+    find node_modules -name "*.d.ts" -not -path "*/types/*" -delete && \
+    find node_modules -name "*.ts" -not -path "*/types/*" -delete && \
+    find node_modules -name "*.tsx" -delete && \
+    find node_modules -name "*.flow" -delete && \
+    find node_modules -name "*.orig" -delete && \
+    find node_modules -name ".DS_Store" -delete && \
+    find node_modules -name "Thumbs.db" -delete && \
+    # Remove development dependencies
+    find node_modules -type d -name "__tests__" -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -type d -name "tests" -exec rm -rf {} + 2>/dev/null || true && \
+    find node_modules -type d -name "test" -exec rm -rf {} + 2>/dev/null || true
 
-# Production stage - Use distroless for smaller size and better security
+# Production runtime stage using distroless
 FROM gcr.io/distroless/nodejs20-debian12:nonroot AS production
 WORKDIR /app
 
-# Copy only necessary files
+# Create nextjs user in distroless
+USER nonroot
+
+# Copy only production files with proper ownership
 COPY --from=builder --chown=nonroot:nonroot /app/.next/standalone ./
 COPY --from=builder --chown=nonroot:nonroot /app/.next/static ./.next/static
 COPY --from=builder --chown=nonroot:nonroot /app/public ./public
 
-# Copy Prisma runtime files only
+# Copy essential Prisma files only
 COPY --from=deps --chown=nonroot:nonroot /app/node_modules/.prisma/client ./node_modules/.prisma/client
 
-# Environment variables
-ENV NODE_ENV=production
-ENV PORT=3000
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV HOSTNAME="0.0.0.0"
+# Production environment
+ENV NODE_ENV=production \
+    PORT=3000 \
+    HOSTNAME="0.0.0.0" \
+    NEXT_TELEMETRY_DISABLED=1
 
 EXPOSE 3000
 
-# Use distroless default user (nonroot)
-USER nonroot
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
 CMD ["server.js"]
