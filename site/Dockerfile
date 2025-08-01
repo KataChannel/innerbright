@@ -12,7 +12,7 @@ FROM base AS deps
 WORKDIR /app
 
 # Copy package files for dependency installation from site/
-COPY site/package.json site/bun.lockb* ./
+COPY package.json bun.lockb* ./
 
 # Copy Prisma from site/ directory (not root)
 #COPY site/prisma ./prisma
@@ -34,7 +34,7 @@ COPY --from=deps /app/node_modules ./node_modules
 #COPY --from=deps /app/prisma ./prisma
 
 # Copy site source code
-#COPY site/ ./site
+COPY . .
 
 # Build arguments
 ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
