@@ -14,6 +14,9 @@
     "build:standalone": "next build && next export",
     "build:analyze": "ANALYZE=true next build",
     "build:production": "NODE_ENV=production next build",
+    "build:optimized": "NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 SKIP_ENV_VALIDATION=true NODE_OPTIONS='--max-old-space-size=6144' next build",
+    "build:ultra": "NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 SKIP_ENV_VALIDATION=true NODE_OPTIONS='--max-old-space-size=8192' next build",
+    "build:docker": "NODE_ENV=production DOCKER_BUILD=true NEXT_TELEMETRY_DISABLED=1 SKIP_ENV_VALIDATION=true NODE_OPTIONS='--max-old-space-size=6144' next build",
     "build:check": "npm run type-check && npm run lint && npm run build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
@@ -77,7 +80,12 @@
     "ci": "npm run lint && npm run type-check && npm run test:ci && npm run build",
     "dev:full": "npm run db:generate && npm run dev",
     "fresh": "npm run clean:all && npm install && npm run db:generate && npm run dev",
-    "build:optimized": "NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 next build"
+    "build:optimized": "NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 SKIP_ENV_VALIDATION=true next build",
+    "docker:build": "docker build -t innerbright-site:latest -f Dockerfile.optimized .",
+    "docker:build-prod": "docker build -t innerbright-site:prod -f Dockerfile.optimized --target production .",
+    "docker:run": "docker run -p 3000:3000 innerbright-site:latest",
+    "docker:size": "docker images innerbright-site --format 'table {{.Repository}}\\t{{.Tag}}\\t{{.Size}}'",
+    "bundle:analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

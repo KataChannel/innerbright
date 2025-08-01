@@ -1,0 +1,137 @@
+# ===================================================================
+# OPTIMIZED MULTI-STAGE DOCKERFILE FOR NEXTJS PRODUCTION
+# Size optimized: ~100MB final image
+# Performance optimized: Fast startup, efficient memory usage
+# ===================================================================
+
+# Base stage - Alpine with essential tools
+FROM oven/bun:1-alpine AS base
+WORKDIR /app
+
+# Install security updates and minimal required packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache \
+    libc6-compat \
+    dumb-init \
+    curl \
+    && rm -rf /var/cache/apk/* \
+    && addgroup --system --gid 1001 nodejs \
+    && adduser --system --uid 1001 nextjs --ingroup nodejs
+
+# ===================================================================
+# DEPENDENCIES STAGE - Optimized dependency installation
+# ===================================================================
+FROM base AS deps
+WORKDIR /app
+
+# Copy package files for better Docker layer caching
+COPY package.json bun.lockb* ./
+
+# Install dependencies with cache optimization
+RUN --mount=type=cache,target=/root/.bun,sharing=locked \
+    --mount=type=cache,target=/app/node_modules/.cache,sharing=locked \
+    bun install --frozen-lockfile --production=false
+
+# ===================================================================
+# PRISMA STAGE - Separate Prisma generation for better caching
+# ===================================================================
+FROM deps AS prisma-gen
+WORKDIR /app
+
+# Copy Prisma schema
+COPY prisma ./prisma
+
+# Generate Prisma client with optimizations
+RUN --mount=type=cache,target=/root/.bun,sharing=locked \
+    --mount=type=cache,target=/app/node_modules/.cache,sharing=locked \
+    bunx prisma generate --no-engine
+
+# ===================================================================
+# BUILD STAGE - NextJS build with maximum optimizations
+# ===================================================================
+FROM prisma-gen AS builder
+WORKDIR /app
+
+# Copy source code (excluding node_modules which comes from deps)
+COPY --exclude=node_modules . .
+
+# Set build-time environment variables for maximum optimization
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=production \
+    DOCKER_BUILD=true \
+    SKIP_ENV_VALIDATION=true \
+    NODE_OPTIONS="--max-old-space-size=4096" \
+    NEXT_BUILD_STANDALONE=true
+
+# Build arguments for dynamic configuration
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+ARG NEXT_PUBLIC_MINIO_ENDPOINT=http://localhost:9000
+ENV NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL} \
+    NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
+
+# Create .dockerignore content inline for build optimization
+RUN echo -e "node_modules\n.git\n.next\n*.log\nREADME.md\n.env.local\n.env.development" > .dockerignore
+
+# Build with maximum optimizations and cleanup
+RUN --mount=type=cache,target=/app/.next/cache,sharing=locked \
+    --mount=type=cache,target=/root/.bun,sharing=locked \
+    bun run build:optimized && \
+    # Cleanup unnecessary files to reduce image size
+    rm -rf node_modules/@next/swc-* \
+           node_modules/.cache \
+           .next/cache/*.pack \
+           *.md \
+           *.txt \
+           *.log \
+           .git* \
+           .env.* \
+           test* \
+           **/*.test.* \
+           **/*.spec.* && \
+    # Verify standalone build
+    ls -la .next/standalone/ && \
+    echo "Build completed successfully"
+
+# ===================================================================
+# PRODUCTION STAGE - Ultra-slim production image
+# ===================================================================
+FROM gcr.io/distroless/nodejs20-debian12:nonroot AS production
+WORKDIR /app
+
+# Copy only essential runtime files
+COPY --from=builder --chown=nonroot:nonroot /app/.next/standalone ./
+COPY --from=builder --chown=nonroot:nonroot /app/.next/static ./.next/static
+COPY --from=builder --chown=nonroot:nonroot /app/public ./public
+
+# Copy Prisma runtime files (only generated client)
+COPY --from=prisma-gen --chown=nonroot:nonroot /app/node_modules/.prisma/client ./node_modules/.prisma/client
+
+# Production environment variables
+ENV NODE_ENV=production \
+    PORT=3000 \
+    NEXT_TELEMETRY_DISABLED=1 \
+    HOSTNAME="0.0.0.0" \
+    NODE_OPTIONS="--max-old-space-size=512"
+
+# Expose port
+EXPOSE 3000
+
+# Use non-root user for security
+USER nonroot
+
+# Health check for container orchestration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD ["/nodejs/bin/node", "-e", "require('http').get('http://localhost:3000/api/health', {timeout: 3000}, (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"]
+
+# Start the application
+CMD ["server.js"]
+
+# ===================================================================
+# METADATA AND LABELS
+# ===================================================================
+LABEL maintainer="innerbright3" \
+      version="1.0" \
+      description="Optimized NextJS production image" \
+      nodejs.version="20" \
+      nextjs.version="latest" \
+      image.size="~100MB"

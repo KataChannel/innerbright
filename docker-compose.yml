@@ -63,15 +63,17 @@ services:
       timeout: 20s
       retries: 3
 
-  # Next.js Fullstack Application
+  # Next.js Fullstack Application - OPTIMIZED
   app:
     build:
       context: ./site
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.optimized
+      target: production
       args:
         NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
-        DATABASE_URL: ${DATABASE_URL}
-        JWT_SECRET: ${JWT_SECRET}
+        NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT:-http://localhost:9000}
+      cache_from:
+        - innerbright-site:latest
     container_name: innerbright-app
     restart: unless-stopped
     environment:
@@ -97,11 +99,18 @@ services:
     networks:
       - innerbright-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 40s
+    # Resource limits for production efficiency
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   # Nginx Reverse Proxy
   nginx:

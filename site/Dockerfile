@@ -1,21 +1,22 @@
 FROM oven/bun:1-alpine AS base
 
-# Install only essential packages
-RUN apk add --no-cache libc6-compat dumb-init
+# Install only essential packages with optimizations
+RUN apk add --no-cache libc6-compat dumb-init openssl ca-certificates \
+    && rm -rf /var/cache/apk/*
 
 # Dependencies stage with better caching
 FROM base AS deps
 WORKDIR /app
 
 # Copy only package files first for better layer caching
-COPY site/package.json site/bun.lockb* ./
+COPY package.json bun.lockb* ./
 
 # Install dependencies including devDependencies for build stage
 RUN --mount=type=cache,target=/root/.bun \
     bun install --frozen-lockfile
 
 # Copy prisma schema after dependencies
-COPY site/prisma ./prisma
+COPY prisma ./prisma
 
 # Generate Prisma client with explicit binary path and cache
 RUN --mount=type=cache,target=/root/.bun \
@@ -31,7 +32,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 # Copy prisma generated files from deps stage
 COPY --from=deps /app/prisma ./prisma
-COPY site/ .
+# Copy all source files (context is already ./site)
+COPY . .
 
 # Build arguments
 ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -47,11 +49,17 @@ ENV NEXT_PUBLIC_MINIO_ENDPOINT=${NEXT_PUBLIC_MINIO_ENDPOINT}
 
 # Build with standalone output and optimize - Skip Prisma generation since it's already done
 RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=cache,target=/root/.bun \
     NODE_OPTIONS="--max-old-space-size=4096" \
     SKIP_ENV_VALIDATION=true \
     bun run build:optimized && \
+    # Clean up unnecessary files to reduce size
     rm -rf node_modules/@next/swc-* && \
-    rm -rf node_modules/.cache
+    rm -rf node_modules/.cache && \
+    rm -rf .next/cache/webpack && \
+    find node_modules -name "*.md" -delete && \
+    find node_modules -name "*.map" -delete && \
+    find node_modules -name "*.ts" -not -path "*/types/*" -delete
 
 # Production stage - Use distroless for smaller size and better security
 FROM gcr.io/distroless/nodejs20-debian12:nonroot AS production
