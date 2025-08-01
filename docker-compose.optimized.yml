@@ -14,12 +14,9 @@ x-logging: &default-logging
     max-size: "10m"
     max-file: "3"
 
+# Remove the incorrect restart_policy anchor and replace with correct restart
 x-restart-policy: &restart-policy
-  restart_policy:
-    condition: on-failure
-    delay: 5s
-    max_attempts: 3
-    window: 120s
+  restart: unless-stopped
 
 services:
   # Ultra-optimized Site service
@@ -269,31 +266,15 @@ volumes:
   postgres_data:
     driver: local
     name: ${COMPOSE_PROJECT_NAME:-innerbright}-postgres-data
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/postgres
 
   redis_data:
     driver: local
     name: ${COMPOSE_PROJECT_NAME:-innerbright}-redis-data
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/redis
 
   minio_data:
     driver: local
     name: ${COMPOSE_PROJECT_NAME:-innerbright}-minio-data
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/minio
 
   pgadmin_data:
     driver: local
     name: ${COMPOSE_PROJECT_NAME:-innerbright}-pgadmin-data
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_PATH:-./data}/pgadmin
