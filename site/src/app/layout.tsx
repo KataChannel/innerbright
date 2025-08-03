@@ -10,7 +10,8 @@ import { UnifiedThemeProvider } from '@/hooks/useUnifiedTheme';
 import { UnifiedAuthProvider } from '@/components/auth/UnifiedAuthProvider';
 import { ThemeInitScript } from '@/components/ThemeManager';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+// ✅ PWA Install Prompt DISABLED for performance optimization
+// import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import '@/styles/unified-theme.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -84,7 +85,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             <UnifiedAuthProvider>
               {children}
-              <PWAInstallPrompt />
+              {/* ✅ PWA Install Prompt DISABLED for performance optimization */}
+              {/* <PWAInstallPrompt /> */}
             </UnifiedAuthProvider>
           </UnifiedThemeProvider>
         </ErrorBoundary>

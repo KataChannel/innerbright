@@ -1,12 +1,15 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 
-// PWA Configuration với site-only optimization
+// PWA Configuration - DISABLED for performance optimization
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
+  // ✅ DISABLE PWA in all environments to prevent CPU/Memory issues
+  disable: true, // Force disable PWA completely
+  // Alternative: conditional disable
+  // disable: process.env.NODE_ENV === 'development' || process.env.DISABLE_PWA_BUILD === 'true' || process.env.DOCKER_BUILD === 'true',
   buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
@@ -125,7 +128,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-// Export with or without PWA depending on environment
-export default process.env.NODE_ENV === 'development' 
-  ? nextConfig 
-  : withPWA(nextConfig);
+// Export with PWA DISABLED for performance optimization
+// ✅ Force export without PWA wrapper to prevent build issues
+export default nextConfig;
+
+// Alternative: Conditional PWA wrapping (if you want to re-enable later)
+// export default process.env.DISABLE_PWA_BUILD === 'true' || process.env.DOCKER_BUILD === 'true'
+//   ? nextConfig 
+//   : withPWA(nextConfig);
