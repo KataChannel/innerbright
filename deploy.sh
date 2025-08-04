@@ -35,7 +35,7 @@ fi
 echo -e "${GREEN}🐳 Connecting to server and deploying...${NC}"
 ssh root@116.118.85.41 << 'EOF'
     set -e
-    cd /opt/innerbright
+    cd /opt/innerbright_prod
     
     echo "📥 Pulling latest changes..."
     git pull
