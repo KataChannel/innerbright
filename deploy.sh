@@ -33,7 +33,7 @@ fi
 
 # SSH and deploy with optimizations
 echo -e "${GREEN}🐳 Connecting to server and deploying...${NC}"
-ssh root@116.118.85.41 << 'EOF'
+ssh root@116.118.48.208 << 'EOF'
     set -e
     cd /opt/innerbright_prod
     
