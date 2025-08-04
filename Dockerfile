@@ -10,7 +10,7 @@ WORKDIR /app
 # Dependencies stage - cache layer for package.json changes
 FROM base AS deps
 COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile --production=false
+RUN bun install --frozen-lockfile
 
 # Builder stage - build application
 FROM base AS builder
