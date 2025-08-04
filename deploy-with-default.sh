@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# 🚀 KataCore Deployment Helper with Generated SSH Key
+# 🚀 Tazav1 Deployment Helper with Generated SSH Key
 # Auto-generated helper script for deployment with key: default
 
 SSH_KEY="/home/kata/.ssh/default"
 SSH_USER="root"
-SERVER_IP="116.118.85.41"
+SERVER_IP="116.118.48.208"
 
 # Check if key exists
 if [[ ! -f "$SSH_KEY" ]]; then
