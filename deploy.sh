@@ -26,7 +26,7 @@ git push
 
 # Check if remote server is accessible
 echo -e "${GREEN}🔌 Testing server connection...${NC}"
-if ! ssh -o ConnectTimeout=10 -o BatchMode=yes root@116.118.85.41 exit; then
+if ! ssh -o ConnectTimeout=10 -o BatchMode=yes root@116.118.48.208 exit; then
     echo -e "${RED}❌ Failed to connect to server. Check connection and try again.${NC}"
     exit 1
 fi
@@ -82,7 +82,7 @@ echo -e "${GREEN}🎉 Deployment finished successfully!${NC}"
 echo -e "${BLUE}🔍 Checking service status...${NC}"
 
 # Quick health check
-if curl -f -s -o /dev/null "http://116.118.85.41:3000/api/health" 2>/dev/null; then
+if curl -f -s -o /dev/null "http://116.118.48.208:3000/api/health" 2>/dev/null; then
     echo -e "${GREEN}✅ Service is healthy and responding${NC}"
 else
     echo -e "${YELLOW}⚠️  Service might still be starting up. Check manually if needed.${NC}"
