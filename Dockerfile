@@ -1,42 +1,72 @@
-# Build stage
-FROM oven/bun:1-alpine AS builder
+# Multi-stage optimized build for Next.js
+FROM oven/bun:1-alpine AS base
+
+# Install system dependencies
+RUN apk add --no-cache libc6-compat curl && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /app
 
-# Copy package files
+# Dependencies stage - cache layer for package.json changes
+FROM base AS deps
 COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile --production=false
 
-# Install dependencies
-RUN bun install --frozen-lockfile
+# Builder stage - build application
+FROM base AS builder
+WORKDIR /app
 
-# Copy source code
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build application
+# Set build environment variables
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Build the application
 RUN bun run build
 
-# Production stage
+# Production dependencies stage - only production deps
+FROM base AS prod-deps
+COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile --production=true
+
+# Runner stage - minimal production image
 FROM oven/bun:1-alpine AS runner
 WORKDIR /app
 
-# Set environment to production
-ENV NODE_ENV production
+# Install only essential runtime dependencies
+RUN apk add --no-cache curl dumb-init && \
+    rm -rf /var/cache/apk/*
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-# Copy only necessary files
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Copy built application files
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Copy standalone build output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Change to non-root user
+# Switch to non-root user
 USER nextjs
 
 # Expose port
 EXPOSE 3000
 
-# Start application
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["bun", "server.js"]
