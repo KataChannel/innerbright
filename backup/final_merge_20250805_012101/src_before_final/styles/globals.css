@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+.text-primary {
+    color: #29256A; /* Example primary color */
+}
+.text-secondary {
+    color: #F05A30; /* Example secondary color */
+}
+.bg-primary {
+    background-color: #29256A; /* Example primary background color */
+}
+.bg-secondary {
+    background-color: #F05A30; /* Example secondary background color */
+}

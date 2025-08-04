@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model User {
+  id                       String         @id @default(cuid())
+  email                    String         @unique
+  username                 String?        @unique
+  displayName              String?
+  password                 String
+  avatar                   String?
+  isVerified               Boolean        @default(false)
+  roleId                   String?        @default("user")
+  role                     Role?          @relation(fields: [roleId], references: [id])
+  createdConversations     Conversation[] @relation("ConversationCreatedBy")
+  participantConversations Conversation[] @relation("ConversationParticipants")
+  messages                 Message[]
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  permissions String[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model Conversation {
+  id           String    @id @default(cuid())
+  title        String?
+  description  String?
+  isPublic     Boolean   @default(false)
+  userId       String?
+  createdById  String?
+  createdBy    User?     @relation("ConversationCreatedBy", fields: [createdById], references: [id])
+  participants User[]    @relation("ConversationParticipants")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  role           String       @default("user") // user, assistant, system
+  userId         String?
+  user           User?        @relation(fields: [userId], references: [id])
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@map("messages")
+}

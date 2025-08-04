@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   images: {
     unoptimized: true,
     formats: ['image/webp', 'image/avif'],
