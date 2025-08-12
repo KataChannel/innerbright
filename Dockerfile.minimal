@@ -11,14 +11,14 @@ WORKDIR /app
 # Dependencies stage with minimal memory usage
 FROM base AS deps
 COPY package.json bun.lockb* ./
-# Ultra-conservative installation
-RUN bun install --frozen-lockfile --no-optional --silent --no-cache --production
+# Install all dependencies (including dev deps needed for build)
+RUN bun install --frozen-lockfile --no-optional --silent --no-cache
 
 # Builder stage with extreme memory optimization
 FROM base AS builder
 WORKDIR /app
 
-# Copy only production dependencies
+# Copy all dependencies (including dev deps for build)
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy only essential files
@@ -59,9 +59,14 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Copy built application with minimal footprint
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public/
+
+# Copy the built Next.js application
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next/
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
+# Copy node_modules for production (minimal runtime dependencies)
+RUN mkdir -p ./node_modules
 
 USER nextjs
 
@@ -72,4 +77,4 @@ HEALTHCHECK --interval=60s --timeout=10s --start-period=120s --retries=2 \
   CMD curl -f http://localhost:3000/ || exit 1
 
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["bun", "server.js"]
+CMD ["bun", "start"]
