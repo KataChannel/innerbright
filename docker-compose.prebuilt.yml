@@ -1,0 +1,92 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: innerbright-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-innerbright}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    
+    # Optimized resource limits for 2GB server
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+          cpus: '0.3'
+        reservations:
+          memory: 100M
+          cpus: '0.1'
+    
+    networks:
+      - innerbright-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-innerbright}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
+
+  site:
+    build:
+      context: ./
+      dockerfile: Dockerfile.prebuilt
+    image: innerbright/site:prebuilt
+    container_name: innerbright-site
+    restart: unless-stopped
+    ports:
+      - "${SITE_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      # Database connection
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:password@postgres:5432/innerbright}
+      # Basic app config
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    
+    # Optimized resource limits for pre-built app
+    deploy:
+      resources:
+        limits:
+          memory: 400M
+          cpus: '0.6'
+        reservations:
+          memory: 200M
+          cpus: '0.2'
+    
+    networks:
+      - innerbright-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 90s
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
+
+networks:
+  innerbright-network:
+    driver: bridge
+    name: innerbright-network
+
+volumes:
+  postgres_data:
+    name: innerbright-postgres-data
