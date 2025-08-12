@@ -63,7 +63,7 @@ ssh root@116.118.48.208 << 'EOF'
     DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose -f 'docker-compose.yml' build \
         --no-cache \
         --pull \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --build-arg BUILDKIT_INLINE_CACHE=1
     
     echo "🚀 Starting services..."
     docker compose -f 'docker-compose.yml' up -d

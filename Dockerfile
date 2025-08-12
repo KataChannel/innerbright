@@ -25,8 +25,8 @@ COPY --from=deps /app/node_modules ./node_modules
 
 # Copy only necessary files for build (exclude unnecessary files)
 COPY package.json next.config.ts tsconfig.json ./
-COPY postcss.config.mjs tailwind.config.* ./
-COPY app ./app
+COPY postcss.config.mjs ./
+COPY src ./src
 COPY public ./public
 
 # Set build environment variables
