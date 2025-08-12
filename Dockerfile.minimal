@@ -65,8 +65,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public/
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next/
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
-# Copy node_modules for production (minimal runtime dependencies)
-RUN mkdir -p ./node_modules
+# Copy essential node_modules for Next.js runtime
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 USER nextjs
 
