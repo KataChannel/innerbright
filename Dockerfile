@@ -11,10 +11,11 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-# Dependencies stage - optimized caching
+# Dependencies stage - optimized caching with minimal memory usage
 FROM base AS deps
 COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile --no-optional --silent
+# Install with memory optimizations
+RUN bun install --frozen-lockfile --no-optional --silent --no-cache
 
 # Builder stage - build application with optimizations
 FROM base AS builder
@@ -34,13 +35,17 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_ENV_VALIDATION=1
 
-# Build the application with optimizations
-RUN bun run build && \
+# Build the application with optimizations for low-resource environments
+RUN NODE_OPTIONS="--max-old-space-size=1024" bun run build && \
     # Remove source maps and other dev files to reduce size
     find .next -name "*.map" -delete && \
     # Remove unnecessary files
     rm -rf node_modules/.cache && \
-    rm -rf .next/cache/webpack
+    rm -rf .next/cache/webpack && \
+    # Additional cleanup for low-resource environments
+    rm -rf .next/cache && \
+    rm -rf /tmp/* && \
+    rm -rf /root/.bun/install/cache
 
 # Production dependencies stage - minimal deps only
 FROM base AS prod-deps
