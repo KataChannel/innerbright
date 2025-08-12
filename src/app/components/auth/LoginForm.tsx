@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 
 interface LoginFormProps {
-    onLogin: (email: string, password: string) => Promise<boolean>;
+    onLogin: (email: string, password: string) => boolean;
     onBack: () => void;
 }
 
@@ -20,7 +20,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onBack }) => {
         setLoading(true);
 
         try {
-            const success = await onLogin(email, password);
+            const success = onLogin(email, password);
             if (!success) {
                 setError('Email hoặc mật khẩu không chính xác');
             }

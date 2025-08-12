@@ -1,4 +1,4 @@
-'use client';
+// 📝 Custom Hooks cho BlockEditor
 import { useCallback, useState } from 'react';
 import { BlockData, BlockType, Post } from '../types';
 import { 

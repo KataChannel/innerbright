@@ -174,7 +174,7 @@ async function seedMessages(conversation: any, users: any) {
 
 export async function GET() {
   try {
-    await prisma.$transaction(async (tx: any) => {
+    await prisma.$transaction(async (tx) => {
       // Clear existing data
       await tx.message.deleteMany();
       await tx.conversation.deleteMany();

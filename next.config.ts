@@ -19,23 +19,26 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     formats: ['image/webp', 'image/avif'],
   },
-  webpack: (config, { dev, isServer }) => {
-    if (!dev && !isServer) {
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          vendor: {
-            name: 'vendor',
-            chunks: 'all',
-            test: /node_modules/,
+  // Only apply webpack config in production builds (not dev with turbopack)
+  ...(process.env.NODE_ENV === 'production' && {
+    webpack: (config, { dev, isServer }) => {
+      if (!dev && !isServer) {
+        config.optimization.splitChunks = {
+          chunks: 'all',
+          cacheGroups: {
+            default: false,
+            vendors: false,
+            vendor: {
+              name: 'vendor',
+              chunks: 'all',
+              test: /node_modules/,
+            },
           },
-        },
-      };
-    }
-    return config;
-  },
+        };
+      }
+      return config;
+    },
+  }),
 };
 
 export default nextConfig;

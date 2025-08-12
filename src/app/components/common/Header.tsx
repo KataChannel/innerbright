@@ -4,8 +4,13 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { Menu, X, ChevronDown, Search, User } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { siteConfig } from "@/lib/config/site";
-import SearchDialog, { SearchDialogContent, SearchDialogTrigger, SearchResult, SearchResults } from "./search";
+import { siteConfig } from "@/app/lib/config/site";
+import SearchDialog, { 
+  SearchDialogTrigger, 
+  SearchDialogContent, 
+  SearchResults,
+  SearchResult 
+} from "@/app/components/common/search";
 
 export interface NavigationItem {
   name: string;

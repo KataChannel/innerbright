@@ -1,5 +1,4 @@
 // 📝 Drag and Drop Logic cho BlockEditor
-'use client';
 import { useCallback, useState } from 'react';
 import { DragState, BlockData, Post } from '../types';
 import { 

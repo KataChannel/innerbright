@@ -1,37 +1,13 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { siteConfig } from '@/lib/config/site';
-import MaintenanceGuard from '@/components/auth/MaintenanceGuard';
-import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
-
+import '@/app/globals.css';
+import { inter } from '@/app/ui/fonts';
+import { Metadata } from 'next';
+import { siteConfig } from '@/app/lib/config/site';
+import Head from 'next/head'; // Sử dụng next/head cho các thẻ meta
+import { MaintenanceGuard } from '@/app/components/auth';
+import myCustomFont from '@/app/lib/fonts';
 export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
+  title: siteConfig.title,
   description: siteConfig.description,
-  keywords: [...siteConfig.keywords],
-  authors: [siteConfig.author],
-  creator: siteConfig.author.name,
-  openGraph: {
-    type: 'website',
-    locale: 'vi_VN',
-    url: siteConfig.url,
-    title: siteConfig.name,
-    description: siteConfig.description,
-    siteName: siteConfig.name,
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: siteConfig.name,
-    description: siteConfig.description,
-    creator: '@innerbright',
-  },
-  icons: {
-    icon: '/favicon.ico',
-  },
 };
 
 export default function RootLayout({
@@ -40,8 +16,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi">
-      <body className={inter.className}>
+    <html lang="en" className={myCustomFont.className}>
+      <Head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="A Progressive Web App built with Next.js" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+      </Head>
+      <body className={`${inter.className} antialiased`}>
         <MaintenanceGuard>
           {children}
         </MaintenanceGuard>

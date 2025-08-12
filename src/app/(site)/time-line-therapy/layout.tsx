@@ -268,19 +268,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <section className="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-12 flex flex-col lg:flex-row items-start lg:space-x-8">
               <div className="lg:w-1/2 w-full mb-8 lg:mb-0">
                 <AccordionItem title="Xác định Dòng Thời Gian">
-                  <p>Xác định Dòng Thời Gian</p>
+                  <p>Nhà trị liệu Trị liệu Dòng thời gian sẽ hướng dẫn bạn khám phá và nhận diện dòng thời gian nội tại của chính mình. Mỗi người có một cách riêng để sắp xếp và truy cập vào ký ức, và việc nhận thức được điều này là bước đầu tiên quan trọng.</p>
                 </AccordionItem>
                 <AccordionItem title="Làm Chủ Từng Bước Thực Hành">
-                  <p>Làm Chủ Từng Bước Thực Hành</p>
+                  <p>Trị liệu Dòng thời gian cung cấp các kỹ thuật mạnh mẽ để giải phóng những cảm xúc tiêu cực đã "mắc kẹt" trong dòng thời gian, chẳng hạn như giận dữ, buồn bã, sợ hãi, tội lỗi và tổn thương. Quá trình này thường diễn ra một cách nhanh chóng và hiệu quả, giúp bạn không còn bị chi phối bởi những cảm xúc này trong hiện tại.</p>
                 </AccordionItem>
                 <AccordionItem title="Học Qua Trải Nghiệm Sâu Sắc">
-                  <p>Học Qua Trải Nghiệm Sâu Sắc</p>
+                  <p>Những niềm tin tiêu cực về bản thân, về người khác và về thế giới thường được hình thành từ những trải nghiệm trong quá khứ. Trị liệu Dòng thời gian giúp bạn xác định những niềm tin này và thay thế chúng bằng những niềm tin tích cực và hỗ trợ, mở ra những khả năng mới.</p>
                 </AccordionItem>
                 <AccordionItem title="Kiến Tạo Thói Quen Thay Đổi Bền Vững">
-                  <p>Kiến Tạo Thói Quen Thay Đổi Bền Vững</p>
+                  <p>Trong những tình huống khó khăn, chúng ta có thể đưa ra những quyết định có giới hạn ảnh hưởng tiêu cực đến cuộc sống sau này. Trị liệu Dòng thời gian giúp bạn nhận diện những quyết định này và thay đổi chúng, tạo ra những lựa chọn mới tích cực hơn cho tương lai.</p>
                 </AccordionItem>
                 <AccordionItem title="Đồng Hành Trên Hành Trình Chuyển Hóa">
-                  <p>Đồng Hành Trên Hành Trình Chuyển Hóa</p>
+                  <p>Trị liệu Dòng thời gian không chỉ tập trung vào việc giải quyết vấn đề trong quá khứ mà còn hướng đến việc kiến tạo một tương lai tốt đẹp hơn. Các kỹ thuật Trị liệu Dòng thời gian giúp bạn thiết lập mục tiêu rõ ràng, loại bỏ những xung đột nội tâm và tạo ra một "lộ trình" tinh thần để đạt được những điều mình mong muốn.</p>
                 </AccordionItem>
               </div>
 
