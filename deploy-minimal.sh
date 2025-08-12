@@ -80,7 +80,7 @@ ssh root@116.118.48.208 << 'EOF'
     sleep 30
     
     echo "🏗️ Building with 600MB memory limit..."
-    docker compose -f docker-compose.minimal.yml build site --memory=600m --cpus=0.4
+    docker compose -f docker-compose.minimal.yml build site --memory=600m
     
     echo "🚀 Starting application..."
     docker compose -f docker-compose.minimal.yml up -d site

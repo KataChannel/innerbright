@@ -92,7 +92,7 @@ ssh root@116.118.48.208 << 'EOF'
     
     echo "🏗️ Building application with EXTREME memory limits..."
     # Build with reduced parallelism and memory limits for 2GB server
-    docker compose -f docker-compose.low-resource.yml build site --memory=800m --cpus=0.5
+    docker compose -f docker-compose.low-resource.yml build site --memory=800m
     
     echo "🚀 Starting main application..."
     docker compose -f docker-compose.low-resource.yml up -d site
