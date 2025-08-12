@@ -21,14 +21,16 @@ else
     echo -e "${BLUE}ℹ️ Using existing .next build directory${NC}"
 fi
 
-# Check if standalone build exists
-if [ -d ".next/standalone" ]; then
-    echo -e "${GREEN}✅ Standalone build found${NC}"
-    BUILD_TYPE="standalone"
-else
-    echo -e "${YELLOW}⚠️ Using regular build (no standalone)${NC}"
-    BUILD_TYPE="regular"
+# Validate local build exists
+if [ ! -d ".next/standalone" ]; then
+    echo -e "${RED}❌ Error: .next/standalone not found!${NC}"
+    echo -e "${YELLOW}💡 Run './build-local.sh' first to build the application locally${NC}"
+    exit 1
 fi
+
+# Temporarily add .next to git (it's in .gitignore)
+echo -e "${BLUE}📁 Temporarily tracking .next folder for deployment...${NC}"
+git add -f .next/
 
 # Git operations
 echo -e "${GREEN}📝 Adding files to git...${NC}"
@@ -41,6 +43,11 @@ git commit -m "🔧 Pre-built deployment optimization - $(date)" || {
 
 echo -e "${GREEN}📤 Pushing to remote...${NC}"
 git push
+
+# Clean up - remove .next from git tracking after push
+echo -e "${BLUE}🧹 Removing .next from git tracking...${NC}"
+git rm -r --cached .next/ 2>/dev/null || true
+git commit -m "Clean: Remove .next from tracking after deployment" 2>/dev/null || echo "No cleanup needed"
 
 # Check if remote server is accessible
 echo -e "${GREEN}🔌 Testing server connection...${NC}"
