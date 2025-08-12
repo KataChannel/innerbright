@@ -55,6 +55,16 @@ ssh root@116.118.48.208 << 'EOF'
     docker system prune -af --volumes || true
     docker builder prune -af || true
     
+    # Create temporary swap if not exists (for build process)
+    if [ ! -f /swapfile ]; then
+        echo "📦 Creating temporary swap for build process..."
+        fallocate -l 1G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=1024
+        chmod 600 /swapfile
+        mkswap /swapfile
+        swapon /swapfile
+        echo "✅ Temporary swap created"
+    fi
+    
     # Clear swap if any
     sync && echo 3 > /proc/sys/vm/drop_caches || true
     
@@ -80,9 +90,9 @@ ssh root@116.118.48.208 << 'EOF'
     # echo "⏳ Waiting for Redis to be ready..."
     # sleep 10
     
-    echo "🏗️ Building application with memory limits..."
-    # Build with reduced parallelism and memory limits
-    docker compose -f docker-compose.low-resource.yml build site --memory=1200m
+    echo "🏗️ Building application with EXTREME memory limits..."
+    # Build with reduced parallelism and memory limits for 2GB server
+    docker compose -f docker-compose.low-resource.yml build site --memory=800m --cpus=0.5
     
     echo "🚀 Starting main application..."
     docker compose -f docker-compose.low-resource.yml up -d site

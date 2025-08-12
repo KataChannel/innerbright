@@ -35,17 +35,17 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_ENV_VALIDATION=1
 
-# Build the application with optimizations for low-resource environments
-RUN NODE_OPTIONS="--max-old-space-size=1024" bun run build && \
+# Build the application with EXTREME memory optimization for 2GB servers
+RUN NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=1 --max-executable-size=128" bun run build && \
     # Remove source maps and other dev files to reduce size
-    find .next -name "*.map" -delete && \
+    find .next -name "*.map" -delete 2>/dev/null || true && \
     # Remove unnecessary files
-    rm -rf node_modules/.cache && \
-    rm -rf .next/cache/webpack && \
+    rm -rf node_modules/.cache 2>/dev/null || true && \
+    rm -rf .next/cache/webpack 2>/dev/null || true && \
     # Additional cleanup for low-resource environments
-    rm -rf .next/cache && \
-    rm -rf /tmp/* && \
-    rm -rf /root/.bun/install/cache
+    rm -rf .next/cache 2>/dev/null || true && \
+    rm -rf /tmp/* 2>/dev/null || true && \
+    rm -rf /root/.bun/install/cache 2>/dev/null || true
 
 # Production dependencies stage - minimal deps only
 FROM base AS prod-deps

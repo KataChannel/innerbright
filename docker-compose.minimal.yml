@@ -1,0 +1,94 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: innerbright-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    
+    # Ultra-conservative resource limits for 2GB server
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.2'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+    
+    networks:
+      - innerbright-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 60s
+      timeout: 10s
+      retries: 2
+    logging:
+      driver: json-file
+      options:
+        max-size: 2m
+        max-file: "1"
+
+  site:
+    build:
+      context: ./
+      dockerfile: Dockerfile.minimal
+      args:
+        NODE_ENV: production
+        NEXT_TELEMETRY_DISABLED: "1"
+    image: innerbright/site:minimal
+    container_name: innerbright-site
+    restart: unless-stopped
+    ports:
+      - "${SITE_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+      # Ultra-minimal environment
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      LOG_LEVEL: error
+    
+    # Ultra-conservative resource limits for 2GB server
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+          cpus: '0.5'
+        reservations:
+          memory: 150M
+          cpus: '0.2'
+    
+    networks:
+      - innerbright-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 180s
+    logging:
+      driver: json-file
+      options:
+        max-size: 2m
+        max-file: "1"
+
+networks:
+  innerbright-network:
+    driver: bridge
+    name: innerbright-network
+
+volumes:
+  postgres_data:
+    name: innerbright-postgres-data
