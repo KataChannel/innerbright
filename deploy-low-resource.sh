@@ -68,17 +68,17 @@ ssh root@116.118.48.208 << 'EOF'
     export COMPOSE_DOCKER_CLI_BUILD=0
     
     # Build only essential services first
-    echo "🐘 Starting PostgreSQL first..."
-    docker compose -f docker-compose.low-resource.yml up -d postgres
+    # echo "🐘 Starting PostgreSQL first..."
+    # docker compose -f docker-compose.low-resource.yml up -d postgres
     
-    echo "⏳ Waiting for PostgreSQL to be ready..."
-    sleep 20
+    # echo "⏳ Waiting for PostgreSQL to be ready..."
+    # sleep 20
     
-    echo "🔴 Starting Redis..."
-    docker compose -f docker-compose.low-resource.yml up -d redis
+    # echo "🔴 Starting Redis..."
+    # docker compose -f docker-compose.low-resource.yml up -d redis
     
-    echo "⏳ Waiting for Redis to be ready..."
-    sleep 10
+    # echo "⏳ Waiting for Redis to be ready..."
+    # sleep 10
     
     echo "🏗️ Building application with memory limits..."
     # Build with reduced parallelism and memory limits
