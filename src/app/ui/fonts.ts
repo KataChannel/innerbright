@@ -1,5 +1,13 @@
-import { Inter, Lusitana } from 'next/font/google';
+import { Inter, Lusitana, Roboto } from 'next/font/google';
 import localFont from 'next/font/local';
+
+// Roboto font configuration
+export const roboto = Roboto({
+  weight: ['300', '400', '500', '700', '900'],
+  subsets: ['latin', 'vietnamese'],
+  display: 'swap',
+  variable: '--font-roboto',
+});
 
 export const inter = Inter({ subsets: ['latin'] });
 
