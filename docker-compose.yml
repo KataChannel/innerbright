@@ -4,21 +4,21 @@ services:
     container_name: innerbright-postgres
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-innerbright}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     
-    # Resource limits for low-resource server
+    # Resource limits optimized for 2GB server
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: ${POSTGRES_MEMORY_LIMIT:-200M}
           cpus: '0.3'
         reservations:
-          memory: 128M
+          memory: ${POSTGRES_MEMORY_RESERVATION:-100M}
           cpus: '0.1'
     
     networks:
@@ -27,32 +27,32 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-innerbright}"]
       interval: 30s
       timeout: 10s
       retries: 3
     logging:
       driver: json-file
       options:
-        max-size: 10m
-        max-file: "3"
+        max-size: ${LOG_MAX_SIZE:-5m}
+        max-file: "${LOG_MAX_FILE:-2}"
 
   redis:
     image: redis:7-alpine
     container_name: innerbright-redis
     restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${REDIS_PORT}:6379"
-    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis123} --appendonly yes --maxmemory ${REDIS_MAX_MEMORY:-64mb} --maxmemory-policy allkeys-lru
     
     # Resource limits for low-resource server
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: ${REDIS_MEMORY_LIMIT:-128M}
           cpus: '0.2'
         reservations:
-          memory: 64M
+          memory: ${REDIS_MEMORY_RESERVATION:-64M}
           cpus: '0.1'
     
     networks:
@@ -67,20 +67,34 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: 10m
-        max-file: "3"
+        max-size: ${LOG_MAX_SIZE:-5m}
+        max-file: "${LOG_MAX_FILE:-2}"
+    profiles:
+      - redis
+      - full
 
   minio:
     image: minio/minio:latest
     container_name: innerbright-minio
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${MINIO_PORT}:9000"
-      - "${MINIO_CONSOLE_PORT}:9001"
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio123}
     command: server /data --console-address ":9001"
+    
+    # Resource limits for file storage
+    deploy:
+      resources:
+        limits:
+          memory: ${MINIO_MEMORY_LIMIT:-256M}
+          cpus: '0.3'
+        reservations:
+          memory: ${MINIO_MEMORY_RESERVATION:-128M}
+          cpus: '0.1'
+    
     networks:
       - innerbright-network
     volumes:
@@ -93,20 +107,34 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: 10m
-        max-file: "3"
+        max-size: ${LOG_MAX_SIZE:-5m}
+        max-file: "${LOG_MAX_FILE:-2}"
+    profiles:
+      - minio
+      - full
 
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: innerbright-pgadmin
-    restart: ${RESTART_POLICY}
+    restart: ${RESTART_POLICY:-unless-stopped}
     ports:
-      - "${PGADMIN_PORT}:80"
+      - "${PGADMIN_PORT:-5050}:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@innerbright.vn}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    
+    # Resource limits for admin interface
+    deploy:
+      resources:
+        limits:
+          memory: ${PGADMIN_MEMORY_LIMIT:-256M}
+          cpus: '0.3'
+        reservations:
+          memory: ${PGADMIN_MEMORY_RESERVATION:-128M}
+          cpus: '0.1'
+    
     networks:
       - innerbright-network
     volumes:
@@ -121,14 +149,18 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: 10m
-        max-file: "3"
+        max-size: ${LOG_MAX_SIZE:-5m}
+        max-file: "${LOG_MAX_FILE:-2}"
+    profiles:
+      - pgadmin
+      - full
+      
   site:
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: ${DOCKERFILE_NAME:-Dockerfile}
       args:
-        BUILD_SITE_ONLY: "true"
+        BUILD_MODE: ${BUILD_MODE:-prebuilt}
         NODE_ENV: production
         NEXT_TELEMETRY_DISABLED: "1"
     image: innerbright/site:${SITE_VERSION:-latest}
@@ -137,29 +169,35 @@ services:
     ports:
       - "${SITE_PORT:-3000}:3000"
     environment:
-      BUILD_SITE_ONLY: "true"
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: "1"
       PORT: 3000
       HOSTNAME: "0.0.0.0"
+      
+      # Database connection
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-innerbright}}
+      
       # Public environment variables
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
       NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
-      LOG_LEVEL: ${LOG_LEVEL}
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_PORT: ${MINIO_PORT}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_USE_SSL: ${MINIO_USE_SSL}
+      
+      # Service endpoints
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio}
+      MINIO_PORT: ${MINIO_PORT:-9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-${MINIO_ROOT_USER:-minio}}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-${MINIO_ROOT_PASSWORD:-minio123}}
+      MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
+      REDIS_URL: ${REDIS_URL:-redis://default:${REDIS_PASSWORD:-redis123}@redis:6379}
     
-    # Resource limits for low-resource server
+    # Optimized resource limits for pre-built app
     deploy:
       resources:
         limits:
-          memory: 512M
-          cpus: '0.8'
+          memory: ${SITE_MEMORY_LIMIT:-400M}
+          cpus: '0.6'
         reservations:
-          memory: 256M
+          memory: ${SITE_MEMORY_RESERVATION:-200M}
           cpus: '0.2'
     
     networks:
@@ -167,21 +205,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 60s
+      start_period: ${SITE_START_PERIOD:-90s}
     logging:
       driver: json-file
       options:
-        max-size: 10m
-        max-file: "3"
+        max-size: ${LOG_MAX_SIZE:-5m}
+        max-file: "${LOG_MAX_FILE:-2}"
 
 networks:
   innerbright-network:
