@@ -389,7 +389,7 @@ export const NLPBenefitsBlock: React.FC<{
                             <ul className="text-gray-600 text-sm space-y-1">
                               {benefit.examples.map((example: string, i: number) => (
                                 <li key={i} className="flex items-start">
-                                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 mt-2 flex-shrink-0"></span>
+                                  <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 mt-2 flex-shrink-0"></span>
                                   {example}
                                 </li>
                               ))}

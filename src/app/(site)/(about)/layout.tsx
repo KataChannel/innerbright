@@ -21,9 +21,7 @@ const AccordionItem = ({
         <span>{title}</span>
         {/* Chevron icon, rotates based on isOpen state */}
         <svg
-          className={`w-5 h-5 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -50,14 +48,13 @@ const AccordionItem = ({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-100 font-inter">
-      <Section id="section1" padding="none" className="relative">
+      <Section
+        id="section1"
+        padding="none"
+        className="relative"
+      >
         <Hero
-          title={
-            <>
-              <span>CÂU CHUYỆN</span>{" "}
-              <span className="text-3xl">Về InnerBright</span>
-            </>
-          }
+          title={<><span>CÂU CHUYỆN</span> <span className="text-3xl">Về InnerBright</span></>}
           description="InnerBright Training & Coaching được thành lập từ năm 2020 bởi nhà đào tạo Chloe Quý Châu"
           imageSrc="images/about/cau-chuyen.jpg"
           imageAlt="InnerBright Team"
@@ -66,8 +63,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <Section>
         <h2 className="text-center text-3xl font-bold text-blue-700 mb-8">
-          <span>Mang trong mình</span>{" "}
-          <span className="text-5xl">KHÁT VỌNG</span>
+          <span>Mang trong mình</span> <span className="text-5xl">KHÁT VỌNG</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="relative bg-white rounded-xl shadow-lg overflow-hidden">
@@ -304,55 +300,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <section className="bg-white rounded-lg shadow-lg p-6 md:p-8 mb-12 flex flex-col lg:flex-row items-start lg:space-x-8">
               <div className="lg:w-1/2 w-full mb-8 lg:mb-0">
                 <AccordionItem title="Khai Phá Tiềm Năng Não Bộ">
-                  <p>
-                    Thay vì chỉ truyền tải kiến thức một chiều, chúng tôi kích
-                    hoạt bộ não của bạn để việc học trở nên tự nhiên và hiệu
-                    quả. Các phương pháp giảng dạy được thiết kế dựa trên cách
-                    bộ não tiếp thu và xử lý thông tin, giúp bạn nắm bắt kiến
-                    thức một cách sâu sắc và ghi nhớ lâu dài, giảm thiểu sự phụ
-                    thuộc vào việc ghi chép thụ động.
-                  </p>
+                  <p>Nội dung chi tiết về việc khai phá tiềm năng não bộ.</p>
                 </AccordionItem>
                 <AccordionItem title="Làm Chủ Từng Bước Thực Hành">
-                  <p>
-                    Chúng tôi tin rằng hành động tạo nên sự khác biệt. Bạn sẽ
-                    được cung cấp những hướng dẫn chi tiết, trực quan thông qua
-                    các phần thị phạm và giải thích cặn kẽ từng kỹ thuật. Quá
-                    trình phức tạp được chia nhỏ thành các bước dễ thực hiện,
-                    dựa trên kinh nghiệm thực tế của các huấn luyện viên hàng
-                    đầu. Bạn sẽ được dẫn dắt từng bước, hiểu rõ nguyên lý và nắm
-                    vững những điểm then chốt để sau khóa học, bạn có thể tự tin
-                    mô hình hóa và ứng dụng thành công những gì đã học.
-                  </p>
+                  <p>Nội dung chi tiết về các bước thực hành hiệu quả.</p>
                 </AccordionItem>
                 <AccordionItem title="Học Qua Trải Nghiệm Sâu Sắc">
-                  <p>
-                    Mỗi chương trình đào tạo tại InnerBright được thiết kế tỉ mỉ
-                    với các hoạt động thực hành tương tác cao. Đến 70% thời gian
-                    trên lớp dành cho các hoạt động tác động sâu sắc đến tư duy
-                    và hành vi, giúp bạn biến những kiến thức lý thuyết thành kỹ
-                    năng thực tế, sẵn sàng ứng dụng ngay vào cuộc sống.
-                  </p>
+                  <p>Nội dung chi tiết về phương pháp học qua trải nghiệm.</p>
                 </AccordionItem>
                 <AccordionItem title="Kiến Tạo Thói Quen Thay Đổi Bền Vững">
                   <p>
-                    Bạn không chỉ được trang bị kiến thức NLP, mà còn tích hợp
-                    những kiến thức đó vào thói quen hàng ngày. Đây chính là
-                    chìa khóa tạo nên sự thay đổi sâu sắc và bền vững sau khi
-                    bạn hoàn thành chương trình. Bạn sẽ được hướng dẫn cách hệ
-                    thống hóa và ứng dụng những công cụ NLP vào các lĩnh vực cụ
-                    thể trong cuộc sống, biến việc học thành một phần tự nhiên
-                    trong cách bạn tư duy và hành động.
+                    Nội dung chi tiết về việc hình thành thói quen tích cực.
                   </p>
                 </AccordionItem>
                 <AccordionItem title="Đồng Hành Trên Hành Trình Chuyển Hóa">
                   <p>
-                    Trên con đường phát triển và thay đổi, sự đồng hành và hỗ
-                    trợ là vô giá. Đội ngũ Coaching Assistants tận tâm của
-                    InnerBright sẽ là những người bạn đồng hành đáng tin cậy,
-                    luôn sẵn sàng hỗ trợ, khuyến khích và giải đáp mọi thắc mắc
-                    của bạn trong suốt các buổi thực hành và hoạt động tại lớp
-                    học.
+                    Nội dung chi tiết về sự hỗ trợ đồng hành trong quá trình
+                    chuyển hóa.
                   </p>
                 </AccordionItem>
               </div>
@@ -505,6 +469,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </Section>
+
     </div>
   );
 }

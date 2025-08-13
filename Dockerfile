@@ -1,91 +1,24 @@
-# Multi-stage optimized build for Next.js with maximum efficiency
-FROM oven/bun:1-alpine AS base
+# Ultra-lightweight Dockerfile for pre-built Next.js app
+FROM oven/bun:1-alpine AS runtime
 
-# Install system dependencies for build and runtime
-RUN apk add --no-cache \
-    libc6-compat \
-    curl \
-    dumb-init \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*
-
-WORKDIR /app
-
-# Dependencies stage - optimized caching with minimal memory usage
-FROM base AS deps
-COPY package.json bun.lockb* ./
-# Install with memory optimizations
-RUN bun install --frozen-lockfile --no-optional --silent --no-cache
-
-# Builder stage - build application with optimizations
-FROM base AS builder
-WORKDIR /app
-
-# Copy dependencies from deps stage
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copy only necessary files for build (exclude unnecessary files)
-COPY package.json next.config.ts tsconfig.json ./
-COPY postcss.config.mjs ./
-COPY src ./src
-COPY public ./public
-
-# Set build environment variables
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-ENV SKIP_ENV_VALIDATION=1
-
-# Build the application with EXTREME memory optimization for 2GB servers
-RUN NODE_OPTIONS="--max-old-space-size=512 --max-semi-space-size=1 --max-executable-size=128" bun run build && \
-    # Remove source maps and other dev files to reduce size
-    find .next -name "*.map" -delete 2>/dev/null || true && \
-    # Remove unnecessary files
-    rm -rf node_modules/.cache 2>/dev/null || true && \
-    rm -rf .next/cache/webpack 2>/dev/null || true && \
-    # Additional cleanup for low-resource environments
-    rm -rf .next/cache 2>/dev/null || true && \
-    rm -rf /tmp/* 2>/dev/null || true && \
-    rm -rf /root/.bun/install/cache 2>/dev/null || true
-
-# Production dependencies stage - minimal deps only
-FROM base AS prod-deps
-COPY package.json bun.lockb* ./
-RUN bun install --frozen-lockfile --production --no-optional --silent && \
-    # Clean up unnecessary files
-    rm -rf node_modules/.cache && \
-    rm -rf /root/.bun/install/cache
-
-# Runner stage - ultra-minimal production image
-FROM oven/bun:1-alpine AS runner
-WORKDIR /app
-
-# Install only essential runtime dependencies
+# Install minimal runtime dependencies
 RUN apk add --no-cache curl dumb-init && \
     rm -rf /var/cache/apk/* && \
-    rm -rf /tmp/*
+    addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs --ingroup nodejs
 
-# Set production environment
+WORKDIR /app
+
+# Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs --ingroup nodejs
-
-# Create necessary directories with correct permissions
-RUN mkdir -p .next && chown nextjs:nodejs .next
-
-# Copy built application files with optimized layers
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-
-# Copy standalone build output (Next.js optimized for standalone mode)
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy only production dependencies if needed
-# COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copy pre-built application files
+COPY --chown=nextjs:nodejs .next/standalone ./ 
+COPY --chown=nextjs:nodejs .next/static ./.next/static
+COPY --chown=nextjs:nodejs public ./public
 
 # Switch to non-root user
 USER nextjs
@@ -93,10 +26,10 @@ USER nextjs
 # Expose port
 EXPOSE 3000
 
-# Health check optimized for standalone mode
+# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/health || curl -f http://localhost:3000/ || exit 1
+  CMD curl -f http://localhost:3000/ || exit 1
 
-# Use dumb-init for proper signal handling and bun for optimal performance
+# Start the application
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["bun", "server.js"]

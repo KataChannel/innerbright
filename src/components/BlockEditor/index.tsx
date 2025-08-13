@@ -62,7 +62,7 @@ const BlockEditor: React.FC<BlockEditorProps> = ({
     <div className="max-w-7xl mx-auto p-6 bg-white">
       {/* Drag Overlay */}
       {dragState.isDragging && (
-        <div className="fixed inset-0 pointer-events-none z-50 bg-blue-500 bg-opacity-5">
+        <div className="fixed inset-0 pointer-events-none z-50 bg-primary bg-opacity-5">
           <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
             Đang di chuyển block...
           </div>

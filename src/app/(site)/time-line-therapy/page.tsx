@@ -1,10 +1,5 @@
 import React from 'react';
-import { Metadata } from 'next';
 import Swipe from '@/app/components/common/swipe';
-export const metadata: Metadata = {
-    title: 'Home Page - Your E-commerce',
-    description: 'This is the Home page for Your E-commerce.',
-};
 
 export default function HomePage() {
     const advancedSlides = [

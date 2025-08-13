@@ -537,7 +537,7 @@ const ResizableTable: React.FC = () => {
               />
               <button
                 onClick={handleAddFilter}
-                className="px-4 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
                 Thêm
               </button>
@@ -633,11 +633,11 @@ const ResizableTable: React.FC = () => {
                     {/* Tay cầm thay đổi kích thước cột */}
                     {index < columns.length - 1 && (
                       <div
-                        className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500 transition-colors duration-150 group z-10"
+                        className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary transition-colors duration-150 group z-10"
                         onMouseDown={(e) => handleMouseDown(e, column.key)}
                         onClick={(e) => e.stopPropagation()} // Prevent sort when clicking resize handle
                       >
-                        <div className="w-full h-full bg-transparent group-hover:bg-blue-500"></div>
+                        <div className="w-full h-full bg-transparent group-hover:bg-primary"></div>
                       </div>
                     )}
                   </th>
@@ -774,7 +774,7 @@ const ResizableTable: React.FC = () => {
                           onClick={() => handlePageChange(page as number)}
                           className={`px-3 py-1 text-sm border rounded-lg ${
                             currentPage === page
-                              ? 'bg-blue-500 text-white border-blue-500'
+                              ? 'bg-primary text-white border-blue-500'
                               : 'border-gray-300 hover:bg-gray-50'
                           }`}
                         >

@@ -51,10 +51,10 @@ export const DraggableBlockRenderer: React.FC<DraggableBlockRendererProps> = ({
     >
       {/* Drop Indicators */}
       {isDropTarget && dropPosition === 'before' && (
-        <div className="absolute -top-1 left-0 right-0 h-0.5 bg-blue-500 z-10"></div>
+        <div className="absolute -top-1 left-0 right-0 h-0.5 bg-primary z-10"></div>
       )}
       {isDropTarget && dropPosition === 'after' && (
-        <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500 z-10"></div>
+        <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary z-10"></div>
       )}
       {isDropTarget && dropPosition === 'inside' && isContainer && (
         <div className="absolute inset-0 border-2 border-blue-500 bg-blue-50 bg-opacity-20 rounded-lg z-10 pointer-events-none"></div>
@@ -177,7 +177,7 @@ export const DraggableBlockRenderer: React.FC<DraggableBlockRendererProps> = ({
         )}
 
         {/* Block Type Indicator */}
-        <div className="absolute -left-2 top-2 w-4 h-4 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+        <div className="absolute -left-2 top-2 w-4 h-4 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">
           {getBlockTypeIcon(block.type)}
         </div>
 

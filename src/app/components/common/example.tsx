@@ -217,7 +217,7 @@
 //                         {showCart && (
 //                             <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
 //                                 <ShoppingCart className="h-5 w-5" />
-//                                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center">
+//                                 <span className="absolute -top-1 -right-1 h-4 w-4 bg-primary text-white text-xs rounded-full flex items-center justify-center">
 //                                     3
 //                                 </span>
 //                             </button>

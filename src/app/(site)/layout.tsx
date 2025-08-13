@@ -87,8 +87,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={`block py-2 px-3 rounded-md transition-colors duration-200 ease-in-out ${
                       isActive
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-700 hover:bg-blue-500 hover:text-white'
+                        ? 'bg-primary text-white'
+                        : 'text-gray-700 hover:bg-primary hover:text-white'
                     }`}
                   >
                     {item.label}

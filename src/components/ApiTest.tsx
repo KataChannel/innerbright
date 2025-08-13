@@ -41,7 +41,7 @@ export default function ApiTest() {
       <button
         onClick={testApi}
         disabled={loading}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        className="bg-primary hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
       >
         {loading ? 'Testing...' : 'Test API Connection'}
       </button>
