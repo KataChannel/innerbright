@@ -205,7 +205,7 @@ export default function BaiVietPage() {
                 <h1 className="text-3xl font-bold">Quản lý Bài viết</h1>
                 <button
                     onClick={handleAdd}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-hover transition-colors"
                 >
                     <Plus size={16} />
                     Thêm bài viết mới
@@ -236,7 +236,7 @@ export default function BaiVietPage() {
                                             {baiViet.tags && baiViet.tags.length > 0 && baiViet.tags.map((tag, index) => (
                                                 <span
                                                     key={index}
-                                                    className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                                                    className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
                                                 >
                                                     {tag}
                                                 </span>
@@ -255,7 +255,7 @@ export default function BaiVietPage() {
                                         </span>
                                         <button
                                             onClick={() => handleEdit(baiViet.id)}
-                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                         >
                                             <Edit size={16} />
                                         </button>

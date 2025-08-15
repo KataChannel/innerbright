@@ -23,6 +23,7 @@ model User {
   createdConversations     Conversation[] @relation("ConversationCreatedBy")
   participantConversations Conversation[] @relation("ConversationParticipants")
   messages                 Message[]
+  posts                    Post[]         // Relation to posts
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
 
@@ -68,4 +69,85 @@ model Message {
   createdAt      DateTime     @default(now())
 
   @@map("messages")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  color       String?   @default("#3B82F6")
+  isActive    Boolean   @default(true)
+  posts       Post[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+model Post {
+  id              String       @id @default(cuid())
+  title           String
+  slug            String       @unique
+  excerpt         String?
+  content         Json?        // Lưu trữ nội dung web builder dạng JSON
+  htmlContent     String?      // HTML đã render
+  metaTitle       String?
+  metaDescription String?
+  featuredImage   String?
+  status          PostStatus   @default(DRAFT)
+  publishedAt     DateTime?
+  categoryId      String?
+  category        Category?    @relation(fields: [categoryId], references: [id])
+  authorId        String?
+  author          User?        @relation(fields: [authorId], references: [id])
+  tags            PostTag[]
+  views           Int          @default(0)
+  likes           Int          @default(0)
+  isSticky        Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("posts")
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  color     String?   @default("#6B7280")
+  posts     PostTag[]
+  createdAt DateTime  @default(now())
+
+  @@map("tags")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model WebBuilderTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  content     Json     // Lưu trữ cấu trúc template
+  thumbnail   String?
+  category    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("webbuilder_templates")
 }

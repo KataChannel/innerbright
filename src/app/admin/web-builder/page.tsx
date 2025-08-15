@@ -96,11 +96,11 @@ export default function WebBuilderAdmin() {
         icon: 'text-purple-600'
       },
       blue: {
-        bg: 'bg-blue-50',
-        border: 'border-blue-200',
-        text: 'text-blue-600',
-        button: 'bg-blue-600 hover:bg-blue-700',
-        icon: 'text-blue-600'
+        bg: 'bg-primary/10',
+        border: 'border-primary/20',
+        text: 'text-primary',
+        button: 'bg-primary hover:bg-primary-hover',
+        icon: 'text-primary'
       },
       green: {
         bg: 'bg-green-50',
@@ -235,7 +235,7 @@ export default function WebBuilderAdmin() {
             
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-2">25+</div>
+                <div className="text-3xl font-bold text-primary mb-2">25+</div>
                 <div className="text-gray-600">Block types chuyên biệt</div>
               </div>
               
@@ -250,7 +250,7 @@ export default function WebBuilderAdmin() {
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+            <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-purple-50 rounded-lg">
               <h3 className="font-semibold text-gray-900 mb-3">🎯 Tính năng nổi bật:</h3>
               <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
                 <div className="flex items-center">
@@ -345,7 +345,7 @@ export default function WebBuilderAdmin() {
               
               <button
                 onClick={() => handleCreateNewPage(selectedPageType)}
-                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Tạo mới

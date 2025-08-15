@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <input
                 type="text"
                 placeholder="Tìm kiếm..."
-                className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-48"
+                className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm w-48"
               />
               {/* Search Icon */}
               <svg
@@ -88,7 +88,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     className={`block py-2 px-3 rounded-md transition-colors duration-200 ease-in-out ${
                       isActive
                         ? 'bg-primary text-white'
-                        : 'text-gray-700 hover:bg-primary hover:text-white'
+                        : 'text-gray-700 hover:bg-primary-700 hover:text-white'
                     }`}
                   >
                     {item.label}

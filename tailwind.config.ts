@@ -13,7 +13,14 @@ const config: Config = {
         'roboto': ['Roboto', 'sans-serif'],
       },
       colors: {
-        primary: '#011d56',
+        primary: {
+          DEFAULT: '#011d56',
+          50: '#f0f4ff',
+          100: '#e0e8ff', 
+          500: '#011d56',
+          600: '#011d56',
+          700: '#3b82f6', // Màu xanh sáng để dễ thấy hover effect
+        },
         secondary: '#F05A30',
       },
     },
