@@ -5,7 +5,7 @@ import { PlusIcon, TrashIcon, MoveIcon } from 'lucide-react';
 
 interface Block {
   id: string;
-  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'list';
+  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'list' | 'hero' | 'card' | 'feature';
   content: any;
   order: number;
 }
@@ -79,6 +79,12 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ initialContent = [], onChange }
         return { text: 'Trích dẫn...', author: '' };
       case 'list':
         return { items: ['Mục 1', 'Mục 2'], ordered: false };
+      case 'hero':
+        return { title: 'Tiêu đề Hero', subtitle: 'Phụ đề', backgroundImage: '', description: 'Mô tả...' };
+      case 'card':
+        return { title: 'Tiêu đề Card', text: 'Nội dung card...', image: '' };
+      case 'feature':
+        return { title: 'Tính năng', description: 'Mô tả tính năng...', image: '' };
       default:
         return {};
     }
@@ -99,6 +105,33 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ initialContent = [], onChange }
           const tag = block.content.ordered ? 'ol' : 'ul';
           const items = block.content.items.map((item: string) => `<li>${item}</li>`).join('');
           return `<${tag}>${items}</${tag}>`;
+        case 'hero':
+          return `<div class="hero-section relative h-96 bg-cover bg-center rounded-xl overflow-hidden mb-8" style="background-image: url('${block.content.backgroundImage}')">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+            <div class="absolute inset-0 flex items-center">
+              <div class="container mx-auto px-8">
+                <div class="max-w-2xl">
+                  <h1 class="text-5xl font-bold text-white mb-6">${block.content.title}</h1>
+                  <p class="text-xl text-white/90">${block.content.subtitle}</p>
+                  <p class="text-lg text-white/80 mt-4">${block.content.description}</p>
+                </div>
+              </div>
+            </div>
+          </div>`;
+        case 'card':
+          return `<div class="bg-white rounded-lg shadow-md p-6 text-center">
+            <img src="${block.content.image}" alt="${block.content.title}" class="w-full h-48 object-cover rounded-lg mb-4">
+            <h3 class="text-xl font-bold mb-3">${block.content.title}</h3>
+            <p class="text-gray-700">${block.content.text}</p>
+          </div>`;
+        case 'feature':
+          return `<div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <img src="${block.content.image}" alt="${block.content.title}" class="w-full h-64 object-cover">
+            <div class="p-6">
+              <h3 class="text-2xl font-bold mb-3">${block.content.title}</h3>
+              <p class="text-gray-700 leading-relaxed">${block.content.description}</p>
+            </div>
+          </div>`;
         default:
           return '';
       }
@@ -167,6 +200,27 @@ const WebBuilder: React.FC<WebBuilderProps> = ({ initialContent = [], onChange }
           >
             <PlusIcon className="w-4 h-4 inline mr-1" />
             Danh sách
+          </button>
+          <button
+            onClick={() => addBlock('hero')}
+            className="px-3 py-2 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+          >
+            <PlusIcon className="w-4 h-4 inline mr-1" />
+            Hero
+          </button>
+          <button
+            onClick={() => addBlock('card')}
+            className="px-3 py-2 text-sm bg-teal-500 text-white rounded hover:bg-teal-600 transition-colors"
+          >
+            <PlusIcon className="w-4 h-4 inline mr-1" />
+            Card
+          </button>
+          <button
+            onClick={() => addBlock('feature')}
+            className="px-3 py-2 text-sm bg-pink-500 text-white rounded hover:bg-pink-600 transition-colors"
+          >
+            <PlusIcon className="w-4 h-4 inline mr-1" />
+            Feature
           </button>
         </div>
       </div>
@@ -386,6 +440,94 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ block, onChange }) => {
           >
             + Thêm mục
           </button>
+        </div>
+      );
+
+    case 'hero':
+      return (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={block.content.title}
+            onChange={(e) => updateContent({ title: e.target.value })}
+            className="w-full text-2xl font-bold border-none outline-none focus:ring-0"
+            placeholder="Tiêu đề Hero..."
+          />
+          <input
+            type="text"
+            value={block.content.subtitle}
+            onChange={(e) => updateContent({ subtitle: e.target.value })}
+            className="w-full text-lg border-none outline-none focus:ring-0"
+            placeholder="Phụ đề..."
+          />
+          <input
+            type="url"
+            value={block.content.backgroundImage}
+            onChange={(e) => updateContent({ backgroundImage: e.target.value })}
+            className="w-full px-3 py-2 border rounded"
+            placeholder="URL hình nền..."
+          />
+          <textarea
+            value={block.content.description}
+            onChange={(e) => updateContent({ description: e.target.value })}
+            rows={3}
+            className="w-full px-3 py-2 border rounded resize-none"
+            placeholder="Mô tả..."
+          />
+        </div>
+      );
+
+    case 'card':
+      return (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={block.content.title}
+            onChange={(e) => updateContent({ title: e.target.value })}
+            className="w-full text-xl font-bold border-none outline-none focus:ring-0"
+            placeholder="Tiêu đề Card..."
+          />
+          <input
+            type="url"
+            value={block.content.image}
+            onChange={(e) => updateContent({ image: e.target.value })}
+            className="w-full px-3 py-2 border rounded"
+            placeholder="URL hình ảnh..."
+          />
+          <textarea
+            value={block.content.text}
+            onChange={(e) => updateContent({ text: e.target.value })}
+            rows={3}
+            className="w-full px-3 py-2 border rounded resize-none"
+            placeholder="Nội dung card..."
+          />
+        </div>
+      );
+
+    case 'feature':
+      return (
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={block.content.title}
+            onChange={(e) => updateContent({ title: e.target.value })}
+            className="w-full text-xl font-bold border-none outline-none focus:ring-0"
+            placeholder="Tiêu đề Feature..."
+          />
+          <input
+            type="url"
+            value={block.content.image}
+            onChange={(e) => updateContent({ image: e.target.value })}
+            className="w-full px-3 py-2 border rounded"
+            placeholder="URL hình ảnh..."
+          />
+          <textarea
+            value={block.content.description}
+            onChange={(e) => updateContent({ description: e.target.value })}
+            rows={4}
+            className="w-full px-3 py-2 border rounded resize-none"
+            placeholder="Mô tả feature..."
+          />
         </div>
       );
 

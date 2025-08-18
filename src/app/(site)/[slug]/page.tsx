@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
 const prisma = new PrismaClient();
 
@@ -117,22 +118,57 @@ export default async function DynamicPage({ params }: { params: Promise<{ slug: 
             />
           </div>
         </div>
-
-        {/* Page Meta */}
-        <head>
-          <title>{page.metaTitle || page.title}</title>
-          <meta name="description" content={page.metaDescription || ''} />
-          <meta property="og:title" content={page.metaTitle || page.title} />
-          <meta property="og:description" content={page.metaDescription || ''} />
-          {page.featuredImage && (
-            <meta property="og:image" content={page.featuredImage} />
-          )}
-        </head>
       </div>
     );
 
   } catch (error) {
     console.error('Error loading page:', error);
     notFound();
+  }
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
+  try {
+    const page = await prisma.page.findFirst({
+      where: {
+        AND: [
+          { status: 'PUBLISHED' },
+          {
+            OR: [
+              { id: slug },
+              { slug },
+              { path: `/${slug}` },
+              { path: slug }
+            ]
+          }
+        ]
+      }
+    });
+
+    if (!page) {
+      return {
+        title: 'Page Not Found - InnerBright',
+        description: 'The requested page could not be found.'
+      };
+    }
+
+    return {
+      title: page.metaTitle || page.title,
+      description: page.metaDescription || '',
+      openGraph: {
+        title: page.metaTitle || page.title,
+        description: page.metaDescription || '',
+        images: page.featuredImage ? [{ url: page.featuredImage }] : undefined,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'InnerBright',
+      description: 'Trung tâm đào tạo NLP và Time Line Therapy'
+    };
   }
 }
