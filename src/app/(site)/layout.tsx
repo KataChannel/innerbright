@@ -87,8 +87,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     className={`block py-2 px-3 rounded-md transition-colors duration-200 ease-in-out ${
                       isActive
-                        ? 'bg-primary text-white'
-                        : 'text-gray-700 hover:bg-primary-700 hover:text-white'
+                        ? 'bg-[#011d56] text-white'
+                        : 'text-gray-700 hover:bg-[#011d56c7] hover:text-white'
                     }`}
                   >
                     {item.label}
@@ -105,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
       <footer className="container mx-auto px-4 py-8 mt-6 bg-white rounded-xl shadow-lg">
         <div className="text-center text-gray-600 mb-4">
-          <a href="#top" className="hover:underline text-gray-600 font-medium">
+          <a href="#top" className="hover:bg-[#011d56] bg-[#011d56] text-white p-2 rounded-lg font-medium">
             Trở lại đầu trang
           </a>
         </div>

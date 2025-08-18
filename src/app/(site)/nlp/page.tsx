@@ -42,6 +42,81 @@ export default function NLPPage() {
       src: "/images/NLP/NLP_Section 6.png",
       alt: "NLP Background",
     },
+    {
+      id: 7,
+      src: "/images/NLP/NLP_Section 7.1.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 8,
+      src: "/images/NLP/NLP_Section 7.2.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 9,
+      src: "/images/NLP/NLP_Section 7.3.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 10,
+      src: "/images/NLP/NLP_Section 7.4.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 11,
+      src: "/images/NLP/NLP_Section 8.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 12,
+      src: "/images/NLP/NLP_Section 9.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 13,
+      src: "/images/NLP/NLP_Section 11.1.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 14,
+      src: "/images/NLP/NLP_Section 11.2.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 15,
+      src: "/images/NLP/NLP_Section 11.3.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 16,
+      src: "/images/NLP/NLP_Section 12.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 17,
+      src: "/images/NLP/NLP_Section 13.1.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 18,
+      src: "/images/NLP/NLP_Section 13.2.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 19,
+      src: "/images/NLP/NLP_Section 13.3.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 20,
+      src: "/images/NLP/NLP_Section 14.png",
+      alt: "NLP Background",
+    },
+    {
+      id: 21,
+      src: "/images/NLP/NLP_Section 15.png",
+      alt: "NLP Background",
+    },
   ];
   return (
     <PageTransition>
@@ -138,7 +213,7 @@ export default function NLPPage() {
                       2
                     </div>
                     <p className="text-lg md:text-xl font-medium text-white">
-                        Tôi thực sự mong muốn điều gì trong cuộc đời?
+                      Tôi thực sự mong muốn điều gì trong cuộc đời?
                     </p>
                   </div>
                 </div>
@@ -154,11 +229,11 @@ export default function NLPPage() {
                       3
                     </div>
                     <p className="text-lg md:text-xl font-medium text-white">
-                      Làm thế nào để tôi vượt qua những rào cản và đạt được điều mình mong muốn?
+                      Làm thế nào để tôi vượt qua những rào cản và đạt được điều
+                      mình mong muốn?
                     </p>
                   </div>
                 </div>
-                
               </div>
             </div>
 
@@ -204,10 +279,10 @@ export default function NLPPage() {
 
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="relative bg-white p-6 rounded-lg shadow-md">
-               <img
-                    src={ListImage[1].src}
-                    className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
-                  />
+                <img
+                  src={ListImage[1].src}
+                  className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
+                />
                 <h2 className="relative text-2xl font-bold text-white mb-3">
                   Neuro - Tư duy
                 </h2>
@@ -221,15 +296,15 @@ export default function NLPPage() {
                 </p>
               </div>
               <div className="relative bg-white p-6 rounded-lg shadow-md">
-               <img
-                    src={ListImage[1].src}
-                    className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
-                  />
+                <img
+                  src={ListImage[1].src}
+                  className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
+                />
                 <h2 className="relative text-2xl font-bold text-white mb-3">
                   Linguistic - Ngôn ngữ
                 </h2>
                 <p className="relative text-white leading-relaxed">
-                 Cách chúng ta sử dụng ngôn từ không chỉ đơn thuần diễn đạt ý
+                  Cách chúng ta sử dụng ngôn từ không chỉ đơn thuần diễn đạt ý
                   định của chúng ta mà còn thể hiện niềm tin và thái độ của mỗi
                   người. Một lời nói có thể mang năng lượng tích cực, có thể
                   mang năng lượng tiêu cực. Một lời nói có thể mang năng lượng
@@ -241,15 +316,15 @@ export default function NLPPage() {
                 </p>
               </div>
               <div className="relative bg-white p-6 rounded-lg shadow-md">
-               <img
-                    src={ListImage[1].src}
-                    className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
-                  />
+                <img
+                  src={ListImage[1].src}
+                  className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
+                />
                 <h2 className="relative text-2xl font-bold text-white mb-3">
-                       Programming - Lập trình
+                  Programming - Lập trình
                 </h2>
                 <p className="relative text-white leading-relaxed">
-                 Tương tự như hệ điều hành máy tính, lập trình ngôn ngữ tư duy
+                  Tương tự như hệ điều hành máy tính, lập trình ngôn ngữ tư duy
                   là dòng hóa các phản ứng thông tin và hành vi. Nó là một tập
                   hợp các nguyên tắc giúp điều chỉnh các kiểu tiết niệu và hành
                   vi không mong muốn, đồng thời hay mới lạ. Có thể hóa số chương
@@ -259,21 +334,16 @@ export default function NLPPage() {
             </div>
           </section>
 
-          <section
-            className="relative py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center rounded-lg mx-4 sm:mx-6 lg:mx-8 shadow-lg"
-            style={{
-              backgroundImage: `url(${ListImage[0]?.src})`,
-            }}
-          >
-               <img
-                    src={ListImage[5]?.src}
-                    className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg"
-                  />
-            <div className="relative max-w-4xl mx-auto text-center text-white">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight">
+          <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-cover bg-center rounded-lg mx-4 sm:mx-6 lg:mx-8 shadow-lg">
+            <img
+              src={ListImage[5]?.src}
+              className="absolute inset-0 bg-cover bg-center w-full h-full rounded-lg bg-black/60"
+            />
+            <div className="relative max-w-4xl bg-gray-50/50 rounded-lg p-6 mx-auto text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold leading-tight text-[#011d56]">
                 NLP - Tái cấu trúc hệ điều hành cuộc đời bạn
               </h2>
-              <p className="text-lg sm:text-xl leading-relaxed">
+              <p className="leading-relaxed text-black p-2">
                 NLP dựa trên cơ sở bộ não của chúng ta có thể được tái cấu trúc
                 để biến chúng ta thành những thực thể mới. Hay nói cách khác, bộ
                 não là hệ điều hành của cuộc sống. NLP giúp thay đổi cách chúng
@@ -296,36 +366,79 @@ export default function NLPPage() {
               </p>
             </div>
 
-            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              <ToolCard
-                title="Hiểu rõ bản thân"
-                description="Hiểu rõ hơn về giá trị, mục tiêu, niềm tin và khả năng của bản thân để phát triển tiềm năng cá nhân."
-                imageUrl="https://placehold.co/300x200/F0F0F0/333333"
-              />
+            <div className="relative max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 p-16">
+              <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={ListImage[6].src}
+                  className="w-full object-cover inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute top-0 p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-3">
+                  Hiểu rõ bản thân
+                  </h2>
+                  <p className="text-white leading-relaxed">
+                  Hiểu rõ hơn về giá trị, mục tiêu, niềm tin và khả năng của
+                  bản thân để phát triển tiềm năng cá nhân.
+                  </p>
+                </div>
+              </div>
 
-              <ToolCard
-                title="Hiểu rõ người khác"
-                description="Nâng cao kỹ năng giao tiếp, tạo ra mối quan hệ tốt đẹp và ảnh hưởng tích cực đến những người xung quanh."
-                imageUrl="https://placehold.co/300x200/F0F0F0/333333"
-              />
+              <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={ListImage[7].src}
+                  className="w-full object-cover inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute top-0 p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-3">
+                    Hiểu rõ người khác
+                  </h2>
+                  <p className="text-white leading-relaxed">
+                    Nâng cao kỹ năng giao tiếp, tạo ra mối quan hệ tốt đẹp và
+                    ảnh hưởng tích cực đến những người xung quanh.
+                  </p>
+                </div>
+              </div>
 
-              <ToolCard
-                title="Làm chủ cuộc sống"
-                description="Phát triển khả năng tự quản lý cảm xúc, giải quyết vấn đề và đạt được mục tiêu cuộc sống."
-                imageUrl="https://placehold.co/300x200/F0F0F0/333333"
-              />
-
-              <ToolCard
-                title="Khai vấn - Coaching"
-                description="Cung cấp các công cụ và kỹ thuật để hỗ trợ người khác đạt được mục tiêu và giải quyết vấn đề."
-                imageUrl="https://placehold.co/300x200/F0F0F0/333333"
-              />
+              <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={ListImage[8].src}
+                  className="w-full object-cover inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute top-0 p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-3">
+                    Làm chủ cuộc sống
+                  </h2>
+                  <p className="text-white leading-relaxed">
+                    Phát triển khả năng tự quản lý cảm xúc, giải quyết vấn đề và
+                    đạt được mục tiêu cuộc sống.
+                  </p>
+                </div>
+              </div>
+              <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                  src={ListImage[9].src}
+                  className="w-full object-cover inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute top-0 p-6 text-center">
+                  <h2 className="text-2xl font-bold text-white mb-3">
+                    Làm chủ cuộc sống
+                  </h2>
+                  <p className="text-white leading-relaxed">
+                    Phát triển khả năng tự quản lý cảm xúc, giải quyết vấn đề và
+                    đạt được mục tiêu cuộc sống.
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 
           <section className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-            <div className="relative max-w-4xl mx-auto text-center justify-center">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight whitespace-nowrap">
+            <div className="relative p-8 max-w-4xl mx-auto text-center justify-center">
+              <h2 className="text-3xl text-[#011d56] sm:text-4xl font-bold mb-4 leading-tight whitespace-nowrap">
                 Tham gia chương trình đào tạo NLP
               </h2>
               <p className="text-justify text-lg sm:text-xl leading-relaxed">
@@ -336,28 +449,31 @@ export default function NLPPage() {
                 cản hoài nghi năng lực cá nhân, cải thiện khả năng tương tác
                 thấu cảm với người khác; cung cấp cho bạn một loạt các chiến
                 lược gia tăng hiệu suất cá nhân lâu dài, và một hành trình phát
-                triển bản thân đúng đắn và toàn diện. Đến nay, NLP đã phát triển
+                triển bản thân đúng đắn và toàn diện. 
+                <br/>
+                <br/>
+                Đến nay, NLP đã phát triển
                 các công cụ và kỹ năng rất mạnh mẽ và tạo thay đổi trong nhiều
                 lĩnh vực chuyên môn bao gồm: tư vấn, tâm lý trị liệu, giáo dục,
                 sức khỏe, sáng tạo, luật, quản lý, bán hàng, lãnh đạo và nuôi
                 dạy con cái.
               </p>
             </div>
-            <div className="p-4">
+            <div className="p-16">
               <img
-                src="https://placehold.co/300x300/4f46e5/ffffff"
+                src={ListImage[10].src}
                 alt="NLP Background"
-                className="w-full h-full object-cover object-center rounded-lg"
+                className="object-cover object-center rounded-4xl"
               />
             </div>
           </section>
-          <Section className="!bg-blue-400">
-            <h1 className="text-center text-3xl md:text-4xl font-bold text-gray-800 mb-12">
+          <Section className="!bg-[#011d56] !p-8">
+            <h1 className="text-center text-3xl md:text-4xl font-bold text-white mb-4">
               LƯỢC SỬ NLP
             </h1>
             <div className="relative h-80 lg:h-[500px]">
               <img
-                src="https://placehold.co/500x500/b0e0e6/000000"
+                src={ListImage[11].src}
                 alt="Laptop showing NLP concepts"
                 className="mx-auto w-[800px] h-[500px] object-cover object-center rounded-lg"
               />
@@ -394,7 +510,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Milton Erickson */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[12].src}
                     alt="Hình ảnh Milton Erickson"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
@@ -417,7 +533,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Fritz Perls */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[13].src}
                     alt="Hình ảnh Fritz Perls"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
@@ -436,7 +552,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Virginia Satir */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[14].src}
                     alt="Hình ảnh Virginia Satir"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
@@ -499,7 +615,7 @@ export default function NLPPage() {
 
                   <div className="lg:w-1/2 w-full flex justify-center items-center">
                     <img
-                      src="https://placehold.co/500x350/cccccc/333333"
+                      src={ListImage[15].src}
                       alt="InnerBright team and students"
                       width={500}
                       height={350}
@@ -540,7 +656,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Milton Erickson */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[16].src}
                     alt="Hình ảnh Milton Erickson"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
@@ -563,7 +679,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Fritz Perls */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[17].src}
                     alt="Hình ảnh Fritz Perls"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
@@ -582,7 +698,7 @@ export default function NLPPage() {
                 <div className="bg-white border border-gray-200 rounded-lg shadow-md p-6 flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
                   {/* Hình ảnh của Virginia Satir */}
                   <img
-                    src="https://placehold.co/150x150/E0E0E0/333333"
+                    src={ListImage[18].src}
                     alt="Hình ảnh Virginia Satir"
                     className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover mb-4 border-4 border-blue-500 shadow-md"
                   />
