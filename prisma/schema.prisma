@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id                       String         @id @default(cuid())
+  id                       String         @id @default(uuid())
   email                    String         @unique
   username                 String?        @unique
   displayName              String?
@@ -24,6 +24,7 @@ model User {
   participantConversations Conversation[] @relation("ConversationParticipants")
   messages                 Message[]
   posts                    Post[]         // Relation to posts
+  pages                    Page[]         // Relation to pages
   createdAt                DateTime       @default(now())
   updatedAt                DateTime       @updatedAt
 
@@ -31,7 +32,7 @@ model User {
 }
 
 model Role {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String   @unique
   description String?
   permissions String[]
@@ -43,7 +44,7 @@ model Role {
 }
 
 model Conversation {
-  id           String    @id @default(cuid())
+  id           String    @id @default(uuid())
   title        String?
   description  String?
   isPublic     Boolean   @default(false)
@@ -59,7 +60,7 @@ model Conversation {
 }
 
 model Message {
-  id             String       @id @default(cuid())
+  id             String       @id @default(uuid())
   content        String
   role           String       @default("user") // user, assistant, system
   userId         String?
@@ -72,7 +73,7 @@ model Message {
 }
 
 model Category {
-  id          String    @id @default(cuid())
+  id          String    @id @default(uuid())
   name        String    @unique
   slug        String    @unique
   description String?
@@ -86,7 +87,7 @@ model Category {
 }
 
 model Post {
-  id              String       @id @default(cuid())
+  id              String       @id @default(uuid())
   title           String
   slug            String       @unique
   excerpt         String?
@@ -112,7 +113,7 @@ model Post {
 }
 
 model Tag {
-  id        String    @id @default(cuid())
+  id        String    @id @default(uuid())
   name      String    @unique
   slug      String    @unique
   color     String?   @default("#6B7280")
@@ -139,7 +140,7 @@ enum PostStatus {
 }
 
 model WebBuilderTemplate {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
   content     Json     // Lưu trữ cấu trúc template
@@ -150,4 +151,32 @@ model WebBuilderTemplate {
   updatedAt   DateTime @updatedAt
 
   @@map("webbuilder_templates")
+}
+
+model Page {
+  id              String     @id @default(uuid())
+  title           String
+  slug            String     @unique
+  path            String     @unique  // URL path như /about, /nlp, /time-line-therapy
+  content         Json?      // Nội dung dạng block editor
+  htmlContent     String?    // HTML đã render
+  metaTitle       String?
+  metaDescription String?
+  featuredImage   String?
+  status          PageStatus @default(DRAFT)
+  publishedAt     DateTime?
+  authorId        String?
+  author          User?      @relation(fields: [authorId], references: [id])
+  views           Int        @default(0)
+  isHomePage      Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@map("pages")
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 }

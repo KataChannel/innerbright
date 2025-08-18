@@ -9,6 +9,7 @@ import {
   Folder, 
   Tag, 
   Plus,
+  Layout,
   Eye,
   Settings,
   Edit3
@@ -59,6 +60,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     href: "/admin/posts/new",
                     icon: Plus,
                     description: "Viết bài mới với WebBuilder"
+                },
+                {
+                    name: "Trang",
+                    href: "/admin/pages",
+                    icon: Layout,
+                    description: "Quản lý trang tĩnh"
                 },
                 {
                     name: "Danh mục",
