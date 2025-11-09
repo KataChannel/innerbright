@@ -19,9 +19,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 # Copy PRE-BUILT files from local machine (uploaded via rsync)
 # These files are already built locally, NOT on server
-COPY --chown=nextjs:nodejs frontend/public ./public
-COPY --chown=nextjs:nodejs frontend/.next/standalone ./
-COPY --chown=nextjs:nodejs frontend/.next/static ./.next/static
+COPY --chown=nextjs:nodejs public ./public
+COPY --chown=nextjs:nodejs .next/standalone ./
+COPY --chown=nextjs:nodejs .next/static ./.next/static
 
 # Ensure proper permissions
 RUN chmod -R 755 /app
