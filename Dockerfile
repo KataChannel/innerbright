@@ -9,6 +9,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV TURBOPACK=1
 
 # Memory optimization for low-spec server (2GB RAM)
 ENV NODE_OPTIONS="--max-old-space-size=1024"
@@ -23,8 +24,15 @@ COPY --chown=nextjs:nodejs public ./public
 COPY --chown=nextjs:nodejs .next/standalone ./
 COPY --chown=nextjs:nodejs .next/static ./.next/static
 
-# Ensure proper permissions
-RUN chmod -R 755 /app
+# Create symlinks for Turbopack runtime files
+RUN cd /app/node_modules/next/dist/compiled/next-server && \
+    ln -sf app-page-turbo.runtime.prod.js app-page.runtime.prod.js && \
+    ln -sf app-route-turbo.runtime.prod.js app-route.runtime.prod.js && \
+    ln -sf pages-turbo.runtime.prod.js pages.runtime.prod.js
+
+# Ensure proper permissions and ownership
+RUN chown -R nextjs:nodejs /app && \
+    chmod -R 755 /app
 
 # Switch to non-root user
 USER nextjs

@@ -7,7 +7,7 @@ node_modules
 coverage
 
 # Next.js
-.next/
+.next/cache
 out/
 build
 dist

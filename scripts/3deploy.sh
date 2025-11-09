@@ -104,7 +104,7 @@ UPLOAD_SIZE=$(du -sh . 2>/dev/null | cut -f1)
 log_info "   Total size: ${UPLOAD_SIZE}"
 
 rsync -avz --timeout=600 \
-  --exclude 'node_modules' \
+  --exclude '/node_modules' \
   --exclude '.git' \
   --exclude '.github' \
   --exclude '.next/cache' \
