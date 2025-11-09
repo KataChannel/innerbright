@@ -1,0 +1,3 @@
+1. Thiết kế, màu sắc, layout y như hình 100%
+2. Layout reponsive + PWA + Shadcn UI
+3. Hình ảnh demo lấy từ https://placehold.co/ tùy kích thước
