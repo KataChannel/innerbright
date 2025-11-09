@@ -133,6 +133,12 @@ ssh -o ConnectTimeout=60 "${SERVER_USER}@${SERVER_IP}" bash -s << 'REMOTE_EOF'
     set -e
     cd /root/innerbright
     
+    # Create frontend symlink if not exists
+    if [[ ! -L "frontend" ]]; then
+        echo "Creating frontend symlink..."
+        ln -s . frontend
+    fi
+    
     echo "=== Server Resources Before Deploy ==="
     free -h
     df -h / | tail -1
