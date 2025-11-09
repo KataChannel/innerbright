@@ -129,10 +129,7 @@ log_success "✅ Files uploaded successfully"
 # Step 5: Deploy on server (NO BUILD, just copy files to Docker)
 log_info "🐳 Step 5: Deploying on server (no compilation)..."
 
-ssh -o ConnectTimeout=60 "${SERVER_USER}@${SERVER_IP}" bash -s << 'REMOTE_EOF' || {
-    log_error "Deployment on server failed"
-    exit 1
-}
+ssh -o ConnectTimeout=60 "${SERVER_USER}@${SERVER_IP}" bash -s << 'REMOTE_EOF'
     set -e
     cd /root/innerbright
     
@@ -188,6 +185,11 @@ ssh -o ConnectTimeout=60 "${SERVER_USER}@${SERVER_IP}" bash -s << 'REMOTE_EOF' |
     echo ""
     echo "✅ Deployment completed on server"
 REMOTE_EOF
+
+if [[ $? -ne 0 ]]; then
+    log_error "Deployment on server failed"
+    exit 1
+fi
 
 log_success "✅ Docker container started"
 
