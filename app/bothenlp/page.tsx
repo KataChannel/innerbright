@@ -18,15 +18,15 @@ export default function BoTheNLPPage() {
 
 				</svg>
 				<div id="aae">
-					<img id="aaf" src="/images/BOTHE_NLP/aaf.png" srcSet="/images/BOTHE_NLP/aaf.png 1x, /images/BOTHE_NLP/aaf@2x.png 2x" />
+					<img id="aaf" src="/images/bothe_nlp/aaf.png" srcSet="/images/bothe_nlp/aaf.png 1x, /images/bothe_nlp/aaf@2x.png 2x" />
 				</div>
-				<div id="aag" style={{ cursor: "pointer" }}>
+				<div id="aag" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
-						<img id="aah" src="/images/BOTHE_NLP/aah.png" srcSet="/images/BOTHE_NLP/aah.png 1x, /images/BOTHE_NLP/aah@2x.png 2x" />
+						<img id="aah" src="/images/bothe_nlp/aah.png" srcSet="/images/bothe_nlp/aah.png 1x, /images/bothe_nlp/aah@2x.png 2x" />
 					</Link>
 				</div>
 				<div id="aai">
-					<img id="aaj" src="/images/BOTHE_NLP/aaj.png" srcSet="/images/BOTHE_NLP/aaj.png 1x, /images/BOTHE_NLP/aaj@2x.png 2x" />
+					<img id="aaj" src="/images/bothe_nlp/aaj.png" srcSet="/images/bothe_nlp/aaj.png 1x, /images/bothe_nlp/aaj@2x.png 2x" />
 				</div>
 				<svg className="aak" viewBox="163.359 104.418 1339.799 49.335">
 					<path id="aak" d="M 1493.431884765625 153.7531127929688 L 173.0869903564453 153.7531127929688 C 167.7145843505859 153.7531127929688 163.3589935302734 148.8037719726562 163.3589935302734 142.70068359375 L 163.3589935302734 115.4704513549805 C 163.3589935302734 109.3673477172852 167.7145843505859 104.4180068969727 173.0869903564453 104.4180068969727 L 1493.431884765625 104.4180068969727 C 1498.804321289062 104.4180068969727 1503.158081054688 109.3673477172852 1503.158081054688 115.4704513549805 L 1503.158081054688 142.70068359375 C 1503.158081054688 148.8037719726562 1498.804321289062 153.7531127929688 1493.431884765625 153.7531127929688" />
@@ -36,12 +36,12 @@ export default function BoTheNLPPage() {
 					<rect id="aal" rx="0" ry="0" x="0" y="0" width="1339.801" height="49.328" />
 
 				</svg>
-				<div id="aam" style={{ cursor: "pointer" }}>
+				<div id="aam" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/nlp" className="block w-full h-full">
 						<span>NLP</span>
 					</Link>
 				</div>
-				<div id="aan" style={{ cursor: "pointer" }}>
+				<div id="aan" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
 						<div id="aao">
 							<div id="aap">
@@ -69,33 +69,33 @@ export default function BoTheNLPPage() {
 					<span>Liên hệ</span>
 				</div>
 				<div id="aaw">
-					<img id="aax" src="/images/BOTHE_NLP/aax.png" srcSet="/images/BOTHE_NLP/aax.png 1x, /images/BOTHE_NLP/aax@2x.png 2x" />
+					<img id="aax" src="/images/bothe_nlp/aax.png" srcSet="/images/bothe_nlp/aax.png 1x, /images/bothe_nlp/aax@2x.png 2x" />
 				</div>
 				<div id="aay">
 					<span>Khoá học</span>
 				</div>
-				<div id="aaz" style={{ cursor: "pointer" }}>
+				<div id="aaz" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
 						<span>Về InnerBright</span>
 					</Link>
 				</div>
 				<div id="aba">
 					<div id="abb">
-						<img id="abc" src="/images/BOTHE_NLP/abc.png" srcSet="/images/BOTHE_NLP/abc.png 1x, /images/BOTHE_NLP/abc@2x.png 2x" />
+						<img id="abc" src="/images/bothe_nlp/abc.png" srcSet="/images/bothe_nlp/abc.png 1x, /images/bothe_nlp/abc@2x.png 2x" />
 					</div>
-					<div id="abd" style={{ cursor: "pointer" }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+					<div id="abd" style={{ cursor: "pointer" }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="relative z-50">
 						<span>Trở lại đầu trang</span>
 					</div>
 				</div>
 				<div id="abe">
 					<div id="abf">
-						<img id="abg" src="/images/BOTHE_NLP/abg.png" srcSet="/images/BOTHE_NLP/abg.png 1x, /images/BOTHE_NLP/abg@2x.png 2x" />
+						<img id="abg" src="/images/bothe_nlp/abg.png" srcSet="/images/bothe_nlp/abg.png 1x, /images/bothe_nlp/abg@2x.png 2x" />
 					</div>
 					<div id="abh">
-						<img id="abi" src="/images/BOTHE_NLP/abi.png" srcSet="/images/BOTHE_NLP/abi.png 1x, /images/BOTHE_NLP/abi@2x.png 2x" />
+						<img id="abi" src="/images/bothe_nlp/abi.png" srcSet="/images/bothe_nlp/abi.png 1x, /images/bothe_nlp/abi@2x.png 2x" />
 					</div>
 					<div id="abj">
-						<img id="abk" src="/images/BOTHE_NLP/abk.png" srcSet="/images/BOTHE_NLP/abk.png 1x, /images/BOTHE_NLP/abk@2x.png 2x" />
+						<img id="abk" src="/images/bothe_nlp/abk.png" srcSet="/images/bothe_nlp/abk.png 1x, /images/bothe_nlp/abk@2x.png 2x" />
 					</div>
 					<div id="abl">
 						<span>Bộ thẻ</span>
@@ -130,13 +130,13 @@ export default function BoTheNLPPage() {
 						<span>InnerBright sử dụng NLP trong ba khía cạnh để giúp phát triển bản thân một cách hiệu quả.</span>
 					</div>
 					<div id="abw">
-						<img id="abx" src="/images/BOTHE_NLP/abx.png" srcSet="/images/BOTHE_NLP/abx.png 1x, /images/BOTHE_NLP/abx@2x.png 2x" />
+						<img id="abx" src="/images/bothe_nlp/abx.png" srcSet="/images/bothe_nlp/abx.png 1x, /images/bothe_nlp/abx@2x.png 2x" />
 					</div>
 					<div id="aby">
-						<img id="abz" src="/images/BOTHE_NLP/abz.png" srcSet="/images/BOTHE_NLP/abz.png 1x, /images/BOTHE_NLP/abz@2x.png 2x" />
+						<img id="abz" src="/images/bothe_nlp/abz.png" srcSet="/images/bothe_nlp/abz.png 1x, /images/bothe_nlp/abz@2x.png 2x" />
 					</div>
 					<div id="aca">
-						<img id="acb" src="/images/BOTHE_NLP/acb.png" srcSet="/images/BOTHE_NLP/acb.png 1x, /images/BOTHE_NLP/acb@2x.png 2x" />
+						<img id="acb" src="/images/bothe_nlp/acb.png" srcSet="/images/bothe_nlp/acb.png 1x, /images/bothe_nlp/acb@2x.png 2x" />
 					</div>
 					<div id="acc">
 						<span>Trở thành người giao<br />tiếp hiệu quả</span>
@@ -173,16 +173,16 @@ export default function BoTheNLPPage() {
 						<span>Khám phá tất cả 45 thẻ ứng dụng NLP được thiết kế cẩn thận, mỗi thẻ được thiết kế để nâng cao kỹ năng giao tiếp và phát triển cá nhân của bạn.</span>
 					</div>
 					<div id="acn">
-						<img id="aco" src="/images/BOTHE_NLP/aco.png" srcSet="/images/BOTHE_NLP/aco.png 1x, /images/BOTHE_NLP/aco@2x.png 2x" />
+						<img id="aco" src="/images/bothe_nlp/aco.png" srcSet="/images/bothe_nlp/aco.png 1x, /images/bothe_nlp/aco@2x.png 2x" />
 					</div>
 					<div id="acp">
-						<img id="acq" src="/images/BOTHE_NLP/acq.png" srcSet="/images/BOTHE_NLP/acq.png 1x, /images/BOTHE_NLP/acq@2x.png 2x" />
+						<img id="acq" src="/images/bothe_nlp/acq.png" srcSet="/images/bothe_nlp/acq.png 1x, /images/bothe_nlp/acq@2x.png 2x" />
 					</div>
 					<div id="acr">
-						<img id="acs" src="/images/BOTHE_NLP/acs.png" srcSet="/images/BOTHE_NLP/acs.png 1x, /images/BOTHE_NLP/acs@2x.png 2x" />
+						<img id="acs" src="/images/bothe_nlp/acs.png" srcSet="/images/bothe_nlp/acs.png 1x, /images/bothe_nlp/acs@2x.png 2x" />
 					</div>
 					<div id="act">
-						<img id="acu" src="/images/BOTHE_NLP/acu.png" srcSet="/images/BOTHE_NLP/acu.png 1x, /images/BOTHE_NLP/acu@2x.png 2x" />
+						<img id="acu" src="/images/bothe_nlp/acu.png" srcSet="/images/bothe_nlp/acu.png 1x, /images/bothe_nlp/acu@2x.png 2x" />
 					</div>
 				</div>
 				<div id="acv">
@@ -191,7 +191,7 @@ export default function BoTheNLPPage() {
 
 					</svg>
 					<div id="acx">
-						<img id="acy" src="/images/BOTHE_NLP/acy.png" srcSet="/images/BOTHE_NLP/acy.png 1x, /images/BOTHE_NLP/acy@2x.png 2x" />
+						<img id="acy" src="/images/bothe_nlp/acy.png" srcSet="/images/bothe_nlp/acy.png 1x, /images/bothe_nlp/acy@2x.png 2x" />
 					</div>
 					<div id="acz">
 						<span>Tại sao nên chọn bộ thẻ</span>
@@ -201,7 +201,7 @@ export default function BoTheNLPPage() {
 					</div>
 					<div id="adb">
 						<div id="adc">
-							<img id="add" src="/images/BOTHE_NLP/add.png" srcSet="/images/BOTHE_NLP/add.png 1x, /images/BOTHE_NLP/add@2x.png 2x" />
+							<img id="add" src="/images/bothe_nlp/add.png" srcSet="/images/bothe_nlp/add.png 1x, /images/bothe_nlp/add@2x.png 2x" />
 						</div>
 						<div id="ade">
 							<span>Tham gia vào hành trình ứng dụng NLP chính là Bạn đang tham gia vào hành trình thấu hiểu bản thân, tìm thấy mục tiêu cuộc sống và làm chủ chính mình.</span>
@@ -209,24 +209,24 @@ export default function BoTheNLPPage() {
 					</div>
 					<div id="adf">
 						<div id="adg">
-							<img id="adh" src="/images/BOTHE_NLP/adh.png" srcSet="/images/BOTHE_NLP/adh.png 1x, /images/BOTHE_NLP/adh@2x.png 2x" />
+							<img id="adh" src="/images/bothe_nlp/adh.png" srcSet="/images/bothe_nlp/adh.png 1x, /images/bothe_nlp/adh@2x.png 2x" />
 						</div>
 						<div id="adi">
 							<span>Hãy chọn một thẻ bài bất kỳ vào mỗi ngày để đọc, chiêm nghiệm và thực hành dựa trên kiến thức, phương pháp tư duy hoặc kỹ thuật mà chiếc thẻ gợi ý.</span>
 						</div>
 					</div>
 				</div>
-				<img id="adj" src="/images/BOTHE_NLP/adj.png" srcSet="/images/BOTHE_NLP/adj.png 1x, /images/BOTHE_NLP/adj@2x.png 2x" />
+				<img id="adj" src="/images/bothe_nlp/adj.png" srcSet="/images/bothe_nlp/adj.png 1x, /images/bothe_nlp/adj@2x.png 2x" />
 
-				<img id="adk" src="/images/BOTHE_NLP/adk.png" srcSet="/images/BOTHE_NLP/adk.png 1x, /images/BOTHE_NLP/adk@2x.png 2x" />
+				<img id="adk" src="/images/bothe_nlp/adk.png" srcSet="/images/bothe_nlp/adk.png 1x, /images/bothe_nlp/adk@2x.png 2x" />
 
-				<img id="adl" src="/images/BOTHE_NLP/adl.png" srcSet="/images/BOTHE_NLP/adl.png 1x, /images/BOTHE_NLP/adl@2x.png 2x" />
+				<img id="adl" src="/images/bothe_nlp/adl.png" srcSet="/images/bothe_nlp/adl.png 1x, /images/bothe_nlp/adl@2x.png 2x" />
 
-				<img id="adm" src="/images/BOTHE_NLP/adm.png" srcSet="/images/BOTHE_NLP/adm.png 1x, /images/BOTHE_NLP/adm@2x.png 2x" />
+				<img id="adm" src="/images/bothe_nlp/adm.png" srcSet="/images/bothe_nlp/adm.png 1x, /images/bothe_nlp/adm@2x.png 2x" />
 
-				<img id="adn" src="/images/BOTHE_NLP/adn.png" srcSet="/images/BOTHE_NLP/adn.png 1x, /images/BOTHE_NLP/adn@2x.png 2x" />
+				<img id="adn" src="/images/bothe_nlp/adn.png" srcSet="/images/bothe_nlp/adn.png 1x, /images/bothe_nlp/adn@2x.png 2x" />
 
-				<img id="ado" src="/images/BOTHE_NLP/ado.png" srcSet="/images/BOTHE_NLP/ado.png 1x, /images/BOTHE_NLP/ado@2x.png 2x" />
+				<img id="ado" src="/images/bothe_nlp/ado.png" srcSet="/images/bothe_nlp/ado.png 1x, /images/bothe_nlp/ado@2x.png 2x" />
 
 				<div id="adp">
 					<span>“Thế giới của mỗi người chính là hệ sinh thái, nơi mà chúng ta sống và làm việc cùng các cộng đồng. Tại InnerBright, điều quan trọng không chỉ là đạt được thành công cá nhân, mà còn là sử dụng sức mạnh này để tạo ra sự khác biệt và ảnh hưởng đến hệ sinh thái của riêng bạn. Bằng cách phát triển bản thân, chúng ta trở thành nguồn cảm hứng và sự thay đổi mà thế giới cần.”</span>
@@ -290,7 +290,7 @@ export default function BoTheNLPPage() {
 							<span>GỬI THÔNG TIN</span>
 						</div>
 					</div>
-					<img id="aei" src="/images/BOTHE_NLP/aei.png" srcSet="/images/BOTHE_NLP/aei.png 1x, /images/BOTHE_NLP/aei@2x.png 2x" />
+					<img id="aei" src="/images/bothe_nlp/aei.png" srcSet="/images/bothe_nlp/aei.png 1x, /images/bothe_nlp/aei@2x.png 2x" />
 
 				</div>
 				<div id="aej">
@@ -307,7 +307,7 @@ export default function BoTheNLPPage() {
 					<div id="aen">
 						<span>Mỗi thẻ bài chứa đựng những kiến thức, phương pháp tư duy và kỹ thuật được hệ thống hoá một cách đơn giản và dễ ghi nhớ, nhằm giúp Bạn gia tăng năng lực thấu hiểu bản thân và người khác, cải thiện chất lượng tương giao và đồng thời góp phần nâng cấp cuộc sống của Bạn và những người xung quanh.</span>
 					</div>
-					<img id="aeo" src="/images/BOTHE_NLP/aeo.png" srcSet="/images/BOTHE_NLP/aeo.png 1x, /images/BOTHE_NLP/aeo@2x.png 2x" />
+					<img id="aeo" src="/images/bothe_nlp/aeo.png" srcSet="/images/bothe_nlp/aeo.png 1x, /images/bothe_nlp/aeo@2x.png 2x" />
 				</div>
 				<div id="aep" style={{ cursor: "pointer" }}>
 					<Link href="/bothenlp" className="block w-full h-full">

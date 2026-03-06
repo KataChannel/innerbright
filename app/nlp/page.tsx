@@ -1,3 +1,4 @@
+'use client';
 import './NLP.css';
 import ScaleWrapper from '@/components/sections/ScaleWrapper';
 import Link from 'next/link';
@@ -16,15 +17,15 @@ export default function NLPPage() {
 
 				</svg>
 				<div id="aae">
-					<img id="aaf" src="/images/NLP/aaf.png" srcSet="/images/NLP/aaf.png 1x, /images/NLP/aaf@2x.png 2x" />
+					<img id="aaf" src="/images/nlp/aaf.png" srcSet="/images/nlp/aaf.png 1x, /images/nlp/aaf@2x.png 2x" />
 				</div>
-				<div id="aag" style={{ cursor: "pointer" }}>
+				<div id="aag" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
-						<img id="aah" src="/images/NLP/aah.png" srcSet="/images/NLP/aah.png 1x, /images/NLP/aah@2x.png 2x" />
+						<img id="aah" src="/images/nlp/aah.png" srcSet="/images/nlp/aah.png 1x, /images/nlp/aah@2x.png 2x" />
 					</Link>
 				</div>
 				<div id="aai">
-					<img id="aaj" src="/images/NLP/aaj.png" srcSet="/images/NLP/aaj.png 1x, /images/NLP/aaj@2x.png 2x" />
+					<img id="aaj" src="/images/nlp/aaj.png" srcSet="/images/nlp/aaj.png 1x, /images/nlp/aaj@2x.png 2x" />
 				</div>
 				<svg className="aak" viewBox="163.359 104.418 1339.799 49.335">
 					<path id="aak" d="M 1493.431884765625 153.7531127929688 L 173.0869903564453 153.7531127929688 C 167.7145843505859 153.7531127929688 163.3589935302734 148.8037719726562 163.3589935302734 142.70068359375 L 163.3589935302734 115.4704513549805 C 163.3589935302734 109.3673477172852 167.7145843505859 104.4180068969727 173.0869903564453 104.4180068969727 L 1493.431884765625 104.4180068969727 C 1498.804321289062 104.4180068969727 1503.158081054688 109.3673477172852 1503.158081054688 115.4704513549805 L 1503.158081054688 142.70068359375 C 1503.158081054688 148.8037719726562 1498.804321289062 153.7531127929688 1493.431884765625 153.7531127929688" />
@@ -34,7 +35,7 @@ export default function NLPPage() {
 					<rect id="aal" rx="0" ry="0" x="0" y="0" width="1339.801" height="49.328" />
 
 				</svg>
-				<div id="aam" style={{ cursor: "pointer" }}>
+				<div id="aam" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
 						<div id="aan">
 							<span>Time Line </span>
@@ -53,7 +54,7 @@ export default function NLPPage() {
 				<div id="aar">
 					<span>Khai vấn cá nhân</span>
 				</div>
-				<div id="aas" style={{ cursor: "pointer" }}>
+				<div id="aas" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/bothenlp"><span>Bộ thẻ NLP</span></Link>
 				</div>
 				<div id="aat">
@@ -69,20 +70,20 @@ export default function NLPPage() {
 				<div id="aaw">
 					<span>Khoá học</span>
 				</div>
-				<div id="aax" style={{ cursor: "pointer" }}>
+				<div id="aax" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/" className="block w-full h-full">
 						<span>Về InnerBright</span>
 					</Link>
 				</div>
 				<div id="aay">
 					<div id="aaz">
-						<img id="aba" src="/images/NLP/aba.png" srcSet="/images/NLP/aba.png 1x, /images/NLP/aba@2x.png 2x" />
+						<img id="aba" src="/images/nlp/aba.png" srcSet="/images/nlp/aba.png 1x, /images/nlp/aba@2x.png 2x" />
 					</div>
-					<div id="abb" style={{ cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+					<div id="abb" style={{ cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="relative z-50">
 						<span>Trở lại đầu trang</span>
 					</div>
 				</div>
-				<div id="abc" style={{ cursor: "pointer" }}>
+				<div id="abc" style={{ cursor: "pointer" }} className="relative z-50">
 					<Link href="/nlp" className="block w-full h-full">
 						<span>NLP</span>
 					</Link>
@@ -164,7 +165,7 @@ export default function NLPPage() {
 					<path id="aca" d="M 0 0 L 1440 0 L 1440 608 L 0 608 L 0 0 Z" />
 
 				</svg>
-				<img id="acb" src="/images/NLP/acb.png" srcSet="/images/NLP/acb.png 1x, /images/NLP/acb@2x.png 2x" />
+				<img id="acb" src="/images/nlp/acb.png" srcSet="/images/nlp/acb.png 1x, /images/nlp/acb@2x.png 2x" />
 
 				<div id="acc">
 					<span>Nhưng bạn sẽ không nằm<br />trong số đó!</span>
@@ -214,11 +215,11 @@ export default function NLPPage() {
 				<div id="acq">
 					<span>Tương tự như hệ điều hành máy tính, lập trình ngôn ngữ tư duy là dòng hóa các phản ứng thông tin và hành vi. Nó là một tập hợp các nguyên tắc giúp điều chỉnh các kiểu hành vi không mong muốn, đồng thời tối ưu hóa các chương trình tư duy và hành vi để đạt được hiệu quả hơn.</span>
 				</div>
-				<img id="acr" src="/images/NLP/acr.png" srcSet="/images/NLP/acr.png 1x, /images/NLP/acr@2x.png 2x" />
+				<img id="acr" src="/images/nlp/acr.png" srcSet="/images/nlp/acr.png 1x, /images/nlp/acr@2x.png 2x" />
 
-				<img id="acs" src="/images/NLP/acs.png" srcSet="/images/NLP/acs.png 1x, /images/NLP/acs@2x.png 2x" />
+				<img id="acs" src="/images/nlp/acs.png" srcSet="/images/nlp/acs.png 1x, /images/nlp/acs@2x.png 2x" />
 
-				<img id="act" src="/images/NLP/act.png" srcSet="/images/NLP/act.png 1x, /images/NLP/act@2x.png 2x" />
+				<img id="act" src="/images/nlp/act.png" srcSet="/images/nlp/act.png 1x, /images/nlp/act@2x.png 2x" />
 
 				<div id="acu">
 					<span>NLP - Tái cấu trúc hệ điều hành cuộc đời bạn</span>
@@ -227,7 +228,7 @@ export default function NLPPage() {
 					<path id="acv" d="M 0 0 L 1920.000122070312 0 L 1920.000122070312 857.0215454101562 L 0 857.0215454101562 L 0 0 Z" />
 
 				</svg>
-				<img id="acw" src="/images/NLP/acw.png" srcSet="/images/NLP/acw.png 1x, /images/NLP/acw@2x.png 2x" />
+				<img id="acw" src="/images/nlp/acw.png" srcSet="/images/nlp/acw.png 1x, /images/nlp/acw@2x.png 2x" />
 
 				<div id="acx">
 					<span>NLP - Hộp công cụ cuộc sống đa năng</span>
@@ -240,9 +241,9 @@ export default function NLPPage() {
 						<path id="ada" d="M 0 0 L 1920.000122070312 0 L 1920.000122070312 899.064453125 L 0 899.064453125 L 0 0 Z" />
 
 					</svg>
-					<img id="adb" src="/images/NLP/adb.png" srcSet="/images/NLP/adb.png 1x, /images/NLP/adb@2x.png 2x" />
+					<img id="adb" src="/images/nlp/adb.png" srcSet="/images/nlp/adb.png 1x, /images/nlp/adb@2x.png 2x" />
 
-					<img id="adc" src="/images/NLP/adc.png" srcSet="/images/NLP/adc.png 1x, /images/NLP/adc@2x.png 2x" />
+					<img id="adc" src="/images/nlp/adc.png" srcSet="/images/nlp/adc.png 1x, /images/nlp/adc@2x.png 2x" />
 
 					<div id="add">
 						<span>Tham gia<br />chương trình đào tạo NLP</span>
@@ -266,21 +267,21 @@ export default function NLPPage() {
 						<rect id="adj" rx="36" ry="36" x="0" y="0" width="1407" height="866" />
 
 					</svg>
-					<img id="adk" src="/images/NLP/adk.png" srcSet="/images/NLP/adk.png 1x, /images/NLP/adk@2x.png 2x" />
+					<img id="adk" src="/images/nlp/adk.png" srcSet="/images/nlp/adk.png 1x, /images/nlp/adk@2x.png 2x" />
 
-					<img id="adl" src="/images/NLP/adl.png" srcSet="/images/NLP/adl.png 1x, /images/NLP/adl@2x.png 2x" />
+					<img id="adl" src="/images/nlp/adl.png" srcSet="/images/nlp/adl.png 1x, /images/nlp/adl@2x.png 2x" />
 
-					<img id="adm" src="/images/NLP/adm.png" srcSet="/images/NLP/adm.png 1x, /images/NLP/adm@2x.png 2x" />
+					<img id="adm" src="/images/nlp/adm.png" srcSet="/images/nlp/adm.png 1x, /images/nlp/adm@2x.png 2x" />
 
-					<img id="adn" src="/images/NLP/adn.png" srcSet="/images/NLP/adn.png 1x, /images/NLP/adn@2x.png 2x" />
+					<img id="adn" src="/images/nlp/adn.png" srcSet="/images/nlp/adn.png 1x, /images/nlp/adn@2x.png 2x" />
 
-					<img id="ado" src="/images/NLP/ado.png" srcSet="/images/NLP/ado.png 1x, /images/NLP/ado@2x.png 2x" />
+					<img id="ado" src="/images/nlp/ado.png" srcSet="/images/nlp/ado.png 1x, /images/nlp/ado@2x.png 2x" />
 
-					<img id="adp" src="/images/NLP/adp.png" srcSet="/images/NLP/adp.png 1x, /images/NLP/adp@2x.png 2x" />
+					<img id="adp" src="/images/nlp/adp.png" srcSet="/images/nlp/adp.png 1x, /images/nlp/adp@2x.png 2x" />
 
-					<img id="adq" src="/images/NLP/adq.png" srcSet="/images/NLP/adq.png 1x, /images/NLP/adq@2x.png 2x" />
+					<img id="adq" src="/images/nlp/adq.png" srcSet="/images/nlp/adq.png 1x, /images/nlp/adq@2x.png 2x" />
 
-					<img id="adr" src="/images/NLP/adr.png" srcSet="/images/NLP/adr.png 1x, /images/NLP/adr@2x.png 2x" />
+					<img id="adr" src="/images/nlp/adr.png" srcSet="/images/nlp/adr.png 1x, /images/nlp/adr@2x.png 2x" />
 
 					<div id="ads">
 						<svg className="adt">
@@ -471,7 +472,7 @@ export default function NLPPage() {
 				<div id="afv">
 					<span>Là một bác sĩ tâm thần, nhà trị liệu thôi miên rất thành công. NLP dựa trên cách mà Milton Erickson sử dụng ngôn ngữ thôi miên trị liệu để tạo nên các mẫu ngôn ngữ mang tên Mô hình Milton. Bất kể bạn đang ở bất cảnh nào, vai trò của bạn là gì thì những mẫu ngôn ngữ này sẽ giúp cho bạn có thể gia tăng khả năng giao tiếp với tầng tiềm thức của người nghe, thúc đẩy động lực, gây sự ảnh hưởng và tạo ra sự thay đổi lâu dài mang tính tích cực.</span>
 				</div>
-				<img id="afw" src="/images/NLP/afw.png" srcSet="/images/NLP/afw.png 1x, /images/NLP/afw@2x.png 2x" />
+				<img id="afw" src="/images/nlp/afw.png" srcSet="/images/nlp/afw.png 1x, /images/nlp/afw@2x.png 2x" />
 
 				<div id="afx">
 					<span>Milton Erickson</span>
@@ -508,9 +509,9 @@ export default function NLPPage() {
 				<div id="agh">
 					<span>Những nhà tiên phong truyền cảm hứng</span>
 				</div>
-				<img id="agi" src="/images/NLP/agi.png" srcSet="/images/NLP/agi.png 1x, /images/NLP/agi@2x.png 2x" />
+				<img id="agi" src="/images/nlp/agi.png" srcSet="/images/nlp/agi.png 1x, /images/nlp/agi@2x.png 2x" />
 
-				<img id="agj" src="/images/NLP/agj.png" srcSet="/images/NLP/agj.png 1x, /images/NLP/agj@2x.png 2x" />
+				<img id="agj" src="/images/nlp/agj.png" srcSet="/images/nlp/agj.png 1x, /images/nlp/agj@2x.png 2x" />
 
 				<svg className="agk" viewBox="0 0 1920 683.83">
 					<path id="agk" d="M 0 0 L 1920 0 L 1920 683.830078125 L 0 683.830078125 L 0 0 Z" />
@@ -541,7 +542,7 @@ export default function NLPPage() {
 						<span>TAD JAMES</span>
 					</div>
 					<div id="agt">
-						<img id="agu" src="/images/NLP/agu.png" srcSet="/images/NLP/agu.png 1x, /images/NLP/agu@2x.png 2x" />
+						<img id="agu" src="/images/nlp/agu.png" srcSet="/images/nlp/agu.png 1x, /images/nlp/agu@2x.png 2x" />
 
 					</div>
 					<div id="agv">
@@ -573,7 +574,7 @@ export default function NLPPage() {
 						<span>ROBERT DILTS</span>
 					</div>
 					<div id="ahe">
-						<img id="ahf" src="/images/NLP/ahf.png" srcSet="/images/NLP/ahf.png 1x, /images/NLP/ahf@2x.png 2x" />
+						<img id="ahf" src="/images/nlp/ahf.png" srcSet="/images/nlp/ahf.png 1x, /images/nlp/ahf@2x.png 2x" />
 
 					</div>
 					<div id="ahg">
@@ -605,7 +606,7 @@ export default function NLPPage() {
 						<span>ANTHONY ROBBINS</span>
 					</div>
 					<div id="ahp">
-						<img id="ahq" src="/images/NLP/ahq.png" srcSet="/images/NLP/ahq.png 1x, /images/NLP/ahq@2x.png 2x" />
+						<img id="ahq" src="/images/nlp/ahq.png" srcSet="/images/nlp/ahq.png 1x, /images/nlp/ahq@2x.png 2x" />
 
 					</div>
 					<div id="ahr">
@@ -618,9 +619,9 @@ export default function NLPPage() {
 				<div id="aht">
 					<span>Chắp cánh cho một lĩnh vực mang tầm ảnh hưởng to lớn</span>
 				</div>
-				<img id="ahu" src="/images/NLP/ahu.png" srcSet="/images/NLP/ahu.png 1x, /images/NLP/ahu@2x.png 2x" />
+				<img id="ahu" src="/images/nlp/ahu.png" srcSet="/images/nlp/ahu.png 1x, /images/nlp/ahu@2x.png 2x" />
 
-				<img id="ahv" src="/images/NLP/ahv.png" srcSet="/images/NLP/ahv.png 1x, /images/NLP/ahv@2x.png 2x" />
+				<img id="ahv" src="/images/nlp/ahv.png" srcSet="/images/nlp/ahv.png 1x, /images/nlp/ahv@2x.png 2x" />
 				<div id="ahw">
 					<span>NLP</span>
 				</div>
@@ -643,7 +644,7 @@ export default function NLPPage() {
 
 					</svg>
 				</div>
-				<img id="aid" src="/images/NLP/aid.png" srcSet="/images/NLP/aid.png 1x, /images/NLP/aid@2x.png 2x" />
+				<img id="aid" src="/images/nlp/aid.png" srcSet="/images/nlp/aid.png 1x, /images/nlp/aid@2x.png 2x" />
 				<svg className="aie">
 					<rect id="aie" rx="13" ry="13" x="0" y="0" width="311" height="135" />
 
@@ -656,7 +657,7 @@ export default function NLPPage() {
 						<span>Nhận thức sâu sắc về chính mình, phá vỡ những rào cản nội tại và khai phá tiềm lực bên trong.</span>
 					</div>
 				</div>
-				<img id="aii" src="/images/NLP/aii.png" srcSet="/images/NLP/aii.png 1x, /images/NLP/aii@2x.png 2x" />
+				<img id="aii" src="/images/nlp/aii.png" srcSet="/images/nlp/aii.png 1x, /images/nlp/aii@2x.png 2x" />
 				<div id="aij">
 					<svg className="aik">
 						<rect id="aik" rx="13" ry="13" x="0" y="0" width="311" height="135" />
@@ -669,7 +670,7 @@ export default function NLPPage() {
 						<span>Nâng cao khả năng giao tiếp, hài hòa các mối quan hệ và giúp người khác giải phóng rào cản, khơi thông nguồn lực để tiến về phía trước.</span>
 					</div>
 				</div>
-				<img id="ain" src="/images/NLP/ain.png" srcSet="/images/NLP/ain.png 1x, /images/NLP/ain@2x.png 2x" />
+				<img id="ain" src="/images/nlp/ain.png" srcSet="/images/nlp/ain.png 1x, /images/nlp/ain@2x.png 2x" />
 				<div id="aio">
 					<svg className="aip">
 						<rect id="aip" rx="13" ry="13" x="0" y="0" width="584" height="69" />
@@ -718,7 +719,7 @@ export default function NLPPage() {
 							<ellipse id="aje" rx="123.5" ry="124" cx="123.5" cy="124" />
 
 						</svg>
-						<img id="ajf" src="/images/NLP/ajf.png" srcSet="/images/NLP/ajf.png 1x, /images/NLP/ajf@2x.png 2x" />
+						<img id="ajf" src="/images/nlp/ajf.png" srcSet="/images/nlp/ajf.png 1x, /images/nlp/ajf@2x.png 2x" />
 
 					</div>
 				</div>
@@ -742,7 +743,7 @@ export default function NLPPage() {
 							<ellipse id="ajm" rx="123.5" ry="124" cx="123.5" cy="124" />
 
 						</svg>
-						<img id="ajn" src="/images/NLP/ajn.png" srcSet="/images/NLP/ajn.png 1x, /images/NLP/ajn@2x.png 2x" />
+						<img id="ajn" src="/images/nlp/ajn.png" srcSet="/images/nlp/ajn.png 1x, /images/nlp/ajn@2x.png 2x" />
 
 					</div>
 				</div>

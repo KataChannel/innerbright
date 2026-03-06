@@ -1,19 +1,19 @@
-.mediaViewInfo {
+#Bo_the_NLP .mediaViewInfo {
 		--web-view-name: Bo the NLP;
 		--web-view-id: Bo_the_NLP;
 		--web-scale-on-resize: true;
 		--web-enable-deep-linking: true;
 	}
-	:root {
+	:root  {
 		--web-view-ids: Bo_the_NLP;
 	}
-	* {
+	*  {
 		margin: 0;
 		padding: 0;
 		box-sizing: border-box;
 		border: none;
 	}
-	#Bo_the_NLP {
+	#Bo_the_NLP  {
 		position: absolute;
 		width: 1920px;
 		height: 7040px;
@@ -24,10 +24,10 @@
 		--web-scale-on-resize: true;
 		--web-enable-deep-linking: true;
 	}
-	#aac {
+#Bo_the_NLP #aac {
 		fill: rgba(242,242,242,1);
 	}
-	.aac {
+#Bo_the_NLP .aac {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -35,10 +35,10 @@
 		left: 0px;
 		top: 3296px;
 	}
-	#aad {
+#Bo_the_NLP #aad {
 		fill: rgba(248,248,248,1);
 	}
-	.aad {
+#Bo_the_NLP .aad {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -46,7 +46,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#aae {
+#Bo_the_NLP #aae {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -54,7 +54,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aaf {
+#Bo_the_NLP #aaf {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -62,7 +62,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aag {
+#Bo_the_NLP #aag {
 		position: absolute;
 		width: 119.732px;
 		height: 24.203px;
@@ -70,7 +70,7 @@
 		top: 87.445px;
 		overflow: visible;
 	}
-	#aah {
+#Bo_the_NLP #aah {
 		position: absolute;
 		width: 119.731px;
 		height: 24.203px;
@@ -78,7 +78,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aai {
+#Bo_the_NLP #aai {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -86,7 +86,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aaj {
+#Bo_the_NLP #aaj {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -94,10 +94,10 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aak {
+#Bo_the_NLP #aak {
 		fill: rgba(237,237,237,1);
 	}
-	.aak {
+#Bo_the_NLP .aak {
 		overflow: visible;
 		position: absolute;
 		width: 1339.799px;
@@ -106,10 +106,10 @@
 		top: 185.632px;
 		transform: matrix(1,0,0,1,0,0);
 	}
-	#aal {
+#Bo_the_NLP #aal {
 		fill: rgba(0,0,0,0);
 	}
-	.aal {
+#Bo_the_NLP .aal {
 		position: absolute;
 		overflow: visible;
 		width: 1339.801px;
@@ -117,7 +117,7 @@
 		left: 290.418px;
 		top: 185.639px;
 	}
-	#aam {
+#Bo_the_NLP #aam {
 		border: 0;
 		left: 459.917px;
 		top: 198.21px;
@@ -134,7 +134,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aan {
+#Bo_the_NLP #aan {
 		position: absolute;
 		width: 177.537px;
 		height: 26px;
@@ -142,7 +142,7 @@
 		top: 198.21px;
 		overflow: visible;
 	}
-	#aao {
+#Bo_the_NLP #aao {
 		position: absolute;
 		width: 163.947px;
 		height: 26px;
@@ -150,7 +150,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aap {
+#Bo_the_NLP #aap {
 		border: 0;
 		left: 0px;
 		top: 0px;
@@ -167,7 +167,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aaq {
+#Bo_the_NLP #aaq {
 		border: 0;
 		left: 91.947px;
 		top: 0px;
@@ -184,7 +184,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aar {
+#Bo_the_NLP #aar {
 		border: 0;
 		left: 165.537px;
 		top: 3.559px;
@@ -201,7 +201,7 @@
 		font-size: 14px;
 		color: rgba(0,71,198,1);
 	}
-	#aas {
+#Bo_the_NLP #aas {
 		border: 0;
 		left: 741.829px;
 		top: 198.214px;
@@ -218,7 +218,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aat {
+#Bo_the_NLP #aat {
 		border: 0;
 		left: 976.424px;
 		top: 198.214px;
@@ -235,7 +235,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aau {
+#Bo_the_NLP #aau {
 		border: 0;
 		left: 1430.458px;
 		top: 198.214px;
@@ -252,7 +252,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aav {
+#Bo_the_NLP #aav {
 		border: 0;
 		left: 1546.111px;
 		top: 198.214px;
@@ -269,7 +269,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aaw {
+#Bo_the_NLP #aaw {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -277,7 +277,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aax {
+#Bo_the_NLP #aax {
 		position: absolute;
 		width: 1920px;
 		height: 258px;
@@ -285,7 +285,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aay {
+#Bo_the_NLP #aay {
 		border: 0;
 		left: 1174.839px;
 		top: 198.214px;
@@ -302,7 +302,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aaz {
+#Bo_the_NLP #aaz {
 		border: 0;
 		left: 302.064px;
 		top: 198.214px;
@@ -319,7 +319,7 @@
 		font-size: 22px;
 		color: rgba(0,71,198,1);
 	}
-	#aba {
+#Bo_the_NLP #aba {
 		position: absolute;
 		width: 1787.322px;
 		height: 508.016px;
@@ -327,7 +327,7 @@
 		top: 6515px;
 		overflow: visible;
 	}
-	#abb {
+#Bo_the_NLP #abb {
 		position: absolute;
 		width: 1787.322px;
 		height: 476.016px;
@@ -335,7 +335,7 @@
 		top: 32px;
 		overflow: visible;
 	}
-	#abc {
+#Bo_the_NLP #abc {
 		position: absolute;
 		width: 1787.321px;
 		height: 476.016px;
@@ -343,7 +343,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abd {
+#Bo_the_NLP #abd {
 		border: 0;
 		left: 749px;
 		top: 0px;
@@ -358,7 +358,7 @@
 		font-size: 25px;
 		color: rgba(112,112,112,1);
 	}
-	#abe {
+#Bo_the_NLP #abe {
 		position: absolute;
 		width: 1920px;
 		height: 689.286px;
@@ -366,7 +366,7 @@
 		top: 258px;
 		overflow: visible;
 	}
-	#abf {
+#Bo_the_NLP #abf {
 		position: absolute;
 		width: 1920px;
 		height: 689.286px;
@@ -374,7 +374,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abg {
+#Bo_the_NLP #abg {
 		position: absolute;
 		width: 1920px;
 		height: 689.286px;
@@ -382,7 +382,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abh {
+#Bo_the_NLP #abh {
 		position: absolute;
 		width: 189.291px;
 		height: 689.286px;
@@ -390,7 +390,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abi {
+#Bo_the_NLP #abi {
 		position: absolute;
 		width: 189.291px;
 		height: 689.286px;
@@ -398,7 +398,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abj {
+#Bo_the_NLP #abj {
 		position: absolute;
 		width: 797.649px;
 		height: 601.491px;
@@ -406,7 +406,7 @@
 		top: 65.712px;
 		overflow: visible;
 	}
-	#abk {
+#Bo_the_NLP #abk {
 		position: absolute;
 		width: 797.649px;
 		height: 601.491px;
@@ -414,7 +414,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#abl {
+#Bo_the_NLP #abl {
 		border: 0;
 		left: 260.273px;
 		top: 120.735px;
@@ -431,7 +431,7 @@
 		font-size: 60px;
 		color: rgba(255,255,255,1);
 	}
-	#abm {
+#Bo_the_NLP #abm {
 		border: 0;
 		left: 263.916px;
 		top: 307.346px;
@@ -448,7 +448,7 @@
 		font-size: 40px;
 		color: rgba(255,148,41,1);
 	}
-	#abn {
+#Bo_the_NLP #abn {
 		border: 0;
 		left: 260px;
 		top: 192.58px;
@@ -465,7 +465,7 @@
 		font-size: 103px;
 		color: rgba(255,255,255,1);
 	}
-	#abo {
+#Bo_the_NLP #abo {
 		border: 0;
 		left: 260px;
 		top: 382px;
@@ -480,7 +480,7 @@
 		font-size: 30px;
 		color: rgba(255,255,255,1);
 	}
-	#abp {
+#Bo_the_NLP #abp {
 		position: absolute;
 		width: 946px;
 		height: 230px;
@@ -488,7 +488,7 @@
 		top: 3329px;
 		overflow: visible;
 	}
-	#abq {
+#Bo_the_NLP #abq {
 		border: 0;
 		left: 1px;
 		top: 0px;
@@ -503,7 +503,7 @@
 		font-size: 55px;
 		color: rgba(29,63,154,1);
 	}
-	#abr {
+#Bo_the_NLP #abr {
 		border: 0;
 		left: 0px;
 		top: 100px;
@@ -518,7 +518,7 @@
 		font-size: 107px;
 		color: rgba(29,63,154,1);
 	}
-	#abs {
+#Bo_the_NLP #abs {
 		border: 0;
 		left: 1px;
 		top: 61px;
@@ -533,7 +533,7 @@
 		font-size: 49px;
 		color: rgba(29,63,154,1);
 	}
-	#abt {
+#Bo_the_NLP #abt {
 		position: absolute;
 		width: 1920px;
 		height: 794px;
@@ -541,10 +541,10 @@
 		top: 947px;
 		overflow: visible;
 	}
-	#abu {
+#Bo_the_NLP #abu {
 		fill: rgba(255,255,255,1);
 	}
-	.abu {
+#Bo_the_NLP .abu {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -552,7 +552,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#abv {
+#Bo_the_NLP #abv {
 		border: 0;
 		left: 351px;
 		top: 38px;
@@ -567,7 +567,7 @@
 		font-size: 40px;
 		color: rgba(29,63,154,1);
 	}
-	#abw {
+#Bo_the_NLP #abw {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -575,7 +575,7 @@
 		top: 178px;
 		overflow: visible;
 	}
-	#abx {
+#Bo_the_NLP #abx {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -583,7 +583,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aby {
+#Bo_the_NLP #aby {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -591,7 +591,7 @@
 		top: 178px;
 		overflow: visible;
 	}
-	#abz {
+#Bo_the_NLP #abz {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -599,7 +599,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#aca {
+#Bo_the_NLP #aca {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -607,7 +607,7 @@
 		top: 178px;
 		overflow: visible;
 	}
-	#acb {
+#Bo_the_NLP #acb {
 		position: absolute;
 		width: 309.84px;
 		height: 309.84px;
@@ -615,7 +615,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#acc {
+#Bo_the_NLP #acc {
 		border: 0;
 		left: 260px;
 		top: 508px;
@@ -630,7 +630,7 @@
 		font-size: 35px;
 		color: rgba(0,0,0,1);
 	}
-	#acd {
+#Bo_the_NLP #acd {
 		border: 0;
 		left: 768px;
 		top: 508px;
@@ -645,7 +645,7 @@
 		font-size: 35px;
 		color: rgba(0,0,0,1);
 	}
-	#ace {
+#Bo_the_NLP #ace {
 		border: 0;
 		left: 1242.66px;
 		top: 508px;
@@ -660,7 +660,7 @@
 		font-size: 35px;
 		color: rgba(0,0,0,1);
 	}
-	#acf {
+#Bo_the_NLP #acf {
 		border: 0;
 		left: 280.5px;
 		top: 620.16px;
@@ -675,7 +675,7 @@
 		font-size: 28px;
 		color: rgba(0,0,0,1);
 	}
-	#acg {
+#Bo_the_NLP #acg {
 		border: 0;
 		left: 1223.16px;
 		top: 620.16px;
@@ -690,7 +690,7 @@
 		font-size: 28px;
 		color: rgba(0,0,0,1);
 	}
-	#ach {
+#Bo_the_NLP #ach {
 		border: 0;
 		left: 755px;
 		top: 620.16px;
@@ -705,7 +705,7 @@
 		font-size: 28px;
 		color: rgba(0,0,0,1);
 	}
-	#aci {
+#Bo_the_NLP #aci {
 		position: absolute;
 		width: 1920px;
 		height: 750px;
@@ -713,10 +713,10 @@
 		top: 2546px;
 		overflow: visible;
 	}
-	#acj {
+#Bo_the_NLP #acj {
 		fill: rgba(242,242,242,1);
 	}
-	.acj {
+#Bo_the_NLP .acj {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -724,10 +724,10 @@
 		left: 0px;
 		top: 0px;
 	}
-	#ack {
+#Bo_the_NLP #ack {
 		fill: rgba(255,148,41,1);
 	}
-	.ack {
+#Bo_the_NLP .ack {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -735,7 +735,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#acl {
+#Bo_the_NLP #acl {
 		border: 0;
 		left: 351px;
 		top: 43px;
@@ -750,7 +750,7 @@
 		font-size: 40px;
 		color: rgba(255,255,255,1);
 	}
-	#acm {
+#Bo_the_NLP #acm {
 		border: 0;
 		left: 382px;
 		top: 110.501px;
@@ -765,7 +765,7 @@
 		font-size: 28px;
 		color: rgba(255,255,255,1);
 	}
-	#acn {
+#Bo_the_NLP #acn {
 		position: absolute;
 		width: 325.462px;
 		height: 452.397px;
@@ -773,7 +773,7 @@
 		top: 213.501px;
 		overflow: visible;
 	}
-	#aco {
+#Bo_the_NLP #aco {
 		position: absolute;
 		width: 325.462px;
 		height: 452.397px;
@@ -781,7 +781,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#acp {
+#Bo_the_NLP #acp {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -789,7 +789,7 @@
 		top: 263.268px;
 		overflow: visible;
 	}
-	#acq {
+#Bo_the_NLP #acq {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -797,7 +797,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#acr {
+#Bo_the_NLP #acr {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -805,7 +805,7 @@
 		top: 214.002px;
 		overflow: visible;
 	}
-	#acs {
+#Bo_the_NLP #acs {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -813,7 +813,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#act {
+#Bo_the_NLP #act {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -821,7 +821,7 @@
 		top: 263px;
 		overflow: visible;
 	}
-	#acu {
+#Bo_the_NLP #acu {
 		position: absolute;
 		width: 314.657px;
 		height: 440.831px;
@@ -829,7 +829,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#acv {
+#Bo_the_NLP #acv {
 		position: absolute;
 		width: 1920px;
 		height: 657px;
@@ -837,10 +837,10 @@
 		top: 5145px;
 		overflow: visible;
 	}
-	#acw {
+#Bo_the_NLP #acw {
 		fill: rgba(255,255,255,1);
 	}
-	.acw {
+#Bo_the_NLP .acw {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -848,7 +848,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#acx {
+#Bo_the_NLP #acx {
 		position: absolute;
 		width: 674.165px;
 		height: 488.571px;
@@ -856,7 +856,7 @@
 		top: 115.429px;
 		overflow: visible;
 	}
-	#acy {
+#Bo_the_NLP #acy {
 		position: absolute;
 		width: 674.165px;
 		height: 488.571px;
@@ -864,7 +864,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#acz {
+#Bo_the_NLP #acz {
 		border: 0;
 		left: 262px;
 		top: 105.429px;
@@ -881,7 +881,7 @@
 		font-size: 30px;
 		color: rgba(255,148,41,1);
 	}
-	#ada {
+#Bo_the_NLP #ada {
 		border: 0;
 		left: 260px;
 		top: 147.429px;
@@ -896,7 +896,7 @@
 		font-size: 60px;
 		color: rgba(0,71,198,1);
 	}
-	#adb {
+#Bo_the_NLP #adb {
 		position: absolute;
 		width: 657px;
 		height: 140px;
@@ -904,7 +904,7 @@
 		top: 253.429px;
 		overflow: visible;
 	}
-	#adc {
+#Bo_the_NLP #adc {
 		position: absolute;
 		width: 17px;
 		height: 17px;
@@ -912,7 +912,7 @@
 		top: 10px;
 		overflow: visible;
 	}
-	#add {
+#Bo_the_NLP #add {
 		position: absolute;
 		width: 17px;
 		height: 17px;
@@ -920,7 +920,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#ade {
+#Bo_the_NLP #ade {
 		border: 0;
 		left: 33px;
 		top: 0px;
@@ -935,7 +935,7 @@
 		font-size: 30px;
 		color: rgba(112,112,112,1);
 	}
-	#adf {
+#Bo_the_NLP #adf {
 		position: absolute;
 		width: 657px;
 		height: 140px;
@@ -943,7 +943,7 @@
 		top: 417.429px;
 		overflow: visible;
 	}
-	#adg {
+#Bo_the_NLP #adg {
 		position: absolute;
 		width: 17px;
 		height: 17px;
@@ -951,7 +951,7 @@
 		top: 10px;
 		overflow: visible;
 	}
-	#adh {
+#Bo_the_NLP #adh {
 		position: absolute;
 		width: 17px;
 		height: 17px;
@@ -959,7 +959,7 @@
 		top: 0px;
 		overflow: visible;
 	}
-	#adi {
+#Bo_the_NLP #adi {
 		border: 0;
 		left: 33px;
 		top: 0px;
@@ -974,7 +974,7 @@
 		font-size: 30px;
 		color: rgba(112,112,112,1);
 	}
-	#adj {
+#Bo_the_NLP #adj {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 494px;
@@ -983,7 +983,7 @@
 		top: 3767px;
 		overflow: visible;
 	}
-	#adk {
+#Bo_the_NLP #adk {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 494px;
@@ -992,7 +992,7 @@
 		top: 4302px;
 		overflow: visible;
 	}
-	#adl {
+#Bo_the_NLP #adl {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 494px;
@@ -1001,7 +1001,7 @@
 		top: 3767px;
 		overflow: visible;
 	}
-	#adm {
+#Bo_the_NLP #adm {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 494px;
@@ -1010,7 +1010,7 @@
 		top: 4607px;
 		overflow: visible;
 	}
-	#adn {
+#Bo_the_NLP #adn {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 694px;
@@ -1019,7 +1019,7 @@
 		top: 4599px;
 		overflow: visible;
 	}
-	#ado {
+#Bo_the_NLP #ado {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 695px;
@@ -1028,7 +1028,7 @@
 		top: 3847px;
 		overflow: visible;
 	}
-	#adp {
+#Bo_the_NLP #adp {
 		border: 0;
 		left: 275px;
 		top: 3569px;
@@ -1043,7 +1043,7 @@
 		font-size: 30px;
 		color: rgba(65,65,65,1);
 	}
-	#adq {
+#Bo_the_NLP #adq {
 		position: absolute;
 		width: 1920px;
 		height: 698px;
@@ -1051,10 +1051,10 @@
 		top: 5802px;
 		overflow: visible;
 	}
-	#adr {
+#Bo_the_NLP #adr {
 		fill: rgba(255,255,255,1);
 	}
-	.adr {
+#Bo_the_NLP .adr {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -1062,7 +1062,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#ads {
+#Bo_the_NLP #ads {
 		fill: rgba(0,71,198,1);
 		stroke: rgba(112,112,112,1);
 		stroke-width: 1px;
@@ -1071,7 +1071,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.ads {
+#Bo_the_NLP .ads {
 		position: absolute;
 		overflow: visible;
 		width: 1400px;
@@ -1079,7 +1079,7 @@
 		left: 260px;
 		top: 44px;
 	}
-	#adt {
+#Bo_the_NLP #adt {
 		border: 0;
 		left: 1183px;
 		top: 87px;
@@ -1094,7 +1094,7 @@
 		font-size: 30px;
 		color: rgba(255,255,255,1);
 	}
-	#adu {
+#Bo_the_NLP #adu {
 		border: 0;
 		left: 1093px;
 		top: 128px;
@@ -1111,7 +1111,7 @@
 		font-size: 40px;
 		color: rgba(255,148,41,1);
 	}
-	#adv {
+#Bo_the_NLP #adv {
 		fill: rgba(255,255,255,1);
 		stroke: rgba(112,112,112,1);
 		stroke-width: 1px;
@@ -1120,7 +1120,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.adv {
+#Bo_the_NLP .adv {
 		position: absolute;
 		overflow: visible;
 		width: 580px;
@@ -1128,7 +1128,7 @@
 		left: 1024px;
 		top: 190px;
 	}
-	#adw {
+#Bo_the_NLP #adw {
 		fill: rgba(245,245,245,1);
 		stroke: rgba(208,208,208,1);
 		stroke-width: 1px;
@@ -1137,7 +1137,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.adw {
+#Bo_the_NLP .adw {
 		position: absolute;
 		overflow: visible;
 		width: 519px;
@@ -1145,7 +1145,7 @@
 		left: 1054px;
 		top: 218px;
 	}
-	#adx {
+#Bo_the_NLP #adx {
 		opacity: 0.516;
 		border: 0;
 		left: 1073px;
@@ -1161,7 +1161,7 @@
 		font-size: 21px;
 		color: rgba(112,112,112,1);
 	}
-	#ady {
+#Bo_the_NLP #ady {
 		fill: rgba(245,245,245,1);
 		stroke: rgba(208,208,208,1);
 		stroke-width: 1px;
@@ -1170,7 +1170,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.ady {
+#Bo_the_NLP .ady {
 		position: absolute;
 		overflow: visible;
 		width: 519px;
@@ -1178,7 +1178,7 @@
 		left: 1054px;
 		top: 276px;
 	}
-	#adz {
+#Bo_the_NLP #adz {
 		opacity: 0.516;
 		border: 0;
 		left: 1073px;
@@ -1194,7 +1194,7 @@
 		font-size: 21px;
 		color: rgba(112,112,112,1);
 	}
-	#aea {
+#Bo_the_NLP #aea {
 		fill: rgba(245,245,245,1);
 		stroke: rgba(208,208,208,1);
 		stroke-width: 1px;
@@ -1203,7 +1203,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.aea {
+#Bo_the_NLP .aea {
 		position: absolute;
 		overflow: visible;
 		width: 519px;
@@ -1211,7 +1211,7 @@
 		left: 1054px;
 		top: 334px;
 	}
-	#aeb {
+#Bo_the_NLP #aeb {
 		opacity: 0.516;
 		border: 0;
 		left: 1073px;
@@ -1227,7 +1227,7 @@
 		font-size: 21px;
 		color: rgba(112,112,112,1);
 	}
-	#aec {
+#Bo_the_NLP #aec {
 		fill: rgba(245,245,245,1);
 		stroke: rgba(208,208,208,1);
 		stroke-width: 1px;
@@ -1236,7 +1236,7 @@
 		stroke-miterlimit: 4;
 		shape-rendering: auto;
 	}
-	.aec {
+#Bo_the_NLP .aec {
 		position: absolute;
 		overflow: visible;
 		width: 519px;
@@ -1244,7 +1244,7 @@
 		left: 1054px;
 		top: 392px;
 	}
-	#aed {
+#Bo_the_NLP #aed {
 		opacity: 0.516;
 		border: 0;
 		left: 1073px;
@@ -1260,7 +1260,7 @@
 		font-size: 21px;
 		color: rgba(112,112,112,1);
 	}
-	#aee {
+#Bo_the_NLP #aee {
 		border: 0;
 		left: 1809px;
 		top: 230px;
@@ -1275,7 +1275,7 @@
 		font-size: 21px;
 		color: rgba(242,242,242,1);
 	}
-	#aef {
+#Bo_the_NLP #aef {
 		position: absolute;
 		width: 320px;
 		height: 59px;
@@ -1283,10 +1283,10 @@
 		top: 545px;
 		overflow: visible;
 	}
-	#aeg {
+#Bo_the_NLP #aeg {
 		fill: rgba(255,148,41,1);
 	}
-	.aeg {
+#Bo_the_NLP .aeg {
 		position: absolute;
 		overflow: visible;
 		width: 320px;
@@ -1294,7 +1294,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#aeh {
+#Bo_the_NLP #aeh {
 		border: 0;
 		left: 53px;
 		top: 12px;
@@ -1311,7 +1311,7 @@
 		font-size: 30px;
 		color: rgba(255,255,255,1);
 	}
-	#aei {
+#Bo_the_NLP #aei {
 		filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.161));
 		position: absolute;
 		width: 649px;
@@ -1320,7 +1320,7 @@
 		top: 87px;
 		overflow: visible;
 	}
-	#aej {
+#Bo_the_NLP #aej {
 		position: absolute;
 		width: 1920px;
 		height: 805px;
@@ -1328,10 +1328,10 @@
 		top: 1741px;
 		overflow: visible;
 	}
-	#aek {
+#Bo_the_NLP #aek {
 		fill: rgba(255,255,255,1);
 	}
-	.aek {
+#Bo_the_NLP .aek {
 		position: absolute;
 		overflow: visible;
 		width: 1920px;
@@ -1339,7 +1339,7 @@
 		left: 0px;
 		top: 0px;
 	}
-	#ael {
+#Bo_the_NLP #ael {
 		border: 0;
 		left: 960px;
 		top: 139.499px;
@@ -1356,7 +1356,7 @@
 		font-size: 50px;
 		color: rgba(255,148,41,1);
 	}
-	#aem {
+#Bo_the_NLP #aem {
 		border: 0;
 		left: 960px;
 		top: 216px;
@@ -1371,7 +1371,7 @@
 		font-size: 30px;
 		color: rgba(112,112,112,1);
 	}
-	#aen {
+#Bo_the_NLP #aen {
 		border: 0;
 		left: 960px;
 		top: 392px;
@@ -1386,7 +1386,7 @@
 		font-size: 30px;
 		color: rgba(112,112,112,1);
 	}
-	#aeo {
+#Bo_the_NLP #aeo {
 		position: absolute;
 		width: 935px;
 		height: 757px;
@@ -1394,7 +1394,7 @@
 		top: 32px;
 		overflow: visible;
 	}
-	#aep {
+#Bo_the_NLP #aep {
 		border: 0;
 		left: 1297.082px;
 		top: 198.214px;
@@ -1411,3 +1411,20 @@
 		font-size: 22px;
 		color: rgba(255,255,255,1);
 	}
+/* Fix for overlapping decorative layers blocking clicks */
+#Bo_the_NLP #aac, #Bo_the_NLP #aad, #Bo_the_NLP #aae, #Bo_the_NLP #aaf, #Bo_the_NLP #aai, #Bo_the_NLP #aaj, #Bo_the_NLP #aaw, #Bo_the_NLP #aax, #Bo_the_NLP #aba, #Bo_the_NLP #abb, #Bo_the_NLP #abc {
+    pointer-events: none;
+}
+#Bo_the_NLP #aag, #Bo_the_NLP #aam, #Bo_the_NLP #aan, #Bo_the_NLP #aar, #Bo_the_NLP #aas, #Bo_the_NLP #aat, #Bo_the_NLP #aau, #Bo_the_NLP #aay, #Bo_the_NLP #aaz, #Bo_the_NLP #abd, #Bo_the_NLP #aep {
+    pointer-events: auto !important;
+    z-index: 100 !important;
+}
+
+/* Hover effects for BoTheNLP menu */
+#Bo_the_NLP #aag, #Bo_the_NLP #aam, #Bo_the_NLP #aan, #Bo_the_NLP #aas, #Bo_the_NLP #aat, #Bo_the_NLP #aau, #Bo_the_NLP #aay, #Bo_the_NLP #aaz {
+    transition: all 0.3s ease;
+}
+#Bo_the_NLP #aag:hover, #Bo_the_NLP #aam:hover, #Bo_the_NLP #aan:hover, #Bo_the_NLP #aas:hover, #Bo_the_NLP #aat:hover, #Bo_the_NLP #aau:hover, #Bo_the_NLP #aay:hover, #Bo_the_NLP #aaz:hover {
+    color: #FF9429 !important;
+    cursor: pointer;
+}

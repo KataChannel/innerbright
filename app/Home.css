@@ -1,22 +1,22 @@
-.mediaViewInfo {
+#Home .mediaViewInfo {
 	--web-view-name: Home;
 	--web-view-id: Home;
 	--web-scale-on-resize: false;
 	--web-enable-deep-linking: true;
 }
 
-:root {
+:root  {
 	--web-view-ids: Home;
 }
 
-* {
+*  {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	border: none;
 }
 
-#Home {
+#Home  {
 	position: relative;
 	width: 1920px;
 	margin: 0;
@@ -30,11 +30,11 @@
 	--web-enable-deep-linking: true;
 }
 
-#aaa {
+#Home #aaa {
 	fill: rgba(248, 248, 248, 1);
 }
 
-.aaa {
+#Home .aaa {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -43,7 +43,7 @@
 	top: 0px;
 }
 
-#aab {
+#Home #aab {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -52,7 +52,7 @@
 	overflow: visible;
 }
 
-#aac {
+#Home #aac {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -61,7 +61,7 @@
 	overflow: visible;
 }
 
-#aad {
+#Home #aad {
 	position: absolute;
 	width: 119.732px;
 	height: 24.203px;
@@ -70,7 +70,7 @@
 	overflow: visible;
 }
 
-#aae {
+#Home #aae {
 	position: absolute;
 	width: 119.732px;
 	height: 24.203px;
@@ -79,7 +79,7 @@
 	overflow: visible;
 }
 
-#aaf {
+#Home #aaf {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -88,7 +88,7 @@
 	overflow: visible;
 }
 
-#aag {
+#Home #aag {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -97,11 +97,11 @@
 	overflow: visible;
 }
 
-#aah {
+#Home #aah {
 	fill: rgba(237, 237, 237, 1);
 }
 
-.aah {
+#Home .aah {
 	overflow: visible;
 	position: absolute;
 	width: 1339.799px;
@@ -111,11 +111,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aai {
+#Home #aai {
 	fill: rgba(0, 0, 0, 0);
 }
 
-.aai {
+#Home .aai {
 	position: absolute;
 	overflow: visible;
 	width: 1339.801px;
@@ -124,7 +124,7 @@
 	top: 185.639px;
 }
 
-#aaj {
+#Home #aaj {
 	border: 0;
 	left: 289.778px;
 	top: 194.872px;
@@ -142,7 +142,7 @@
 	color: rgba(1, 29, 86, 1);
 }
 
-#aak {
+#Home #aak {
 	border: 0;
 	left: 459.917px;
 	top: 198.21px;
@@ -160,7 +160,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aal {
+#Home #aal {
 	position: absolute;
 	width: 177.537px;
 	height: 26px;
@@ -169,7 +169,7 @@
 	overflow: visible;
 }
 
-#aam {
+#Home #aam {
 	border: 0;
 	left: 0px;
 	top: 0px;
@@ -187,7 +187,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aan {
+#Home #aan {
 	border: 0;
 	left: 91.947px;
 	top: 0px;
@@ -205,7 +205,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aao {
+#Home #aao {
 	border: 0;
 	left: 165.537px;
 	top: 3.559px;
@@ -223,7 +223,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aap {
+#Home #aap {
 	border: 0;
 	left: 741.829px;
 	top: 198.214px;
@@ -241,7 +241,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aaq {
+#Home #aaq {
 	border: 0;
 	left: 976.424px;
 	top: 198.214px;
@@ -259,7 +259,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aar {
+#Home #aar {
 	border: 0;
 	left: 1297.082px;
 	top: 198.214px;
@@ -277,7 +277,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aas {
+#Home #aas {
 	border: 0;
 	left: 1430.458px;
 	top: 198.214px;
@@ -295,7 +295,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aat {
+#Home #aat {
 	border: 0;
 	left: 1546.111px;
 	top: 198.214px;
@@ -313,7 +313,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aau {
+#Home #aau {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -322,7 +322,7 @@
 	overflow: visible;
 }
 
-#aav {
+#Home #aav {
 	position: absolute;
 	width: 1920px;
 	height: 258px;
@@ -331,7 +331,7 @@
 	overflow: visible;
 }
 
-#aaw {
+#Home #aaw {
 	border: 0;
 	left: 1174.839px;
 	top: 198.214px;
@@ -349,7 +349,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aax {
+#Home #aax {
 	border: 0;
 	left: 302.064px;
 	top: 198.214px;
@@ -367,7 +367,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aay {
+#Home #aay {
 	position: absolute;
 	width: 1920px;
 	height: 869px;
@@ -376,11 +376,11 @@
 	overflow: visible;
 }
 
-#aaz {
+#Home #aaz {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aaz {
+#Home .aaz {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -389,7 +389,7 @@
 	top: 0px;
 }
 
-#aba {
+#Home #aba {
 	position: absolute;
 	width: 492.695px;
 	height: 490.997px;
@@ -398,7 +398,7 @@
 	overflow: visible;
 }
 
-#abb {
+#Home #abb {
 	position: absolute;
 	width: 492.695px;
 	height: 490.997px;
@@ -407,7 +407,7 @@
 	overflow: visible;
 }
 
-#abc {
+#Home #abc {
 	border: 0;
 	left: 709.796px;
 	top: 48.192px;
@@ -425,7 +425,7 @@
 	color: rgba(255, 176, 62, 1);
 }
 
-#abd {
+#Home #abd {
 	border: 0;
 	left: 711.806px;
 	top: 109.418px;
@@ -443,7 +443,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#abe {
+#Home #abe {
 	position: absolute;
 	width: 565.685px;
 	height: 94.21px;
@@ -452,7 +452,7 @@
 	overflow: visible;
 }
 
-#abf {
+#Home #abf {
 	position: absolute;
 	width: 565.685px;
 	height: 94.21px;
@@ -461,7 +461,7 @@
 	overflow: visible;
 }
 
-#abg {
+#Home #abg {
 	position: absolute;
 	width: 673.052px;
 	height: 120.097px;
@@ -470,7 +470,7 @@
 	overflow: visible;
 }
 
-#abh {
+#Home #abh {
 	position: absolute;
 	width: 673.052px;
 	height: 120.097px;
@@ -479,7 +479,7 @@
 	overflow: visible;
 }
 
-#abi {
+#Home #abi {
 	position: absolute;
 	width: 668.384px;
 	height: 151.925px;
@@ -488,7 +488,7 @@
 	overflow: visible;
 }
 
-#abj {
+#Home #abj {
 	position: absolute;
 	width: 668.384px;
 	height: 151.925px;
@@ -497,7 +497,7 @@
 	overflow: visible;
 }
 
-#abk {
+#Home #abk {
 	border: 0;
 	left: 269.533px;
 	top: 243.653px;
@@ -515,7 +515,7 @@
 	color: rgba(255, 176, 62, 1);
 }
 
-#abl {
+#Home #abl {
 	border: 0;
 	left: 270.826px;
 	top: 339.517px;
@@ -534,7 +534,7 @@
 	letter-spacing: -0.84px;
 }
 
-#abm {
+#Home #abm {
 	border: 0;
 	left: 270.826px;
 	top: 371.345px;
@@ -552,7 +552,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abn {
+#Home #abn {
 	border: 0;
 	left: 270.826px;
 	top: 403.173px;
@@ -570,7 +570,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abo {
+#Home #abo {
 	border: 0;
 	left: 270.826px;
 	top: 435.001px;
@@ -588,7 +588,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abp {
+#Home #abp {
 	border: 0;
 	left: 270.826px;
 	top: 466.829px;
@@ -606,7 +606,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abq {
+#Home #abq {
 	border: 0;
 	left: 270.826px;
 	top: 498.656px;
@@ -624,7 +624,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abr {
+#Home #abr {
 	border: 0;
 	left: 265.078px;
 	top: 573.983px;
@@ -642,7 +642,7 @@
 	color: rgba(255, 176, 62, 1);
 }
 
-#abs {
+#Home #abs {
 	border: 0;
 	left: 265.521px;
 	top: 664.791px;
@@ -661,7 +661,7 @@
 	letter-spacing: -0.75px;
 }
 
-#abt {
+#Home #abt {
 	border: 0;
 	left: 265.521px;
 	top: 696.619px;
@@ -679,7 +679,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abu {
+#Home #abu {
 	border: 0;
 	left: 265.521px;
 	top: 728.446px;
@@ -697,7 +697,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abv {
+#Home #abv {
 	border: 0;
 	left: 265.521px;
 	top: 760.274px;
@@ -715,7 +715,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abw {
+#Home #abw {
 	border: 0;
 	left: 1358.105px;
 	top: 305.647px;
@@ -734,7 +734,7 @@
 	letter-spacing: -0.24px;
 }
 
-#abx {
+#Home #abx {
 	border: 0;
 	left: 1358.307px;
 	top: 399.634px;
@@ -752,7 +752,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#aby {
+#Home #aby {
 	border: 0;
 	left: 1358.307px;
 	top: 439.95px;
@@ -770,7 +770,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#abz {
+#Home #abz {
 	border: 0;
 	left: 1358.307px;
 	top: 480.265px;
@@ -788,7 +788,8 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#aca {
+#Home #aca {
+	display: none;
 	border: 0;
 	left: 815px;
 	top: 7834.752px;
@@ -804,7 +805,7 @@
 	color: rgba(112, 112, 112, 1);
 }
 
-#acb {
+#Home #acb {
 	position: absolute;
 	width: 1920px;
 	height: 744.176px;
@@ -813,7 +814,7 @@
 	overflow: visible;
 }
 
-#acc {
+#Home #acc {
 	position: absolute;
 	width: 1920px;
 	height: 744.176px;
@@ -822,7 +823,7 @@
 	overflow: visible;
 }
 
-#acd {
+#Home #acd {
 	position: absolute;
 	width: 1920px;
 	height: 744.176px;
@@ -831,7 +832,7 @@
 	overflow: visible;
 }
 
-#ace {
+#Home #ace {
 	position: absolute;
 	width: 539.076px;
 	height: 137.43px;
@@ -840,7 +841,7 @@
 	overflow: visible;
 }
 
-#acf {
+#Home #acf {
 	border: 0;
 	left: 3.076px;
 	top: 0px;
@@ -858,7 +859,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#acg {
+#Home #acg {
 	border: 0;
 	left: 5.576px;
 	top: 93.43px;
@@ -876,11 +877,11 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#ach {
+#Home #ach {
 	fill: rgba(0, 71, 198, 1);
 }
 
-.ach {
+#Home .ach {
 	overflow: visible;
 	position: absolute;
 	width: 536.239px;
@@ -890,7 +891,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aci {
+#Home #aci {
 	fill: transparent;
 	stroke: rgba(255, 255, 255, 1);
 	stroke-width: 1px;
@@ -900,7 +901,7 @@
 	shape-rendering: auto;
 }
 
-.aci {
+#Home .aci {
 	overflow: visible;
 	position: absolute;
 	width: 530px;
@@ -910,7 +911,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#acj {
+#Home #acj {
 	border: 0;
 	left: 260px;
 	top: 247.803px;
@@ -926,7 +927,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#ack {
+#Home #ack {
 	border: 0;
 	left: 260px;
 	top: 530.803px;
@@ -942,7 +943,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#acl {
+#Home #acl {
 	position: absolute;
 	width: 498.807px;
 	height: 627.629px;
@@ -951,7 +952,7 @@
 	overflow: visible;
 }
 
-#acm {
+#Home #acm {
 	position: absolute;
 	width: 498.807px;
 	height: 627.629px;
@@ -960,7 +961,7 @@
 	overflow: visible;
 }
 
-#acn {
+#Home #acn {
 	position: absolute;
 	width: 1920px;
 	height: 1195px;
@@ -969,11 +970,11 @@
 	overflow: visible;
 }
 
-#aco {
+#Home #aco {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aco {
+#Home .aco {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -982,7 +983,7 @@
 	top: 0px;
 }
 
-#acp {
+#Home #acp {
 	border: 0;
 	left: 619.5px;
 	top: 177.57px;
@@ -998,7 +999,7 @@
 	color: rgba(112, 112, 112, 1);
 }
 
-#acq {
+#Home #acq {
 	position: absolute;
 	width: 297.857px;
 	height: 468.008px;
@@ -1007,7 +1008,7 @@
 	overflow: visible;
 }
 
-#acr {
+#Home #acr {
 	position: absolute;
 	width: 297.857px;
 	height: 468.008px;
@@ -1016,7 +1017,7 @@
 	overflow: visible;
 }
 
-#acs {
+#Home #acs {
 	border: 0;
 	left: 876.125px;
 	top: 51.562px;
@@ -1034,7 +1035,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#act {
+#Home #act {
 	border: 0;
 	left: 665.5px;
 	top: 63.562px;
@@ -1052,7 +1053,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#acu {
+#Home #acu {
 	position: absolute;
 	width: 662.233px;
 	height: 439.751px;
@@ -1061,7 +1062,7 @@
 	overflow: visible;
 }
 
-#acv {
+#Home #acv {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1070,7 +1071,7 @@
 	overflow: visible;
 }
 
-#acw {
+#Home #acw {
 	opacity: 0.26;
 	mix-blend-mode: multiply;
 	position: absolute;
@@ -1081,7 +1082,7 @@
 	overflow: visible;
 }
 
-#acx {
+#Home #acx {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1090,7 +1091,7 @@
 	overflow: visible;
 }
 
-#acy {
+#Home #acy {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1099,11 +1100,11 @@
 	overflow: visible;
 }
 
-#acz {
+#Home #acz {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.acz {
+#Home .acz {
 	overflow: visible;
 	position: absolute;
 	width: 634.339px;
@@ -1113,7 +1114,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ada {
+#Home #ada {
 	position: absolute;
 	width: 528.609px;
 	height: 408.197px;
@@ -1122,7 +1123,7 @@
 	overflow: visible;
 }
 
-#adb {
+#Home #adb {
 	position: absolute;
 	width: 528.609px;
 	height: 408.197px;
@@ -1131,7 +1132,7 @@
 	overflow: visible;
 }
 
-#adc {
+#Home #adc {
 	position: absolute;
 	width: 609.745px;
 	height: 3.687px;
@@ -1140,7 +1141,7 @@
 	overflow: visible;
 }
 
-#add {
+#Home #add {
 	position: absolute;
 	width: 609.745px;
 	height: 3.687px;
@@ -1149,7 +1150,7 @@
 	overflow: visible;
 }
 
-#ade {
+#Home #ade {
 	position: absolute;
 	width: 662.233px;
 	height: 439.751px;
@@ -1158,7 +1159,7 @@
 	overflow: visible;
 }
 
-#adf {
+#Home #adf {
 	position: absolute;
 	width: 609.745px;
 	height: 3.687px;
@@ -1167,7 +1168,7 @@
 	overflow: visible;
 }
 
-#adg {
+#Home #adg {
 	position: absolute;
 	width: 609.745px;
 	height: 3.687px;
@@ -1176,7 +1177,7 @@
 	overflow: visible;
 }
 
-#adh {
+#Home #adh {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1185,7 +1186,7 @@
 	overflow: visible;
 }
 
-#adi {
+#Home #adi {
 	opacity: 0.26;
 	mix-blend-mode: multiply;
 	position: absolute;
@@ -1196,7 +1197,7 @@
 	overflow: visible;
 }
 
-#adj {
+#Home #adj {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1205,7 +1206,7 @@
 	overflow: visible;
 }
 
-#adk {
+#Home #adk {
 	position: absolute;
 	width: 662.233px;
 	height: 436.065px;
@@ -1214,7 +1215,7 @@
 	overflow: visible;
 }
 
-#adl {
+#Home #adl {
 	position: absolute;
 	width: 634.339px;
 	height: 408.197px;
@@ -1223,11 +1224,11 @@
 	overflow: visible;
 }
 
-#adm {
+#Home #adm {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.adm {
+#Home .adm {
 	overflow: visible;
 	position: absolute;
 	width: 634.339px;
@@ -1237,7 +1238,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#adn {
+#Home #adn {
 	position: absolute;
 	width: 578.259px;
 	height: 408.197px;
@@ -1246,7 +1247,7 @@
 	overflow: visible;
 }
 
-#ado {
+#Home #ado {
 	position: absolute;
 	width: 578.259px;
 	height: 408.197px;
@@ -1255,7 +1256,7 @@
 	overflow: visible;
 }
 
-#adp {
+#Home #adp {
 	border: 0;
 	left: 410px;
 	top: 1097px;
@@ -1273,7 +1274,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#adq {
+#Home #adq {
 	border: 0;
 	left: 1050.884px;
 	top: 1097.22px;
@@ -1289,7 +1290,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#adr {
+#Home #adr {
 	position: absolute;
 	width: 1920px;
 	height: 821.479px;
@@ -1298,7 +1299,7 @@
 	overflow: visible;
 }
 
-#ads {
+#Home #ads {
 	position: absolute;
 	width: 1920px;
 	height: 821.479px;
@@ -1307,7 +1308,7 @@
 	overflow: visible;
 }
 
-#adt {
+#Home #adt {
 	position: absolute;
 	width: 1920px;
 	height: 821.479px;
@@ -1316,7 +1317,7 @@
 	overflow: visible;
 }
 
-#adu {
+#Home #adu {
 	position: absolute;
 	width: 622.517px;
 	height: 140.797px;
@@ -1325,7 +1326,7 @@
 	overflow: visible;
 }
 
-#adv {
+#Home #adv {
 	position: absolute;
 	width: 622.517px;
 	height: 140.797px;
@@ -1334,7 +1335,7 @@
 	overflow: visible;
 }
 
-#adw {
+#Home #adw {
 	position: absolute;
 	width: 737.767px;
 	height: 289.229px;
@@ -1343,7 +1344,7 @@
 	overflow: visible;
 }
 
-#adx {
+#Home #adx {
 	position: absolute;
 	width: 737.767px;
 	height: 289.229px;
@@ -1352,7 +1353,7 @@
 	overflow: visible;
 }
 
-#ady {
+#Home #ady {
 	position: absolute;
 	width: 737.767px;
 	height: 289.229px;
@@ -1361,7 +1362,7 @@
 	overflow: visible;
 }
 
-#adz {
+#Home #adz {
 	border: 0;
 	left: 4.783px;
 	top: 239.809px;
@@ -1379,7 +1380,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aea {
+#Home #aea {
 	position: absolute;
 	width: 646.144px;
 	height: 765.149px;
@@ -1388,7 +1389,7 @@
 	overflow: visible;
 }
 
-#aeb {
+#Home #aeb {
 	position: absolute;
 	width: 646.144px;
 	height: 765.149px;
@@ -1397,7 +1398,7 @@
 	overflow: visible;
 }
 
-#aec {
+#Home #aec {
 	position: absolute;
 	width: 1920px;
 	height: 786px;
@@ -1406,11 +1407,11 @@
 	overflow: visible;
 }
 
-#aed {
+#Home #aed {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aed {
+#Home .aed {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -1419,7 +1420,7 @@
 	top: 0px;
 }
 
-#aee {
+#Home #aee {
 	border: 0;
 	left: 527px;
 	top: 50.511px;
@@ -1437,7 +1438,7 @@
 	color: rgba(255, 153, 77, 1);
 }
 
-#aef {
+#Home #aef {
 	border: 0;
 	left: 548px;
 	top: 132.604px;
@@ -1453,11 +1454,11 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#aeg {
+#Home #aeg {
 	fill: rgba(255, 153, 77, 1);
 }
 
-.aeg {
+#Home .aeg {
 	overflow: visible;
 	position: absolute;
 	width: 434.164px;
@@ -1467,7 +1468,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aeh {
+#Home #aeh {
 	position: absolute;
 	width: 434.164px;
 	height: 532.604px;
@@ -1476,7 +1477,7 @@
 	overflow: visible;
 }
 
-#aei {
+#Home #aei {
 	position: absolute;
 	width: 434.164px;
 	height: 532.604px;
@@ -1485,7 +1486,7 @@
 	overflow: visible;
 }
 
-#aej {
+#Home #aej {
 	opacity: 0.32;
 	position: absolute;
 	width: 75.882px;
@@ -1495,7 +1496,7 @@
 	overflow: visible;
 }
 
-#aek {
+#Home #aek {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -1504,7 +1505,7 @@
 	overflow: visible;
 }
 
-#ael {
+#Home #ael {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -1513,7 +1514,7 @@
 	overflow: visible;
 }
 
-#aem {
+#Home #aem {
 	opacity: 0.92;
 	position: absolute;
 	width: 60.705px;
@@ -1523,7 +1524,7 @@
 	overflow: visible;
 }
 
-#aen {
+#Home #aen {
 	position: absolute;
 	width: 60.705px;
 	height: 60.706px;
@@ -1532,7 +1533,7 @@
 	overflow: visible;
 }
 
-#aeo {
+#Home #aeo {
 	position: absolute;
 	width: 60.705px;
 	height: 60.706px;
@@ -1541,7 +1542,7 @@
 	overflow: visible;
 }
 
-#aep {
+#Home #aep {
 	border: 0;
 	left: 318.94px;
 	top: 269.243px;
@@ -1559,7 +1560,7 @@
 	color: rgba(255, 153, 77, 1);
 }
 
-#aeq {
+#Home #aeq {
 	border: 0;
 	left: 389.035px;
 	top: 265.018px;
@@ -1577,7 +1578,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aer {
+#Home #aer {
 	border: 0;
 	left: 389.035px;
 	top: 304.319px;
@@ -1595,7 +1596,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aes {
+#Home #aes {
 	fill: transparent;
 	stroke: rgba(255, 255, 255, 1);
 	stroke-width: 1px;
@@ -1605,7 +1606,7 @@
 	shape-rendering: auto;
 }
 
-.aes {
+#Home .aes {
 	overflow: visible;
 	position: absolute;
 	width: 325.705px;
@@ -1615,7 +1616,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aet {
+#Home #aet {
 	border: 0;
 	left: 294.247px;
 	top: 370.904px;
@@ -1633,7 +1634,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aeu {
+#Home #aeu {
 	border: 0;
 	left: 294.247px;
 	top: 402.668px;
@@ -1651,7 +1652,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aev {
+#Home #aev {
 	border: 0;
 	left: 294.247px;
 	top: 434.433px;
@@ -1669,7 +1670,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aew {
+#Home #aew {
 	border: 0;
 	left: 294.247px;
 	top: 466.198px;
@@ -1687,7 +1688,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aex {
+#Home #aex {
 	border: 0;
 	left: 294.247px;
 	top: 497.963px;
@@ -1705,7 +1706,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aey {
+#Home #aey {
 	border: 0;
 	left: 294.247px;
 	top: 529.728px;
@@ -1723,7 +1724,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aez {
+#Home #aez {
 	border: 0;
 	left: 294.247px;
 	top: 561.492px;
@@ -1741,7 +1742,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afa {
+#Home #afa {
 	border: 0;
 	left: 294.247px;
 	top: 593.257px;
@@ -1759,7 +1760,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afb {
+#Home #afb {
 	border: 0;
 	left: 294.247px;
 	top: 625.021px;
@@ -1777,7 +1778,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afc {
+#Home #afc {
 	border: 0;
 	left: 294.247px;
 	top: 656.786px;
@@ -1795,11 +1796,11 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afd {
+#Home #afd {
 	fill: rgba(255, 153, 77, 1);
 }
 
-.afd {
+#Home .afd {
 	overflow: visible;
 	position: absolute;
 	width: 434.165px;
@@ -1809,7 +1810,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#afe {
+#Home #afe {
 	opacity: 0.32;
 	position: absolute;
 	width: 75.882px;
@@ -1819,7 +1820,7 @@
 	overflow: visible;
 }
 
-#aff {
+#Home #aff {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -1828,7 +1829,7 @@
 	overflow: visible;
 }
 
-#afg {
+#Home #afg {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -1837,7 +1838,7 @@
 	overflow: visible;
 }
 
-#afh {
+#Home #afh {
 	opacity: 0.92;
 	position: absolute;
 	width: 60.706px;
@@ -1847,7 +1848,7 @@
 	overflow: visible;
 }
 
-#afi {
+#Home #afi {
 	position: absolute;
 	width: 60.706px;
 	height: 60.706px;
@@ -1856,7 +1857,7 @@
 	overflow: visible;
 }
 
-#afj {
+#Home #afj {
 	position: absolute;
 	width: 60.706px;
 	height: 60.706px;
@@ -1865,7 +1866,7 @@
 	overflow: visible;
 }
 
-#afk {
+#Home #afk {
 	border: 0;
 	left: 1279.234px;
 	top: 269.243px;
@@ -1883,7 +1884,7 @@
 	color: rgba(255, 153, 77, 1);
 }
 
-#afl {
+#Home #afl {
 	border: 0;
 	left: 1352.56px;
 	top: 265.018px;
@@ -1901,7 +1902,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afm {
+#Home #afm {
 	border: 0;
 	left: 1352.56px;
 	top: 304.319px;
@@ -1919,7 +1920,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afn {
+#Home #afn {
 	fill: transparent;
 	stroke: rgba(255, 255, 255, 1);
 	stroke-width: 1px;
@@ -1929,7 +1930,7 @@
 	shape-rendering: auto;
 }
 
-.afn {
+#Home .afn {
 	overflow: visible;
 	position: absolute;
 	width: 325.705px;
@@ -1939,7 +1940,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#afo {
+#Home #afo {
 	border: 0;
 	left: 1257.771px;
 	top: 370.904px;
@@ -1957,7 +1958,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afp {
+#Home #afp {
 	border: 0;
 	left: 1257.771px;
 	top: 402.668px;
@@ -1975,7 +1976,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afq {
+#Home #afq {
 	border: 0;
 	left: 1257.771px;
 	top: 434.433px;
@@ -1993,7 +1994,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afr {
+#Home #afr {
 	border: 0;
 	left: 1257.771px;
 	top: 466.198px;
@@ -2011,7 +2012,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afs {
+#Home #afs {
 	border: 0;
 	left: 1257.771px;
 	top: 497.963px;
@@ -2029,7 +2030,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aft {
+#Home #aft {
 	border: 0;
 	left: 1257.771px;
 	top: 529.728px;
@@ -2047,7 +2048,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afu {
+#Home #afu {
 	border: 0;
 	left: 1257.771px;
 	top: 561.492px;
@@ -2065,7 +2066,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afv {
+#Home #afv {
 	border: 0;
 	left: 1257.771px;
 	top: 593.257px;
@@ -2083,7 +2084,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afw {
+#Home #afw {
 	border: 0;
 	left: 1257.771px;
 	top: 625.021px;
@@ -2101,7 +2102,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afx {
+#Home #afx {
 	border: 0;
 	left: 1257.771px;
 	top: 656.786px;
@@ -2119,7 +2120,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#afy {
+#Home #afy {
 	opacity: 0.32;
 	position: absolute;
 	width: 75.882px;
@@ -2129,7 +2130,7 @@
 	overflow: visible;
 }
 
-#afz {
+#Home #afz {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -2138,7 +2139,7 @@
 	overflow: visible;
 }
 
-#aga {
+#Home #aga {
 	position: absolute;
 	width: 75.882px;
 	height: 75.882px;
@@ -2147,7 +2148,7 @@
 	overflow: visible;
 }
 
-#agb {
+#Home #agb {
 	opacity: 0.92;
 	position: absolute;
 	width: 60.706px;
@@ -2157,7 +2158,7 @@
 	overflow: visible;
 }
 
-#agc {
+#Home #agc {
 	position: absolute;
 	width: 60.706px;
 	height: 60.706px;
@@ -2166,7 +2167,7 @@
 	overflow: visible;
 }
 
-#agd {
+#Home #agd {
 	position: absolute;
 	width: 60.706px;
 	height: 60.706px;
@@ -2175,7 +2176,7 @@
 	overflow: visible;
 }
 
-#age {
+#Home #age {
 	border: 0;
 	left: 799.393px;
 	top: 269.243px;
@@ -2193,7 +2194,7 @@
 	color: rgba(0, 71, 198, 1);
 }
 
-#agf {
+#Home #agf {
 	border: 0;
 	left: 870.785px;
 	top: 265.018px;
@@ -2211,7 +2212,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agg {
+#Home #agg {
 	border: 0;
 	left: 870.785px;
 	top: 304.319px;
@@ -2229,7 +2230,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agh {
+#Home #agh {
 	fill: transparent;
 	stroke: rgba(255, 255, 255, 1);
 	stroke-width: 1px;
@@ -2239,7 +2240,7 @@
 	shape-rendering: auto;
 }
 
-.agh {
+#Home .agh {
 	overflow: visible;
 	position: absolute;
 	width: 325.705px;
@@ -2249,7 +2250,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#agi {
+#Home #agi {
 	border: 0;
 	left: 775.997px;
 	top: 370.904px;
@@ -2267,7 +2268,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agj {
+#Home #agj {
 	border: 0;
 	left: 775.997px;
 	top: 402.668px;
@@ -2285,7 +2286,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agk {
+#Home #agk {
 	border: 0;
 	left: 775.997px;
 	top: 434.433px;
@@ -2303,7 +2304,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agl {
+#Home #agl {
 	border: 0;
 	left: 775.997px;
 	top: 466.198px;
@@ -2321,7 +2322,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agm {
+#Home #agm {
 	border: 0;
 	left: 775.997px;
 	top: 497.963px;
@@ -2339,7 +2340,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agn {
+#Home #agn {
 	border: 0;
 	left: 775.997px;
 	top: 529.728px;
@@ -2357,7 +2358,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#ago {
+#Home #ago {
 	border: 0;
 	left: 775.997px;
 	top: 561.492px;
@@ -2375,7 +2376,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agp {
+#Home #agp {
 	border: 0;
 	left: 775.997px;
 	top: 593.257px;
@@ -2393,7 +2394,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agq {
+#Home #agq {
 	border: 0;
 	left: 775.997px;
 	top: 625.021px;
@@ -2411,7 +2412,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#agr {
+#Home #agr {
 	border: 0;
 	left: 775.997px;
 	top: 656.786px;
@@ -2429,7 +2430,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#ags {
+#Home #ags {
 	opacity: 0.37;
 	position: absolute;
 	width: 47.144px;
@@ -2439,7 +2440,7 @@
 	overflow: visible;
 }
 
-#agt {
+#Home #agt {
 	position: absolute;
 	width: 47.144px;
 	height: 77.735px;
@@ -2448,7 +2449,7 @@
 	overflow: visible;
 }
 
-#agu {
+#Home #agu {
 	position: absolute;
 	width: 47.144px;
 	height: 77.735px;
@@ -2457,7 +2458,7 @@
 	overflow: visible;
 }
 
-#agv {
+#Home #agv {
 	opacity: 0.37;
 	position: absolute;
 	width: 47.142px;
@@ -2467,7 +2468,7 @@
 	overflow: visible;
 }
 
-#agw {
+#Home #agw {
 	position: absolute;
 	width: 47.142px;
 	height: 77.735px;
@@ -2476,7 +2477,7 @@
 	overflow: visible;
 }
 
-#agx {
+#Home #agx {
 	position: absolute;
 	width: 47.142px;
 	height: 77.735px;
@@ -2485,7 +2486,7 @@
 	overflow: visible;
 }
 
-#agy {
+#Home #agy {
 	position: absolute;
 	width: 1920px;
 	height: 888px;
@@ -2494,11 +2495,11 @@
 	overflow: visible;
 }
 
-#agz {
+#Home #agz {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.agz {
+#Home .agz {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -2507,7 +2508,7 @@
 	top: 0px;
 }
 
-#aha {
+#Home #aha {
 	border: 0;
 	left: 260px;
 	top: 95.752px;
@@ -2523,7 +2524,7 @@
 	color: rgba(112, 112, 112, 1);
 }
 
-#ahb {
+#Home #ahb {
 	border: 0;
 	left: 724.899px;
 	top: 9.167px;
@@ -2541,7 +2542,7 @@
 	color: rgba(255, 153, 77, 1);
 }
 
-#ahc {
+#Home #ahc {
 	border: 0;
 	left: 724.899px;
 	top: 9.167px;
@@ -2559,11 +2560,11 @@
 	color: rgba(255, 153, 77, 1);
 }
 
-#ahd {
+#Home #ahd {
 	fill: rgba(0, 42, 115, 1);
 }
 
-.ahd {
+#Home .ahd {
 	overflow: visible;
 	position: absolute;
 	width: 854.971px;
@@ -2573,11 +2574,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ahe {
+#Home #ahe {
 	fill: rgba(255, 131, 56, 1);
 }
 
-.ahe {
+#Home .ahe {
 	overflow: visible;
 	position: absolute;
 	width: 424.178px;
@@ -2587,7 +2588,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ahf {
+#Home #ahf {
 	position: absolute;
 	width: 840.607px;
 	height: 548.849px;
@@ -2596,7 +2597,7 @@
 	overflow: visible;
 }
 
-#ahg {
+#Home #ahg {
 	position: absolute;
 	width: 840.607px;
 	height: 548.85px;
@@ -2605,7 +2606,7 @@
 	overflow: visible;
 }
 
-#ahh {
+#Home #ahh {
 	border: 0;
 	left: 901px;
 	top: 326.217px;
@@ -2621,7 +2622,7 @@
 	color: rgba(112, 112, 112, 1);
 }
 
-#ahi {
+#Home #ahi {
 	position: absolute;
 	width: 1920px;
 	height: 915.374px;
@@ -2630,11 +2631,11 @@
 	overflow: visible;
 }
 
-#ahj {
+#Home #ahj {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ahj {
+#Home .ahj {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -2643,7 +2644,7 @@
 	top: 0.374px;
 }
 
-#ahk {
+#Home #ahk {
 	border: 0;
 	left: 260px;
 	top: 356.35px;
@@ -2660,7 +2661,7 @@
 	letter-spacing: -0.1px;
 }
 
-#ahl {
+#Home #ahl {
 	position: absolute;
 	width: 821.322px;
 	height: 880.255px;
@@ -2669,7 +2670,7 @@
 	overflow: visible;
 }
 
-#ahm {
+#Home #ahm {
 	position: absolute;
 	width: 821.322px;
 	height: 880.255px;
@@ -2678,7 +2679,7 @@
 	overflow: visible;
 }
 
-#ahn {
+#Home #ahn {
 	position: absolute;
 	width: 594.971px;
 	height: 239.024px;
@@ -2687,7 +2688,7 @@
 	overflow: visible;
 }
 
-#aho {
+#Home #aho {
 	position: absolute;
 	width: 594.971px;
 	height: 239.024px;
@@ -2696,7 +2697,7 @@
 	overflow: visible;
 }
 
-#ahp {
+#Home #ahp {
 	position: absolute;
 	width: 594.971px;
 	height: 239.023px;
@@ -2705,7 +2706,7 @@
 	overflow: visible;
 }
 
-#ahq {
+#Home #ahq {
 	border: 0;
 	left: 6.418px;
 	top: 152.288px;
@@ -2723,7 +2724,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#ahr {
+#Home #ahr {
 	border: 0;
 	left: 21.204px;
 	top: 152.288px;
@@ -2741,7 +2742,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#ahs {
+#Home #ahs {
 	border: 0;
 	left: 6.418px;
 	top: 191.283px;
@@ -2759,7 +2760,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#aht {
+#Home #aht {
 	border: 0;
 	left: 21.204px;
 	top: 191.283px;
@@ -2777,7 +2778,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#ahu {
+#Home #ahu {
 	border: 0;
 	left: 378.158px;
 	top: 193.268px;
@@ -2795,7 +2796,7 @@
 	color: rgba(56, 56, 56, 1);
 }
 
-#ahv {
+#Home #ahv {
 	position: absolute;
 	width: 594.971px;
 	height: 239.024px;
@@ -2804,7 +2805,7 @@
 	overflow: visible;
 }
 
-#ahw {
+#Home #ahw {
 	position: absolute;
 	width: 594.971px;
 	height: 239.023px;
@@ -2813,7 +2814,7 @@
 	overflow: visible;
 }
 
-#ahx {
+#Home #ahx {
 	position: absolute;
 	width: 1920px;
 	height: 623px;
@@ -2822,11 +2823,11 @@
 	overflow: visible;
 }
 
-#ahy {
+#Home #ahy {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ahy {
+#Home .ahy {
 	position: absolute;
 	overflow: visible;
 	width: 1920px;
@@ -2835,7 +2836,7 @@
 	top: 0px;
 }
 
-#ahz {
+#Home #ahz {
 	border: 0;
 	left: 260px;
 	top: 36.752px;
@@ -2851,7 +2852,7 @@
 	color: rgba(112, 112, 112, 1);
 }
 
-#aia {
+#Home #aia {
 	position: absolute;
 	width: 1400px;
 	height: 460px;
@@ -2860,7 +2861,7 @@
 	overflow: visible;
 }
 
-#aib {
+#Home #aib {
 	position: absolute;
 	width: 1400px;
 	height: 460px;
@@ -2869,7 +2870,7 @@
 	overflow: visible;
 }
 
-#aic {
+#Home #aic {
 	position: absolute;
 	width: 1787.322px;
 	height: 476.016px;
@@ -2878,7 +2879,7 @@
 	overflow: visible;
 }
 
-#aid {
+#Home #aid {
 	position: absolute;
 	width: 1787.322px;
 	height: 476.016px;
@@ -2887,7 +2888,7 @@
 	overflow: visible;
 }
 
-#aie {
+#Home #aie {
 	position: absolute;
 	width: 1920px;
 	height: 690.773px;
@@ -2896,7 +2897,7 @@
 	overflow: visible;
 }
 
-#aif {
+#Home #aif {
 	position: absolute;
 	width: 1920px;
 	height: 690.773px;
@@ -2905,7 +2906,7 @@
 	overflow: visible;
 }
 
-#aig {
+#Home #aig {
 	position: absolute;
 	width: 1920px;
 	height: 690.773px;
@@ -2914,7 +2915,7 @@
 	overflow: visible;
 }
 
-#aih {
+#Home #aih {
 	border: 0;
 	left: 297.532px;
 	top: 185.31px;
@@ -2932,7 +2933,7 @@
 	color: rgba(255, 176, 62, 1);
 }
 
-#aii {
+#Home #aii {
 	border: 0;
 	left: 297.181px;
 	top: 283.012px;
@@ -2950,7 +2951,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aij {
+#Home #aij {
 	border: 0;
 	left: 399.398px;
 	top: 258.695px;
@@ -2968,7 +2969,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aik {
+#Home #aik {
 	border: 0;
 	left: 298.634px;
 	top: 422.012px;
@@ -2986,7 +2987,7 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#ail {
+#Home #ail {
 	border: 0;
 	left: 298.634px;
 	top: 462.131px;
@@ -3004,11 +3005,11 @@
 	color: rgba(255, 255, 255, 1);
 }
 
-#aim {
+#Home #aim {
 	fill: rgba(240, 90, 47, 1);
 }
 
-.aim {
+#Home .aim {
 	overflow: visible;
 	position: absolute;
 	width: 554.739px;
@@ -3018,7 +3019,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ain {
+#Home #ain {
 	fill: transparent;
 	stroke: rgba(255, 176, 62, 1);
 	stroke-width: 2.0450000762939453px;
@@ -3028,7 +3029,7 @@
 	shape-rendering: auto;
 }
 
-.ain {
+#Home .ain {
 	overflow: visible;
 	position: absolute;
 	width: 556.782px;
@@ -3038,7 +3039,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aio {
+#Home #aio {
 	position: absolute;
 	width: 63.657px;
 	height: 45.271px;
@@ -3047,7 +3048,7 @@
 	overflow: visible;
 }
 
-#aip {
+#Home #aip {
 	opacity: 0.79;
 	position: absolute;
 	width: 30.382px;
@@ -3057,7 +3058,7 @@
 	overflow: visible;
 }
 
-#aiq {
+#Home #aiq {
 	position: absolute;
 	width: 30.382px;
 	height: 45.026px;
@@ -3066,7 +3067,7 @@
 	overflow: visible;
 }
 
-#air {
+#Home #air {
 	position: absolute;
 	width: 30.382px;
 	height: 45.026px;
@@ -3075,7 +3076,7 @@
 	overflow: visible;
 }
 
-#ais {
+#Home #ais {
 	opacity: 0.72;
 	position: absolute;
 	width: 15.277px;
@@ -3085,7 +3086,7 @@
 	overflow: visible;
 }
 
-#ait {
+#Home #ait {
 	position: absolute;
 	width: 15.277px;
 	height: 44.776px;
@@ -3094,7 +3095,7 @@
 	overflow: visible;
 }
 
-#aiu {
+#Home #aiu {
 	position: absolute;
 	width: 15.277px;
 	height: 44.776px;
@@ -3103,7 +3104,7 @@
 	overflow: visible;
 }
 
-#aiv {
+#Home #aiv {
 	opacity: 0.82;
 	position: absolute;
 	width: 15.279px;
@@ -3113,7 +3114,7 @@
 	overflow: visible;
 }
 
-#aiw {
+#Home #aiw {
 	position: absolute;
 	width: 15.279px;
 	height: 44.776px;
@@ -3122,7 +3123,7 @@
 	overflow: visible;
 }
 
-#aix {
+#Home #aix {
 	position: absolute;
 	width: 15.279px;
 	height: 44.776px;
@@ -3131,11 +3132,11 @@
 	overflow: visible;
 }
 
-#aiy {
+#Home #aiy {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aiy {
+#Home .aiy {
 	overflow: visible;
 	position: absolute;
 	width: 4.154px;
@@ -3145,11 +3146,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aiz {
+#Home #aiz {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aiz {
+#Home .aiz {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3159,11 +3160,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aja {
+#Home #aja {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aja {
+#Home .aja {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3173,11 +3174,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajb {
+#Home #ajb {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajb {
+#Home .ajb {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3187,11 +3188,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajc {
+#Home #ajc {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajc {
+#Home .ajc {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3201,11 +3202,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajd {
+#Home #ajd {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajd {
+#Home .ajd {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3215,11 +3216,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#aje {
+#Home #aje {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.aje {
+#Home .aje {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3229,11 +3230,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajf {
+#Home #ajf {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajf {
+#Home .ajf {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3243,11 +3244,11 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajg {
+#Home #ajg {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajg {
+#Home .ajg {
 	overflow: visible;
 	position: absolute;
 	width: 4.153px;
@@ -3257,7 +3258,7 @@
 	transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
-#ajh {
+#Home #ajh {
 	position: absolute;
 	width: 574px;
 	height: 167px;
@@ -3266,7 +3267,7 @@
 	overflow: visible;
 }
 
-#aji {
+#Home #aji {
 	position: absolute;
 	width: 440.651px;
 	height: 652.866px;
@@ -3275,7 +3276,7 @@
 	overflow: visible;
 }
 
-#ajj {
+#Home #ajj {
 	position: absolute;
 	width: 440.651px;
 	height: 652.866px;
@@ -3284,7 +3285,7 @@
 	overflow: visible;
 }
 
-#ajk {
+#Home #ajk {
 	position: absolute;
 	width: 97px;
 	height: 12px;
@@ -3293,11 +3294,11 @@
 	overflow: visible;
 }
 
-#ajl {
+#Home #ajl {
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajl {
+#Home .ajl {
 	position: absolute;
 	overflow: visible;
 	width: 12px;
@@ -3306,12 +3307,12 @@
 	top: 0px;
 }
 
-#ajm {
+#Home #ajm {
 	opacity: 0.602;
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajm {
+#Home .ajm {
 	position: absolute;
 	overflow: visible;
 	width: 12px;
@@ -3320,12 +3321,12 @@
 	top: 0px;
 }
 
-#ajn {
+#Home #ajn {
 	opacity: 0.602;
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajn {
+#Home .ajn {
 	position: absolute;
 	overflow: visible;
 	width: 12px;
@@ -3334,16 +3335,40 @@
 	top: 0px;
 }
 
-#ajo {
+#Home #ajo {
 	opacity: 0.602;
 	fill: rgba(255, 255, 255, 1);
 }
 
-.ajo {
+#Home .ajo {
 	position: absolute;
 	overflow: visible;
 	width: 12px;
 	height: 12px;
 	left: 85px;
 	top: 0px;
+}
+/* Fix for overlapping decorative layers blocking clicks */
+#Home #aaa, #Home #aab, #Home #aac, #Home #aad, #Home #aae, #Home #aag, #Home #aau, #Home #aav {
+    pointer-events: none;
+}
+#Home #aak, #Home #aar, #Home #aax {
+    pointer-events: auto !important;
+    z-index: 100 !important;
+}
+#Home #aaf {
+    pointer-events: none;
+}
+#Home #aaf a, #Home #aaf Link {
+    pointer-events: auto !important;
+    z-index: 101 !important;
+}
+
+/* Hover effects for Home menu */
+#Home #aak, #Home #aam, #Home #aap, #Home #aaq, #Home #aar, #Home #aas, #Home #aat, #Home #aaw, #Home #aax {
+    transition: all 0.3s ease;
+}
+#Home #aak:hover, #Home #aam:hover, #Home #aap:hover, #Home #aaq:hover, #Home #aar:hover, #Home #aas:hover, #Home #aat:hover, #Home #aaw:hover, #Home #aax:hover {
+    color: #FF9429 !important;
+    cursor: pointer;
 }

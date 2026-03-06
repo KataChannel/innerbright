@@ -9,7 +9,7 @@ export default function Header() {
       <div id="aad">
         <img id="aae" src="/aae.png" srcSet="/aae.png 1x, /aae@2x.png 2x" alt="User Icon" />
       </div>
-      <div id="aaf" style={{ cursor: 'pointer' }}>
+      <div id="aaf" style={{ cursor: 'pointer' }} className="relative z-50">
         <Link href="/">
           <img id="aag" src="/aag.png" srcSet="/aag.png 1x, /aag@2x.png 2x" alt="Logo Section" />
         </Link>
@@ -25,7 +25,7 @@ export default function Header() {
       <div id="aaj">
         <span>V</span>
       </div>
-      <div id="aak" style={{ cursor: 'pointer' }}>
+      <div id="aak" style={{ cursor: 'pointer' }} className="relative z-50">
         <Link href="/nlp" className="block w-full h-full">
           <span>NLP</span>
         </Link>
@@ -47,7 +47,7 @@ export default function Header() {
       <div id="aaq">
         <span>Khai vấn cá nhân</span>
       </div>
-      <div id="aar" style={{ cursor: 'pointer' }}>
+      <div id="aar" style={{ cursor: 'pointer' }} className="relative z-50">
         <Link href="/bothenlp" className="block w-full h-full">
           <span>Bộ thẻ NLP</span>
         </Link>
@@ -64,7 +64,7 @@ export default function Header() {
       <div id="aaw">
         <span>Khoá học</span>
       </div>
-      <div id="aax" style={{ cursor: 'pointer' }}>
+      <div id="aax" style={{ cursor: 'pointer' }} className="relative z-50">
         <Link href="/" className="block w-full h-full">
           <span>Về InnerBright</span>
         </Link>
