@@ -37,20 +37,14 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-        with:
-          # Automatically inject basePath in your Next.js config file and allow
-          # static export images.
-          #
-          # You may remove this line if you want to manage the configuration yourself.
-          static_site_generator: next
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
       - name: Build with Next.js
         run: bun run build
+
+      - name: Verify build output
+        run: ls -la out/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
