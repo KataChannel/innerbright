@@ -12,6 +12,7 @@ export default function ScaleWrapper({ children, height = 8391 }: { children: Re
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const handleResize = () => {
       const designWidth = 1920;
@@ -19,6 +20,7 @@ export default function ScaleWrapper({ children, height = 8391 }: { children: Re
 
       // Calculate scale to fit width
       if (windowWidth < designWidth) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setScale(windowWidth / designWidth);
       } else {
         setScale(1);

@@ -56,7 +56,7 @@ export default function ReviewsPage() {
                   ))}
                 </div>
                 <p className="text-lg text-zinc-700 leading-relaxed mb-8 dark:text-zinc-300">
-                  "{review.content}"
+                  &quot;{review.content}&quot;
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-[#0047C6]/10 flex items-center justify-center text-[#0047C6] font-bold">
