@@ -13,9 +13,12 @@ import PaginationDots from '@/components/sections/PaginationDots';
 import BackToTop from '@/components/sections/BackToTop';
 import ScaleWrapper from '@/components/sections/ScaleWrapper';
 
+import ScrollReveal from '@/components/ScrollReveal';
+
 export default function HomePage() {
   return (
     <ScaleWrapper>
+      <ScrollReveal />
       <div id="Home">
         {/* Universal Background / Decorative elements */}
         <svg className="aaa">

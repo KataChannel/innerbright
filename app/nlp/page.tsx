@@ -2,10 +2,12 @@
 import './NLP.css';
 import ScaleWrapper from '@/components/sections/ScaleWrapper';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function NLPPage() {
 	return (
 		<ScaleWrapper height={11386}>
+			<ScrollReveal />
 
 			<div id="NLP">
 				<svg className="aac">
@@ -16,15 +18,15 @@ export default function NLPPage() {
 					<rect id="aad" rx="0" ry="0" x="0" y="0" width="1920" height="258" />
 
 				</svg>
-				<div id="aae">
+				<div id="aae" className="float-animation">
 					<img id="aaf" src="/images/nlp/aaf.png" srcSet="/images/nlp/aaf.png 1x, /images/nlp/aaf@2x.png 2x" />
 				</div>
-				<div id="aag" style={{ cursor: "pointer" }} className="relative z-50">
+				<div id="aag" style={{ cursor: "pointer" }} className="relative z-50 hover-premium">
 					<Link href="/" className="block w-full h-full">
 						<img id="aah" src="/images/nlp/aah.png" srcSet="/images/nlp/aah.png 1x, /images/nlp/aah@2x.png 2x" />
 					</Link>
 				</div>
-				<div id="aai">
+				<div id="aai" className="float-animation" style={{ animationDelay: "1s" }}>
 					<img id="aaj" src="/images/nlp/aaj.png" srcSet="/images/nlp/aaj.png 1x, /images/nlp/aaj@2x.png 2x" />
 				</div>
 				<svg className="aak" viewBox="163.359 104.418 1339.799 49.335">
@@ -644,12 +646,12 @@ export default function NLPPage() {
 
 					</svg>
 				</div>
-				<img id="aid" src="/images/nlp/aid.png" srcSet="/images/nlp/aid.png 1x, /images/nlp/aid@2x.png 2x" />
+				<img id="aid" className="reveal-hidden" src="/images/nlp/aid.png" srcSet="/images/nlp/aid.png 1x, /images/nlp/aid@2x.png 2x" />
 				<svg className="aie">
 					<rect id="aie" rx="13" ry="13" x="0" y="0" width="311" height="135" />
 
 				</svg>
-				<div id="aif">
+				<div id="aif" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<div id="aig">
 						<span>Hiểu rõ bản thân</span>
 					</div>
@@ -657,8 +659,8 @@ export default function NLPPage() {
 						<span>Nhận thức sâu sắc về chính mình, phá vỡ những rào cản nội tại và khai phá tiềm lực bên trong.</span>
 					</div>
 				</div>
-				<img id="aii" src="/images/nlp/aii.png" srcSet="/images/nlp/aii.png 1x, /images/nlp/aii@2x.png 2x" />
-				<div id="aij">
+				<img id="aii" className="reveal-hidden" src="/images/nlp/aii.png" srcSet="/images/nlp/aii.png 1x, /images/nlp/aii@2x.png 2x" />
+				<div id="aij" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<svg className="aik">
 						<rect id="aik" rx="13" ry="13" x="0" y="0" width="311" height="135" />
 
@@ -670,8 +672,8 @@ export default function NLPPage() {
 						<span>Nâng cao khả năng giao tiếp, hài hòa các mối quan hệ và giúp người khác giải phóng rào cản, khơi thông nguồn lực để tiến về phía trước.</span>
 					</div>
 				</div>
-				<img id="ain" src="/images/nlp/ain.png" srcSet="/images/nlp/ain.png 1x, /images/nlp/ain@2x.png 2x" />
-				<div id="aio">
+				<img id="ain" className="reveal-hidden" src="/images/nlp/ain.png" srcSet="/images/nlp/ain.png 1x, /images/nlp/ain@2x.png 2x" />
+				<div id="aio" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<svg className="aip">
 						<rect id="aip" rx="13" ry="13" x="0" y="0" width="584" height="69" />
 
@@ -685,7 +687,7 @@ export default function NLPPage() {
 						</div>
 					</div>
 				</div>
-				<div id="ait">
+				<div id="ait" className="reveal-hidden" style={{ transitionDelay: "0.4s" }}>
 					<svg className="aiu">
 						<rect id="aiu" rx="13" ry="13" x="0" y="0" width="578" height="150" />
 
@@ -697,7 +699,7 @@ export default function NLPPage() {
 						<span>Khai vấn - Coaching</span>
 					</div>
 				</div>
-				<div id="aix">
+				<div id="aix" className="reveal-hidden">
 					<svg className="aiy">
 						<rect id="aiy" rx="30" ry="30" x="0" y="0" width="683" height="490" />
 
@@ -723,7 +725,7 @@ export default function NLPPage() {
 
 					</div>
 				</div>
-				<div id="ajg">
+				<div id="ajg" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<svg className="ajh">
 						<rect id="ajh" rx="29" ry="29" x="0" y="0" width="683" height="490" />
 

@@ -3,10 +3,12 @@
 import './BOTHE_NLP.css';
 import ScaleWrapper from '@/components/sections/ScaleWrapper';
 import Link from 'next/link';
+import ScrollReveal from '@/components/ScrollReveal';
 
 export default function BoTheNLPPage() {
 	return (
 		<ScaleWrapper height={7040}>
+			<ScrollReveal />
 
 			<div id="Bo_the_NLP">
 				<svg className="aac">
@@ -172,16 +174,16 @@ export default function BoTheNLPPage() {
 					<div id="acm">
 						<span>Khám phá tất cả 45 thẻ ứng dụng NLP được thiết kế cẩn thận, mỗi thẻ được thiết kế để nâng cao kỹ năng giao tiếp và phát triển cá nhân của bạn.</span>
 					</div>
-					<div id="acn">
+					<div id="acn" className="reveal-hidden hover-premium" style={{ transitionDelay: "0.1s" }}>
 						<img id="aco" src="/images/bothe_nlp/aco.png" srcSet="/images/bothe_nlp/aco.png 1x, /images/bothe_nlp/aco@2x.png 2x" />
 					</div>
-					<div id="acp">
+					<div id="acp" className="reveal-hidden hover-premium" style={{ transitionDelay: "0.2s" }}>
 						<img id="acq" src="/images/bothe_nlp/acq.png" srcSet="/images/bothe_nlp/acq.png 1x, /images/bothe_nlp/acq@2x.png 2x" />
 					</div>
-					<div id="acr">
+					<div id="acr" className="reveal-hidden hover-premium" style={{ transitionDelay: "0.3s" }}>
 						<img id="acs" src="/images/bothe_nlp/acs.png" srcSet="/images/bothe_nlp/acs.png 1x, /images/bothe_nlp/acs@2x.png 2x" />
 					</div>
-					<div id="act">
+					<div id="act" className="reveal-hidden hover-premium" style={{ transitionDelay: "0.4s" }}>
 						<img id="acu" src="/images/bothe_nlp/acu.png" srcSet="/images/bothe_nlp/acu.png 1x, /images/bothe_nlp/acu@2x.png 2x" />
 					</div>
 				</div>
@@ -199,7 +201,7 @@ export default function BoTheNLPPage() {
 					<div id="ada">
 						<span>ỨNG DỤNG NLP</span>
 					</div>
-					<div id="adb">
+					<div id="adb" className="reveal-hidden">
 						<div id="adc">
 							<img id="add" src="/images/bothe_nlp/add.png" srcSet="/images/bothe_nlp/add.png 1x, /images/bothe_nlp/add@2x.png 2x" />
 						</div>
@@ -207,7 +209,7 @@ export default function BoTheNLPPage() {
 							<span>Tham gia vào hành trình ứng dụng NLP chính là Bạn đang tham gia vào hành trình thấu hiểu bản thân, tìm thấy mục tiêu cuộc sống và làm chủ chính mình.</span>
 						</div>
 					</div>
-					<div id="adf">
+					<div id="adf" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 						<div id="adg">
 							<img id="adh" src="/images/bothe_nlp/adh.png" srcSet="/images/bothe_nlp/adh.png 1x, /images/bothe_nlp/adh@2x.png 2x" />
 						</div>
@@ -216,19 +218,19 @@ export default function BoTheNLPPage() {
 						</div>
 					</div>
 				</div>
-				<img id="adj" src="/images/bothe_nlp/adj.png" srcSet="/images/bothe_nlp/adj.png 1x, /images/bothe_nlp/adj@2x.png 2x" />
+				<img id="adj" className="float-animation" src="/images/bothe_nlp/adj.png" srcSet="/images/bothe_nlp/adj.png 1x, /images/bothe_nlp/adj@2x.png 2x" />
 
-				<img id="adk" src="/images/bothe_nlp/adk.png" srcSet="/images/bothe_nlp/adk.png 1x, /images/bothe_nlp/adk@2x.png 2x" />
+				<img id="adk" className="float-animation" style={{ animationDelay: "0.5s" }} src="/images/bothe_nlp/adk.png" srcSet="/images/bothe_nlp/adk.png 1x, /images/bothe_nlp/adk@2x.png 2x" />
 
-				<img id="adl" src="/images/bothe_nlp/adl.png" srcSet="/images/bothe_nlp/adl.png 1x, /images/bothe_nlp/adl@2x.png 2x" />
+				<img id="adl" className="float-animation" style={{ animationDelay: "1s" }} src="/images/bothe_nlp/adl.png" srcSet="/images/bothe_nlp/adl.png 1x, /images/bothe_nlp/adl@2x.png 2x" />
 
-				<img id="adm" src="/images/bothe_nlp/adm.png" srcSet="/images/bothe_nlp/adm.png 1x, /images/bothe_nlp/adm@2x.png 2x" />
+				<img id="adm" className="float-animation" style={{ animationDelay: "1.5s" }} src="/images/bothe_nlp/adm.png" srcSet="/images/bothe_nlp/adm.png 1x, /images/bothe_nlp/adm@2x.png 2x" />
 
-				<img id="adn" src="/images/bothe_nlp/adn.png" srcSet="/images/bothe_nlp/adn.png 1x, /images/bothe_nlp/adn@2x.png 2x" />
+				<img id="adn" className="float-animation" style={{ animationDelay: "0.2s" }} src="/images/bothe_nlp/adn.png" srcSet="/images/bothe_nlp/adn.png 1x, /images/bothe_nlp/adn@2x.png 2x" />
 
-				<img id="ado" src="/images/bothe_nlp/ado.png" srcSet="/images/bothe_nlp/ado.png 1x, /images/bothe_nlp/ado@2x.png 2x" />
+				<img id="ado" className="float-animation" style={{ animationDelay: "0.7s" }} src="/images/bothe_nlp/ado.png" srcSet="/images/bothe_nlp/ado.png 1x, /images/bothe_nlp/ado@2x.png 2x" />
 
-				<div id="adp">
+				<div id="adp" className="reveal-hidden">
 					<span>“Thế giới của mỗi người chính là hệ sinh thái, nơi mà chúng ta sống và làm việc cùng các cộng đồng. Tại InnerBright, điều quan trọng không chỉ là đạt được thành công cá nhân, mà còn là sử dụng sức mạnh này để tạo ra sự khác biệt và ảnh hưởng đến hệ sinh thái của riêng bạn. Bằng cách phát triển bản thân, chúng ta trở thành nguồn cảm hứng và sự thay đổi mà thế giới cần.”</span>
 				</div>
 				<div id="adq">

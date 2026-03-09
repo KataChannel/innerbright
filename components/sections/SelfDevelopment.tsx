@@ -1,7 +1,7 @@
 export default function SelfDevelopment() {
   return (
     <div id="acb">
-      <div id="acc">
+      <div id="acc" className="reveal-hidden hover-premium">
         <img id="acd" src="/acd.png" srcSet="/acd.png 1x, /acd@2x.png 2x" alt="Self Development Banner" />
       </div>
       <div id="ace">
@@ -20,13 +20,13 @@ export default function SelfDevelopment() {
           </path>
         </svg>
       </div>
-      <div id="acj">
+      <div id="acj" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
         <span>Thế giới của mỗi người chính là bề sinh trắc, nơi mỗi chúng ta sống và  làm việc cùng các cộng đồng. Tại InnerBright, điều quan trọng không  chỉ là được thành công cá nhân, mà còn là sử dụng sức mạnh này để  tạo ra sự khác biệt và ảnh hưởng đến hệ sinh thái của riêng bạn. Bằng  cách phát triển bản thân, chúng ta tự trở thành người cầm trịch và sẽ  thay đổi cả thế giới.</span>
       </div>
-      <div id="ack">
+      <div id="ack" className="reveal-hidden" style={{ transitionDelay: "0.4s" }}>
         <span>Chúng tôi - những con người tại InnerBright rất tự hào và sẵn sàng đồng hành cùng bạn trên hành trình này để khai phóng tiềm năng và giúp phát huy tối đa nội lực của riêng Bạn</span>
       </div>
-      <div id="acl">
+      <div id="acl" className="float-animation">
         <img id="acm" src="/acm.png" srcSet="/acm.png 1x, /acm@2x.png 2x" alt="Bottom Image" />
       </div>
     </div>

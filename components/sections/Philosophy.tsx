@@ -5,22 +5,22 @@ export default function Philosophy() {
         <rect id="aaz" rx="0" ry="0" x="0" y="0" width="1920" height="869">
         </rect>
       </svg>
-      <div id="aba">
+      <div id="aba" className="reveal-hidden hover-premium">
         <img id="abb" src="/abb.png" srcSet="/abb.png 1x, /abb@2x.png 2x" alt="Core Graphic" />
       </div>
-      <div id="abc">
+      <div id="abc" className="reveal-hidden">
         <span>MANG TRONG MÌNH</span>
       </div>
-      <div id="abd">
+      <div id="abd" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
         <span>KHÁT VỌNG</span>
       </div>
-      <div id="abe">
+      <div id="abe" className="reveal-hidden float-animation" style={{ transitionDelay: "0.3s" }}>
         <img id="abf" src="/abf.png" srcSet="/abf.png 1x, /abf@2x.png 2x" alt="Graphic" />
       </div>
-      <div id="abg">
+      <div id="abg" className="reveal-hidden float-animation" style={{ transitionDelay: "0.5s" }}>
         <img id="abh" src="/abh.png" srcSet="/abh.png 1x, /abh@2x.png 2x" alt="Graphic" />
       </div>
-      <div id="abi">
+      <div id="abi" className="reveal-hidden float-animation" style={{ transitionDelay: "0.7s" }}>
         <img id="abj" src="/abj.png" srcSet="/abj.png 1x, /abj@2x.png 2x" alt="Graphic" />
       </div>
       <div id="abk">

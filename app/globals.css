@@ -101,3 +101,89 @@ h4,
 .font-display {
   font-family: var(--font-display);
 }
+
+/* Animation Design System */
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse-soft {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+.hover-premium {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.hover-premium:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  filter: drop-shadow(0 20px 30px rgba(0, 71, 198, 0.15)) !important;
+  z-index: 100 !important;
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+.menu-hover {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.menu-hover::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 50%;
+  background-color: #FF9429;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.menu-hover:hover::after {
+  width: 80%;
+}
+
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reveal-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Missing z-index on hover fix */
+.hover-premium:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  filter: drop-shadow(0 20px 30px rgba(0, 71, 198, 0.15)) !important;
+  z-index: 100 !important;
+}
