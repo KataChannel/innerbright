@@ -1,3 +1,4 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function Philosophy() {
   return (
     <div id="aay">
@@ -6,7 +7,7 @@ export default function Philosophy() {
         </rect>
       </svg>
       <div id="aba" className="reveal-hidden hover-premium">
-        <img id="abb" src="/abb.png" srcSet="/abb.png 1x, /abb@2x.png 2x" alt="Core Graphic" />
+        <img id="abb" src={getAssetUrl("/abb.png")} srcSet={`${getAssetUrl("/abb.png")} 1x, ${getAssetUrl("/abb@2x.png")} 2x`} alt="Core Graphic" />
       </div>
       <div id="abc" className="reveal-hidden">
         <span>MANG TRONG MÌNH</span>
@@ -15,13 +16,13 @@ export default function Philosophy() {
         <span>KHÁT VỌNG</span>
       </div>
       <div id="abe" className="reveal-hidden float-animation" style={{ transitionDelay: "0.3s" }}>
-        <img id="abf" src="/abf.png" srcSet="/abf.png 1x, /abf@2x.png 2x" alt="Graphic" />
+        <img id="abf" src={getAssetUrl("/abf.png")} srcSet={`${getAssetUrl("/abf.png")} 1x, ${getAssetUrl("/abf@2x.png")} 2x`} alt="Graphic" />
       </div>
       <div id="abg" className="reveal-hidden float-animation" style={{ transitionDelay: "0.5s" }}>
-        <img id="abh" src="/abh.png" srcSet="/abh.png 1x, /abh@2x.png 2x" alt="Graphic" />
+        <img id="abh" src={getAssetUrl("/abh.png")} srcSet={`${getAssetUrl("/abh.png")} 1x, ${getAssetUrl("/abh@2x.png")} 2x`} alt="Graphic" />
       </div>
       <div id="abi" className="reveal-hidden float-animation" style={{ transitionDelay: "0.7s" }}>
-        <img id="abj" src="/abj.png" srcSet="/abj.png 1x, /abj@2x.png 2x" alt="Graphic" />
+        <img id="abj" src={getAssetUrl("/abj.png")} srcSet={`${getAssetUrl("/abj.png")} 1x, ${getAssetUrl("/abj@2x.png")} 2x`} alt="Graphic" />
       </div>
       <div id="abk">
         <span>SỨ MỆNH</span>

@@ -1,8 +1,9 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function SelfDevelopment() {
   return (
     <div id="acb">
       <div id="acc" className="reveal-hidden hover-premium">
-        <img id="acd" src="/acd.png" srcSet="/acd.png 1x, /acd@2x.png 2x" alt="Self Development Banner" />
+        <img id="acd" src={getAssetUrl("/acd.png")} srcSet={`${getAssetUrl("/acd.png")} 1x, ${getAssetUrl("/acd@2x.png")} 2x`} alt="Self Development Banner" />
       </div>
       <div id="ace">
         <div id="acf">
@@ -27,7 +28,7 @@ export default function SelfDevelopment() {
         <span>Chúng tôi - những con người tại InnerBright rất tự hào và sẵn sàng đồng hành cùng bạn trên hành trình này để khai phóng tiềm năng và giúp phát huy tối đa nội lực của riêng Bạn</span>
       </div>
       <div id="acl" className="float-animation">
-        <img id="acm" src="/acm.png" srcSet="/acm.png 1x, /acm@2x.png 2x" alt="Bottom Image" />
+        <img id="acm" src={getAssetUrl("/acm.png")} srcSet={`${getAssetUrl("/acm.png")} 1x, ${getAssetUrl("/acm@2x.png")} 2x`} alt="Bottom Image" />
       </div>
     </div>
   );

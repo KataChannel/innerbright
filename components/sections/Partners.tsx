@@ -1,3 +1,4 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function Partners() {
   return (
     <div id="ahx">
@@ -9,7 +10,7 @@ export default function Partners() {
         <span>Hành trình chuyên nghiệp của Chloe được xây dựng trên nền tảng kinh nghiệm khai vấn (coaching) được chứng nhận bởi hàng loạt các tổ chức uy tín trên thế giới, bao gồm:</span>
       </div>
       <div id="aia">
-        <img id="aib" src="/aib.png" srcSet="/aib.png 1x, /aib@2x.png 2x" alt="Partners Logos" />
+        <img id="aib" src={getAssetUrl("/aib.png")} srcSet={`${getAssetUrl("/aib.png")} 1x, ${getAssetUrl("/aib@2x.png")} 2x`} alt="Partners Logos" />
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function Certification() {
   return (
     <div id="acn">
@@ -9,7 +10,7 @@ export default function Certification() {
         <span>InnerBright Training & Coaching tự hào là thành viên chính thức và uy <br />tín của Hiệp Hội NLP Hoa Kỳ (ABNLP) trong hơn 5 năm liên tục. ABNLP <br />với vai trò là tổ chức lớn nhất và lâu đời nhất về Lập Trình Ngôn Ngữ Tư <br />Duy (NLP - Neuro Linguistic Programming) tại Hoa Kỳ, có chứng nhận sự <br />chuyên nghiệp và chất lượng đào tạo của InnerBright.<br /><br />Đặc biệt, InnerBright là đơn vị tiên phong tại Việt Nam được Ban Cố Vấn <br />(Board of Advisors) của Hiệp Hội ABNLP chứng thực bằng chương trình <br />NLP Master Coach Quốc Tế. Điều này đảm bảo rằng không chỉ về kiến <br />thức chuyên môn, mà còn về đạo đức nghề nghiệp, InnerBright mang <br />đến chương trình đào tạo NLP Coaching chuẩn quốc tế tại Việt Nam.</span>
       </div>
       <div id="acq">
-        <img id="acr" src="/acr.png" srcSet="/acr.png 1x, /acr@2x.png 2x" alt="Certification Logo" />
+        <img id="acr" src={getAssetUrl("/acr.png")} srcSet={`${getAssetUrl("/acr.png")} 1x, ${getAssetUrl("/acr@2x.png")} 2x`} alt="Certification Logo" />
       </div>
       <div id="acs">
         <span>CHỨNG NHẬN</span>
@@ -21,7 +22,7 @@ export default function Certification() {
         <div id="acv">
           <div id="acw">
             <div id="acx">
-              <img id="acy" src="/acy.png" srcSet="/acy.png 1x, /acy@2x.png 2x" alt="Diploma" />
+              <img id="acy" src={getAssetUrl("/acy.png")} srcSet={`${getAssetUrl("/acy.png")} 1x, ${getAssetUrl("/acy@2x.png")} 2x`} alt="Diploma" />
             </div>
           </div>
           <svg className="acz" viewBox="897.157 11.451 634.339 408.197">
@@ -29,22 +30,22 @@ export default function Certification() {
             </path>
           </svg>
           <div id="ada">
-            <img id="adb" src="/adb.png" srcSet="/adb.png 1x, /adb@2x.png 2x" alt="Certification Seal" />
+            <img id="adb" src={getAssetUrl("/adb.png")} srcSet={`${getAssetUrl("/adb.png")} 1x, ${getAssetUrl("/adb@2x.png")} 2x`} alt="Certification Seal" />
           </div>
         </div>
         <div id="adc">
-          <img id="add" src="/add.png" srcSet="/add.png 1x, /add@2x.png 2x" alt="Dot" />
+          <img id="add" src={getAssetUrl("/add.png")} srcSet={`${getAssetUrl("/add.png")} 1x, ${getAssetUrl("/add@2x.png")} 2x`} alt="Dot" />
         </div>
       </div>
       <div id="ade">
         <div id="ade_inner_wrap">
           <div id="adf">
-            <img id="adg" src="/adg.png" srcSet="/adg.png 1x, /adg@2x.png 2x" alt="Dot" />
+            <img id="adg" src={getAssetUrl("/adg.png")} srcSet={`${getAssetUrl("/adg.png")} 1x, ${getAssetUrl("/adg@2x.png")} 2x`} alt="Dot" />
           </div>
           <div id="adh">
             <div id="adi">
               <div id="adj">
-                <img id="adk" src="/adk.png" srcSet="/adk.png 1x, /adk@2x.png 2x" alt="Diploma" />
+                <img id="adk" src={getAssetUrl("/adk.png")} srcSet={`${getAssetUrl("/adk.png")} 1x, ${getAssetUrl("/adk@2x.png")} 2x`} alt="Diploma" />
               </div>
             </div>
             <div id="adl">
@@ -53,7 +54,7 @@ export default function Certification() {
                 </path>
               </svg>
               <div id="adn">
-                <img id="ado" src="/ado.png" srcSet="/ado.png 1x, /ado@2x.png 2x" alt="Certification Seal" />
+                <img id="ado" src={getAssetUrl("/ado.png")} srcSet={`${getAssetUrl("/ado.png")} 1x, ${getAssetUrl("/ado@2x.png")} 2x`} alt="Certification Seal" />
               </div>
             </div>
           </div>

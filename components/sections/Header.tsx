@@ -1,17 +1,19 @@
 import Link from 'next/link';
+import { getAssetUrl } from '@/utils/asset';
+
 
 export default function Header() {
   return (
     <>
       <div id="aab">
-        <img id="aac" src="/aac.png" srcSet="/aac.png 1x, /aac@2x.png 2x" alt="Header Background" />
+        <img id="aac" src={getAssetUrl("/aac.png")} srcSet={`${getAssetUrl("/aac.png")} 1x, ${getAssetUrl("/aac@2x.png")} 2x`} alt="Header Background" />
       </div>
       <div id="aad">
-        <img id="aae" src="/aae.png" srcSet="/aae.png 1x, /aae@2x.png 2x" alt="User Icon" />
+        <img id="aae" src={getAssetUrl("/aae.png")} srcSet={`${getAssetUrl("/aae.png")} 1x, ${getAssetUrl("/aae@2x.png")} 2x`} alt="User Icon" />
       </div>
       <div id="aaf" style={{ cursor: 'pointer' }} className="relative z-50">
         <Link href="/">
-          <img id="aag" src="/aag.png" srcSet="/aag.png 1x, /aag@2x.png 2x" alt="Logo Section" />
+          <img id="aag" src={getAssetUrl("/aag.png")} srcSet={`${getAssetUrl("/aag.png")} 1x, ${getAssetUrl("/aag@2x.png")} 2x`} alt="Logo Section" />
         </Link>
       </div>
       <svg className="aah" viewBox="163.359 104.418 1339.799 49.335">
@@ -59,7 +61,7 @@ export default function Header() {
         <span>Liên hệ</span>
       </div>
       <div id="aau">
-        <img id="aav" src="/aav.png" srcSet="/aav.png 1x, /aav@2x.png 2x" alt="Search Bar Background" />
+        <img id="aav" src={getAssetUrl("/aav.png")} srcSet={`${getAssetUrl("/aav.png")} 1x, ${getAssetUrl("/aav@2x.png")} 2x`} alt="Search Bar Background" />
       </div>
       <div id="aaw">
         <span>Khoá học</span>

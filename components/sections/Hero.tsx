@@ -1,8 +1,10 @@
+import { getAssetUrl } from '@/utils/asset';
+
 export default function Hero() {
   return (
     <div id="aie">
       <div id="aif">
-        <img id="aig" src="/aig.png" srcSet="/aig.png 1x, /aig@2x.png 2x" alt="Hero Background" />
+        <img id="aig" src={getAssetUrl("/aig.png")} srcSet={`${getAssetUrl("/aig.png")} 1x, ${getAssetUrl("/aig@2x.png")} 2x`} alt="Hero Background" />
       </div>
       <div id="aih">
         <span>CÂU CHUYỆN</span>
@@ -30,17 +32,17 @@ export default function Hero() {
       <div id="aio">
         <div id="aip">
           <div id="aiq">
-            <img id="air" src="/air.png" srcSet="/air.png 1x, /air@2x.png 2x" alt="Dot" />
+            <img id="air" src={getAssetUrl("/air.png")} srcSet={`${getAssetUrl("/air.png")} 1x, ${getAssetUrl("/air@2x.png")} 2x`} alt="Dot" />
           </div>
         </div>
         <div id="ais">
           <div id="ait">
-            <img id="aiu" src="/aiu.png" srcSet="/aiu.png 1x, /aiu@2x.png 2x" alt="Dot" />
+            <img id="aiu" src={getAssetUrl("/aiu.png")} srcSet={`${getAssetUrl("/aiu.png")} 1x, ${getAssetUrl("/aiu@2x.png")} 2x`} alt="Dot" />
           </div>
         </div>
         <div id="aiv">
           <div id="aiw">
-            <img id="aix" src="/aix.png" srcSet="/aix.png 1x, /aix@2x.png 2x" alt="Dot" />
+            <img id="aix" src={getAssetUrl("/aix.png")} srcSet={`${getAssetUrl("/aix.png")} 1x, ${getAssetUrl("/aix@2x.png")} 2x`} alt="Dot" />
           </div>
         </div>
         <svg className="aiy" viewBox="219.532 18.618 4.154 4.153">
@@ -80,9 +82,9 @@ export default function Hero() {
         <path id="ajg" d="M 214.6643524169922 33.37770843505859 C 215.6707000732422 33.92952728271484 216.9314422607422 33.56102752685547 217.4832916259766 32.55467224121094 C 218.0332183837891 31.54830741882324 217.6647186279297 30.28754997253418 216.6602325439453 29.7357349395752 C 215.6538543701172 29.18578910827637 214.3931121826172 29.55429267883301 213.8412933349609 30.55877876281738 C 213.2894744873047 31.56514167785645 213.6579742431641 32.82589721679688 214.6643524169922 33.37770843505859">
         </path>
       </svg>
-      <img id="ajh" src="/ajh.png" srcSet="/ajh.png 1x, /ajh@2x.png 2x" alt="Bởi nhà đào tạo CHLOE QUÝ CHÂU" />
+      <img id="ajh" src={getAssetUrl("/ajh.png")} srcSet={`${getAssetUrl("/ajh.png")} 1x, ${getAssetUrl("/ajh@2x.png")} 2x`} alt="Bởi nhà đào tạo CHLOE QUÝ CHÂU" />
       <div id="aji">
-        <img id="ajj" src="/ajj.png" srcSet="/ajj.png 1x, /ajj@2x.png 2x" alt="Bottom Banner" />
+        <img id="ajj" src={getAssetUrl("/ajj.png")} srcSet={`${getAssetUrl("/ajj.png")} 1x, ${getAssetUrl("/ajj@2x.png")} 2x`} alt="Bottom Banner" />
       </div>
     </div>
   );

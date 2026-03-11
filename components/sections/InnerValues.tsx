@@ -1,3 +1,4 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function InnerValues() {
   return (
     <div id="agy">
@@ -23,7 +24,7 @@ export default function InnerValues() {
         </path>
       </svg>
       <div id="ahf">
-        <img id="ahg" src="/ahg.png" srcSet="/ahg.png 1x, /ahg@2x.png 2x" alt="Graphic" />
+        <img id="ahg" src={getAssetUrl("/ahg.png")} srcSet={`${getAssetUrl("/ahg.png")} 1x, ${getAssetUrl("/ahg@2x.png")} 2x`} alt="Graphic" />
       </div>
       <div id="ahh">
         <span>Với tâm huyết truyền tải tinh thần chính trực của NLP, InnerBright không đơn thuần mang đến một hệ thống bài bản. Chúng tôi kiến tạo một hành trình phát triển </span><span style={{ letterSpacing: '0.2px' }}>bản thân toàn diện, hấp nhất sức mạnh nội tại của</span><span> bạn với sự trưởng thành ở cả bốn khía cạnh then chốt: </span><span style={{ letterSpacing: '0.2px' }}>trí tuệ lý trí (mental intelligence), trí tuệ cảm xúc</span><span> </span><span style={{ letterSpacing: '0.2px' }}>(emotional intelligence), trí tuệ thể chất (physical </span><span>intelligence) và trí tuệ tâm linh (spiritual intelligence).<br /><br />Chúng tôi nuôi dưỡng những giá trị cốt lõi của bạn, tạo </span><span style={{ letterSpacing: '0.15px' }}>nên một hệ sinh thái nội tại vụng mạnh và bền vững, giúp bạn phát triển toàn diện và sống một cuộc đời </span><span>trọn vẹn.</span>

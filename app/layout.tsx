@@ -28,7 +28,10 @@ const svnOpinion = localFont({
 export const metadata: Metadata = {
   title: "InnerBright",
   description: "InnerBright App",
-  viewport: "width=1920",
+};
+
+export const viewport = {
+  width: "1920",
 };
 
 export default function RootLayout({

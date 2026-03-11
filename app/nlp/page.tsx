@@ -1,4 +1,6 @@
 'use client';
+import { getAssetUrl } from '@/utils/asset';
+
 import './NLP.css';
 import ScaleWrapper from '@/components/sections/ScaleWrapper';
 import Link from 'next/link';
@@ -19,15 +21,15 @@ export default function NLPPage() {
 
 				</svg>
 				<div id="aae" className="float-animation">
-					<img id="aaf" src="/images/nlp/aaf.png" srcSet="/images/nlp/aaf.png 1x, /images/nlp/aaf@2x.png 2x" />
+					<img id="aaf" src={getAssetUrl("/images/nlp/aaf.png")} srcSet={`${getAssetUrl("/images/nlp/aaf.png")} 1x, ${getAssetUrl("/images/nlp/aaf@2x.png")} 2x`} />
 				</div>
 				<div id="aag" style={{ cursor: "pointer" }} className="relative z-50 hover-premium">
 					<Link href="/" className="block w-full h-full">
-						<img id="aah" src="/images/nlp/aah.png" srcSet="/images/nlp/aah.png 1x, /images/nlp/aah@2x.png 2x" />
+						<img id="aah" src={getAssetUrl("/images/nlp/aah.png")} srcSet={`${getAssetUrl("/images/nlp/aah.png")} 1x, ${getAssetUrl("/images/nlp/aah@2x.png")} 2x`} />
 					</Link>
 				</div>
 				<div id="aai" className="float-animation" style={{ animationDelay: "1s" }}>
-					<img id="aaj" src="/images/nlp/aaj.png" srcSet="/images/nlp/aaj.png 1x, /images/nlp/aaj@2x.png 2x" />
+					<img id="aaj" src={getAssetUrl("/images/nlp/aaj.png")} srcSet={`${getAssetUrl("/images/nlp/aaj.png")} 1x, ${getAssetUrl("/images/nlp/aaj@2x.png")} 2x`} />
 				</div>
 				<svg className="aak" viewBox="163.359 104.418 1339.799 49.335">
 					<path id="aak" d="M 1493.431884765625 153.7531127929688 L 173.0869903564453 153.7531127929688 C 167.7145843505859 153.7531127929688 163.3589935302734 148.8037719726562 163.3589935302734 142.70068359375 L 163.3589935302734 115.4704513549805 C 163.3589935302734 109.3673477172852 167.7145843505859 104.4180068969727 173.0869903564453 104.4180068969727 L 1493.431884765625 104.4180068969727 C 1498.804321289062 104.4180068969727 1503.158081054688 109.3673477172852 1503.158081054688 115.4704513549805 L 1503.158081054688 142.70068359375 C 1503.158081054688 148.8037719726562 1498.804321289062 153.7531127929688 1493.431884765625 153.7531127929688" />
@@ -79,7 +81,7 @@ export default function NLPPage() {
 				</div>
 				<div id="aay">
 					<div id="aaz">
-						<img id="aba" src="/images/nlp/aba.png" srcSet="/images/nlp/aba.png 1x, /images/nlp/aba@2x.png 2x" />
+						<img id="aba" src={getAssetUrl("/images/nlp/aba.png")} srcSet={`${getAssetUrl("/images/nlp/aba.png")} 1x, ${getAssetUrl("/images/nlp/aba@2x.png")} 2x`} />
 					</div>
 					<div id="abb" style={{ cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="relative z-50">
 						<span>Trở lại đầu trang</span>
@@ -167,7 +169,7 @@ export default function NLPPage() {
 					<path id="aca" d="M 0 0 L 1440 0 L 1440 608 L 0 608 L 0 0 Z" />
 
 				</svg>
-				<img id="acb" src="/images/nlp/acb.png" srcSet="/images/nlp/acb.png 1x, /images/nlp/acb@2x.png 2x" />
+				<img id="acb" src={getAssetUrl("/images/nlp/acb.png")} srcSet={`${getAssetUrl("/images/nlp/acb.png")} 1x, ${getAssetUrl("/images/nlp/acb@2x.png")} 2x`} />
 
 				<div id="acc">
 					<span>Nhưng bạn sẽ không nằm<br />trong số đó!</span>
@@ -217,11 +219,11 @@ export default function NLPPage() {
 				<div id="acq">
 					<span>Tương tự như hệ điều hành máy tính, lập trình ngôn ngữ tư duy là dòng hóa các phản ứng thông tin và hành vi. Nó là một tập hợp các nguyên tắc giúp điều chỉnh các kiểu hành vi không mong muốn, đồng thời tối ưu hóa các chương trình tư duy và hành vi để đạt được hiệu quả hơn.</span>
 				</div>
-				<img id="acr" src="/images/nlp/acr.png" srcSet="/images/nlp/acr.png 1x, /images/nlp/acr@2x.png 2x" />
+				<img id="acr" src={getAssetUrl("/images/nlp/acr.png")} srcSet={`${getAssetUrl("/images/nlp/acr.png")} 1x, ${getAssetUrl("/images/nlp/acr@2x.png")} 2x`} />
 
-				<img id="acs" src="/images/nlp/acs.png" srcSet="/images/nlp/acs.png 1x, /images/nlp/acs@2x.png 2x" />
+				<img id="acs" src={getAssetUrl("/images/nlp/acs.png")} srcSet={`${getAssetUrl("/images/nlp/acs.png")} 1x, ${getAssetUrl("/images/nlp/acs@2x.png")} 2x`} />
 
-				<img id="act" src="/images/nlp/act.png" srcSet="/images/nlp/act.png 1x, /images/nlp/act@2x.png 2x" />
+				<img id="act" src={getAssetUrl("/images/nlp/act.png")} srcSet={`${getAssetUrl("/images/nlp/act.png")} 1x, ${getAssetUrl("/images/nlp/act@2x.png")} 2x`} />
 
 				<div id="acu">
 					<span>NLP - Tái cấu trúc hệ điều hành cuộc đời bạn</span>
@@ -230,7 +232,7 @@ export default function NLPPage() {
 					<path id="acv" d="M 0 0 L 1920.000122070312 0 L 1920.000122070312 857.0215454101562 L 0 857.0215454101562 L 0 0 Z" />
 
 				</svg>
-				<img id="acw" src="/images/nlp/acw.png" srcSet="/images/nlp/acw.png 1x, /images/nlp/acw@2x.png 2x" />
+				<img id="acw" src={getAssetUrl("/images/nlp/acw.png")} srcSet={`${getAssetUrl("/images/nlp/acw.png")} 1x, ${getAssetUrl("/images/nlp/acw@2x.png")} 2x`} />
 
 				<div id="acx">
 					<span>NLP - Hộp công cụ cuộc sống đa năng</span>
@@ -243,9 +245,9 @@ export default function NLPPage() {
 						<path id="ada" d="M 0 0 L 1920.000122070312 0 L 1920.000122070312 899.064453125 L 0 899.064453125 L 0 0 Z" />
 
 					</svg>
-					<img id="adb" src="/images/nlp/adb.png" srcSet="/images/nlp/adb.png 1x, /images/nlp/adb@2x.png 2x" />
+					<img id="adb" src={getAssetUrl("/images/nlp/adb.png")} srcSet={`${getAssetUrl("/images/nlp/adb.png")} 1x, ${getAssetUrl("/images/nlp/adb@2x.png")} 2x`} />
 
-					<img id="adc" src="/images/nlp/adc.png" srcSet="/images/nlp/adc.png 1x, /images/nlp/adc@2x.png 2x" />
+					<img id="adc" src={getAssetUrl("/images/nlp/adc.png")} srcSet={`${getAssetUrl("/images/nlp/adc.png")} 1x, ${getAssetUrl("/images/nlp/adc@2x.png")} 2x`} />
 
 					<div id="add">
 						<span>Tham gia<br />chương trình đào tạo NLP</span>
@@ -269,21 +271,21 @@ export default function NLPPage() {
 						<rect id="adj" rx="36" ry="36" x="0" y="0" width="1407" height="866" />
 
 					</svg>
-					<img id="adk" src="/images/nlp/adk.png" srcSet="/images/nlp/adk.png 1x, /images/nlp/adk@2x.png 2x" />
+					<img id="adk" src={getAssetUrl("/images/nlp/adk.png")} srcSet={`${getAssetUrl("/images/nlp/adk.png")} 1x, ${getAssetUrl("/images/nlp/adk@2x.png")} 2x`} />
 
-					<img id="adl" src="/images/nlp/adl.png" srcSet="/images/nlp/adl.png 1x, /images/nlp/adl@2x.png 2x" />
+					<img id="adl" src={getAssetUrl("/images/nlp/adl.png")} srcSet={`${getAssetUrl("/images/nlp/adl.png")} 1x, ${getAssetUrl("/images/nlp/adl@2x.png")} 2x`} />
 
-					<img id="adm" src="/images/nlp/adm.png" srcSet="/images/nlp/adm.png 1x, /images/nlp/adm@2x.png 2x" />
+					<img id="adm" src={getAssetUrl("/images/nlp/adm.png")} srcSet={`${getAssetUrl("/images/nlp/adm.png")} 1x, ${getAssetUrl("/images/nlp/adm@2x.png")} 2x`} />
 
-					<img id="adn" src="/images/nlp/adn.png" srcSet="/images/nlp/adn.png 1x, /images/nlp/adn@2x.png 2x" />
+					<img id="adn" src={getAssetUrl("/images/nlp/adn.png")} srcSet={`${getAssetUrl("/images/nlp/adn.png")} 1x, ${getAssetUrl("/images/nlp/adn@2x.png")} 2x`} />
 
-					<img id="ado" src="/images/nlp/ado.png" srcSet="/images/nlp/ado.png 1x, /images/nlp/ado@2x.png 2x" />
+					<img id="ado" src={getAssetUrl("/images/nlp/ado.png")} srcSet={`${getAssetUrl("/images/nlp/ado.png")} 1x, ${getAssetUrl("/images/nlp/ado@2x.png")} 2x`} />
 
-					<img id="adp" src="/images/nlp/adp.png" srcSet="/images/nlp/adp.png 1x, /images/nlp/adp@2x.png 2x" />
+					<img id="adp" src={getAssetUrl("/images/nlp/adp.png")} srcSet={`${getAssetUrl("/images/nlp/adp.png")} 1x, ${getAssetUrl("/images/nlp/adp@2x.png")} 2x`} />
 
-					<img id="adq" src="/images/nlp/adq.png" srcSet="/images/nlp/adq.png 1x, /images/nlp/adq@2x.png 2x" />
+					<img id="adq" src={getAssetUrl("/images/nlp/adq.png")} srcSet={`${getAssetUrl("/images/nlp/adq.png")} 1x, ${getAssetUrl("/images/nlp/adq@2x.png")} 2x`} />
 
-					<img id="adr" src="/images/nlp/adr.png" srcSet="/images/nlp/adr.png 1x, /images/nlp/adr@2x.png 2x" />
+					<img id="adr" src={getAssetUrl("/images/nlp/adr.png")} srcSet={`${getAssetUrl("/images/nlp/adr.png")} 1x, ${getAssetUrl("/images/nlp/adr@2x.png")} 2x`} />
 
 					<div id="ads">
 						<svg className="adt">
@@ -474,7 +476,7 @@ export default function NLPPage() {
 				<div id="afv">
 					<span>Là một bác sĩ tâm thần, nhà trị liệu thôi miên rất thành công. NLP dựa trên cách mà Milton Erickson sử dụng ngôn ngữ thôi miên trị liệu để tạo nên các mẫu ngôn ngữ mang tên Mô hình Milton. Bất kể bạn đang ở bất cảnh nào, vai trò của bạn là gì thì những mẫu ngôn ngữ này sẽ giúp cho bạn có thể gia tăng khả năng giao tiếp với tầng tiềm thức của người nghe, thúc đẩy động lực, gây sự ảnh hưởng và tạo ra sự thay đổi lâu dài mang tính tích cực.</span>
 				</div>
-				<img id="afw" src="/images/nlp/afw.png" srcSet="/images/nlp/afw.png 1x, /images/nlp/afw@2x.png 2x" />
+				<img id="afw" src={getAssetUrl("/images/nlp/afw.png")} srcSet={`${getAssetUrl("/images/nlp/afw.png")} 1x, ${getAssetUrl("/images/nlp/afw@2x.png")} 2x`} />
 
 				<div id="afx">
 					<span>Milton Erickson</span>
@@ -511,9 +513,9 @@ export default function NLPPage() {
 				<div id="agh">
 					<span>Những nhà tiên phong truyền cảm hứng</span>
 				</div>
-				<img id="agi" src="/images/nlp/agi.png" srcSet="/images/nlp/agi.png 1x, /images/nlp/agi@2x.png 2x" />
+				<img id="agi" src={getAssetUrl("/images/nlp/agi.png")} srcSet={`${getAssetUrl("/images/nlp/agi.png")} 1x, ${getAssetUrl("/images/nlp/agi@2x.png")} 2x`} />
 
-				<img id="agj" src="/images/nlp/agj.png" srcSet="/images/nlp/agj.png 1x, /images/nlp/agj@2x.png 2x" />
+				<img id="agj" src={getAssetUrl("/images/nlp/agj.png")} srcSet={`${getAssetUrl("/images/nlp/agj.png")} 1x, ${getAssetUrl("/images/nlp/agj@2x.png")} 2x`} />
 
 				<svg className="agk" viewBox="0 0 1920 683.83">
 					<path id="agk" d="M 0 0 L 1920 0 L 1920 683.830078125 L 0 683.830078125 L 0 0 Z" />
@@ -544,7 +546,7 @@ export default function NLPPage() {
 						<span>TAD JAMES</span>
 					</div>
 					<div id="agt">
-						<img id="agu" src="/images/nlp/agu.png" srcSet="/images/nlp/agu.png 1x, /images/nlp/agu@2x.png 2x" />
+						<img id="agu" src={getAssetUrl("/images/nlp/agu.png")} srcSet={`${getAssetUrl("/images/nlp/agu.png")} 1x, ${getAssetUrl("/images/nlp/agu@2x.png")} 2x`} />
 
 					</div>
 					<div id="agv">
@@ -576,7 +578,7 @@ export default function NLPPage() {
 						<span>ROBERT DILTS</span>
 					</div>
 					<div id="ahe">
-						<img id="ahf" src="/images/nlp/ahf.png" srcSet="/images/nlp/ahf.png 1x, /images/nlp/ahf@2x.png 2x" />
+						<img id="ahf" src={getAssetUrl("/images/nlp/ahf.png")} srcSet={`${getAssetUrl("/images/nlp/ahf.png")} 1x, ${getAssetUrl("/images/nlp/ahf@2x.png")} 2x`} />
 
 					</div>
 					<div id="ahg">
@@ -608,7 +610,7 @@ export default function NLPPage() {
 						<span>ANTHONY ROBBINS</span>
 					</div>
 					<div id="ahp">
-						<img id="ahq" src="/images/nlp/ahq.png" srcSet="/images/nlp/ahq.png 1x, /images/nlp/ahq@2x.png 2x" />
+						<img id="ahq" src={getAssetUrl("/images/nlp/ahq.png")} srcSet={`${getAssetUrl("/images/nlp/ahq.png")} 1x, ${getAssetUrl("/images/nlp/ahq@2x.png")} 2x`} />
 
 					</div>
 					<div id="ahr">
@@ -621,9 +623,9 @@ export default function NLPPage() {
 				<div id="aht">
 					<span>Chắp cánh cho một lĩnh vực mang tầm ảnh hưởng to lớn</span>
 				</div>
-				<img id="ahu" src="/images/nlp/ahu.png" srcSet="/images/nlp/ahu.png 1x, /images/nlp/ahu@2x.png 2x" />
+				<img id="ahu" src={getAssetUrl("/images/nlp/ahu.png")} srcSet={`${getAssetUrl("/images/nlp/ahu.png")} 1x, ${getAssetUrl("/images/nlp/ahu@2x.png")} 2x`} />
 
-				<img id="ahv" src="/images/nlp/ahv.png" srcSet="/images/nlp/ahv.png 1x, /images/nlp/ahv@2x.png 2x" />
+				<img id="ahv" src={getAssetUrl("/images/nlp/ahv.png")} srcSet={`${getAssetUrl("/images/nlp/ahv.png")} 1x, ${getAssetUrl("/images/nlp/ahv@2x.png")} 2x`} />
 				<div id="ahw">
 					<span>NLP</span>
 				</div>
@@ -646,7 +648,7 @@ export default function NLPPage() {
 
 					</svg>
 				</div>
-				<img id="aid" className="reveal-hidden" src="/images/nlp/aid.png" srcSet="/images/nlp/aid.png 1x, /images/nlp/aid@2x.png 2x" />
+				<img id="aid" className="reveal-hidden" src={getAssetUrl("/images/nlp/aid.png")} srcSet={`${getAssetUrl("/images/nlp/aid.png")} 1x, ${getAssetUrl("/images/nlp/aid@2x.png")} 2x`} />
 				<svg className="aie">
 					<rect id="aie" rx="13" ry="13" x="0" y="0" width="311" height="135" />
 
@@ -659,7 +661,7 @@ export default function NLPPage() {
 						<span>Nhận thức sâu sắc về chính mình, phá vỡ những rào cản nội tại và khai phá tiềm lực bên trong.</span>
 					</div>
 				</div>
-				<img id="aii" className="reveal-hidden" src="/images/nlp/aii.png" srcSet="/images/nlp/aii.png 1x, /images/nlp/aii@2x.png 2x" />
+				<img id="aii" className="reveal-hidden" src={getAssetUrl("/images/nlp/aii.png")} srcSet={`${getAssetUrl("/images/nlp/aii.png")} 1x, ${getAssetUrl("/images/nlp/aii@2x.png")} 2x`} />
 				<div id="aij" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<svg className="aik">
 						<rect id="aik" rx="13" ry="13" x="0" y="0" width="311" height="135" />
@@ -672,7 +674,7 @@ export default function NLPPage() {
 						<span>Nâng cao khả năng giao tiếp, hài hòa các mối quan hệ và giúp người khác giải phóng rào cản, khơi thông nguồn lực để tiến về phía trước.</span>
 					</div>
 				</div>
-				<img id="ain" className="reveal-hidden" src="/images/nlp/ain.png" srcSet="/images/nlp/ain.png 1x, /images/nlp/ain@2x.png 2x" />
+				<img id="ain" className="reveal-hidden" src={getAssetUrl("/images/nlp/ain.png")} srcSet={`${getAssetUrl("/images/nlp/ain.png")} 1x, ${getAssetUrl("/images/nlp/ain@2x.png")} 2x`} />
 				<div id="aio" className="reveal-hidden" style={{ transitionDelay: "0.2s" }}>
 					<svg className="aip">
 						<rect id="aip" rx="13" ry="13" x="0" y="0" width="584" height="69" />
@@ -721,7 +723,7 @@ export default function NLPPage() {
 							<ellipse id="aje" rx="123.5" ry="124" cx="123.5" cy="124" />
 
 						</svg>
-						<img id="ajf" src="/images/nlp/ajf.png" srcSet="/images/nlp/ajf.png 1x, /images/nlp/ajf@2x.png 2x" />
+						<img id="ajf" src={getAssetUrl("/images/nlp/ajf.png")} srcSet={`${getAssetUrl("/images/nlp/ajf.png")} 1x, ${getAssetUrl("/images/nlp/ajf@2x.png")} 2x`} />
 
 					</div>
 				</div>
@@ -745,7 +747,7 @@ export default function NLPPage() {
 							<ellipse id="ajm" rx="123.5" ry="124" cx="123.5" cy="124" />
 
 						</svg>
-						<img id="ajn" src="/images/nlp/ajn.png" srcSet="/images/nlp/ajn.png 1x, /images/nlp/ajn@2x.png 2x" />
+						<img id="ajn" src={getAssetUrl("/images/nlp/ajn.png")} srcSet={`${getAssetUrl("/images/nlp/ajn.png")} 1x, ${getAssetUrl("/images/nlp/ajn@2x.png")} 2x`} />
 
 					</div>
 				</div>

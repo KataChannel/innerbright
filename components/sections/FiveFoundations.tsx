@@ -1,23 +1,24 @@
+import { getAssetUrl } from '@/utils/asset';
 export default function FiveFoundations() {
   return (
     <>
       <div id="adr">
         <div id="ads">
-          <img id="adt" src="/adt.png" srcSet="/adt.png 1x, /adt@2x.png 2x" alt="Transition Banner" />
+          <img id="adt" src={getAssetUrl("/adt.png")} srcSet={`${getAssetUrl("/adt.png")} 1x, ${getAssetUrl("/adt@2x.png")} 2x`} alt="Transition Banner" />
         </div>
         <div id="adu">
-          <img id="adv" src="/adv.png" srcSet="/adv.png 1x, /adv@2x.png 2x" alt="Line Graphic" />
+          <img id="adv" src={getAssetUrl("/adv.png")} srcSet={`${getAssetUrl("/adv.png")} 1x, ${getAssetUrl("/adv@2x.png")} 2x`} alt="Line Graphic" />
         </div>
         <div id="adw">
           <div id="adx">
-            <img id="ady" src="/ady.png" srcSet="/ady.png 1x, /ady@2x.png 2x" alt="Bullet" />
+            <img id="ady" src={getAssetUrl("/ady.png")} srcSet={`${getAssetUrl("/ady.png")} 1x, ${getAssetUrl("/ady@2x.png")} 2x`} alt="Bullet" />
           </div>
           <div id="adz">
             <span>và nguyên lý hoạt động là then chốt.</span>
           </div>
         </div>
         <div id="aea">
-          <img id="aeb" src="/aeb.png" srcSet="/aeb.png 1x, /aeb@2x.png 2x" alt="Bottom Banner" />
+          <img id="aeb" src={getAssetUrl("/aeb.png")} srcSet={`${getAssetUrl("/aeb.png")} 1x, ${getAssetUrl("/aeb@2x.png")} 2x`} alt="Bottom Banner" />
         </div>
       </div>
       <div id="aec">
@@ -36,16 +37,16 @@ export default function FiveFoundations() {
           </path>
         </svg>
         <div id="aeh">
-          <img id="aei" src="/aei.png" srcSet="/aei.png 1x, /aei@2x.png 2x" alt="Foundations" />
+          <img id="aei" src={getAssetUrl("/aei.png")} srcSet={`${getAssetUrl("/aei.png")} 1x, ${getAssetUrl("/aei@2x.png")} 2x`} alt="Foundations" />
         </div>
         <div id="aej">
           <div id="aek">
-            <img id="ael" src="/ael.png" srcSet="/ael.png 1x, /ael@2x.png 2x" alt="Icon" />
+            <img id="ael" src={getAssetUrl("/ael.png")} srcSet={`${getAssetUrl("/ael.png")} 1x, ${getAssetUrl("/ael@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="aem">
           <div id="aen">
-            <img id="aeo" src="/aeo.png" srcSet="/aeo.png 1x, /aeo@2x.png 2x" alt="Icon" />
+            <img id="aeo" src={getAssetUrl("/aeo.png")} srcSet={`${getAssetUrl("/aeo.png")} 1x, ${getAssetUrl("/aeo@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="aep">
@@ -99,12 +100,12 @@ export default function FiveFoundations() {
         </svg>
         <div id="afe">
           <div id="aff">
-            <img id="afg" src="/afg.png" srcSet="/afg.png 1x, /afg@2x.png 2x" alt="Icon" />
+            <img id="afg" src={getAssetUrl("/afg.png")} srcSet={`${getAssetUrl("/afg.png")} 1x, ${getAssetUrl("/afg@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="afh">
           <div id="afi">
-            <img id="afj" src="/afj.png" srcSet="/afj.png 1x, /afj@2x.png 2x" alt="Icon" />
+            <img id="afj" src={getAssetUrl("/afj.png")} srcSet={`${getAssetUrl("/afj.png")} 1x, ${getAssetUrl("/afj@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="afk">
@@ -152,12 +153,12 @@ export default function FiveFoundations() {
         </div>
         <div id="afy">
           <div id="afz">
-            <img id="aga" src="/aga.png" srcSet="/aga.png 1x, /aga@2x.png 2x" alt="Icon" />
+            <img id="aga" src={getAssetUrl("/aga.png")} srcSet={`${getAssetUrl("/aga.png")} 1x, ${getAssetUrl("/aga@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="agb">
           <div id="agc">
-            <img id="agd" src="/agd.png" srcSet="/agd.png 1x, /agd@2x.png 2x" alt="Icon" />
+            <img id="agd" src={getAssetUrl("/agd.png")} srcSet={`${getAssetUrl("/agd.png")} 1x, ${getAssetUrl("/agd@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="age">
@@ -205,12 +206,12 @@ export default function FiveFoundations() {
         </div>
         <div id="ags">
           <div id="agt">
-            <img id="agu" src="/agu.png" srcSet="/agu.png 1x, /agu@2x.png 2x" alt="Icon" />
+            <img id="agu" src={getAssetUrl("/agu.png")} srcSet={`${getAssetUrl("/agu.png")} 1x, ${getAssetUrl("/agu@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
         <div id="agv">
           <div id="agw">
-            <img id="agx" src="/agx.png" srcSet="/agx.png 1x, /agx@2x.png 2x" alt="Icon" />
+            <img id="agx" src={getAssetUrl("/agx.png")} srcSet={`${getAssetUrl("/agx.png")} 1x, ${getAssetUrl("/agx@2x.png")} 2x`} alt="Icon" />
           </div>
         </div>
       </div>

@@ -42,6 +42,8 @@ jobs:
 
       - name: Build with Next.js
         run: bun run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /innerbright
 
       - name: Verify build output
         run: ls -la out/
