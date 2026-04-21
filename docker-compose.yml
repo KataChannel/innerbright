@@ -3,9 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: innerbright-frontend
     container_name: innerbright-frontend
     ports:
-      - "60000:3000"
+      - "3005:3000"
     environment:
       - NODE_ENV=production
     restart: always
